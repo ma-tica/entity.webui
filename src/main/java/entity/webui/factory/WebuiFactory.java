@@ -10,6 +10,6 @@ public interface WebuiFactory {
 
 	HtmlPanelGrid buildPanelGrid();
 
-	List<FieldModel> getFields();
+	List<FieldModel> buildFields();
 
 }

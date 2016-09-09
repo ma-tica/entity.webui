@@ -15,4 +15,7 @@ public @interface Webui {
 	
 	public FieldModel.Controller controller() default FieldModel.Controller.INPUT_TEXT; 
 	
+	public boolean required() default false;
+	
+	
 }

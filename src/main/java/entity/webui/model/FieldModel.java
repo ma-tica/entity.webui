@@ -16,6 +16,7 @@ public class FieldModel {
 	private String propertyName;
 	private String beanControllerName;
 	private Class<?> clazz;
+	private boolean required;
 
 	/**
 	 * @return the caption
@@ -89,6 +90,21 @@ public class FieldModel {
 	 */
 	public void setClazz(Class<?> clazz) {
 		this.clazz = clazz;
+	}
+
+	/**
+	 * @return the required
+	 */
+	public boolean isRequired() {
+		return required;
+	}
+
+	/**
+	 * @param required 
+	 * 			the required to set
+	 */
+	public void setRequired(boolean required) {
+		this.required = required;
 	}
 	
 	

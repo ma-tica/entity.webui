@@ -10,14 +10,16 @@ import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.context.FacesContext;
 
 import org.primefaces.component.inputtext.InputText;
+import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
 
 import entity.webui.annotation.Webui;
+import entity.webui.model.BaseEntityModel;
 import entity.webui.model.FieldModel;
 
-public class WebuiFactoryImpl implements WebuiFactory {
+public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory {
 
-	Class<?> clazz;
+	Class<T> clazz;
 	
 	List<FieldModel> fields;
 	
@@ -29,10 +31,10 @@ public class WebuiFactoryImpl implements WebuiFactory {
 	 * @param clazz
 	 * @param beanName
 	 */
-	public WebuiFactoryImpl(Class<?> clazz, String beanName)
+	public WebuiFactoryImpl(Class<T> clazz, String managedBeanName)
 	{
 		this.clazz = clazz;
-		this.beanName = beanName;
+		this.beanName = managedBeanName;
 		this.fillFieldList(clazz, beanName);
 		
 	}
@@ -41,7 +43,7 @@ public class WebuiFactoryImpl implements WebuiFactory {
 	public HtmlPanelGrid buildPanelGrid()
 	{
 		HtmlPanelGrid panel = new HtmlPanelGrid();
-		panel.setColumns(4);
+		panel.setColumns(6);
 		
 		for(FieldModel field : this.fields)
 		{
@@ -60,7 +62,7 @@ public class WebuiFactoryImpl implements WebuiFactory {
 	
 	
 	@Override
-	public List<FieldModel> getFields()
+	public List<FieldModel> buildFields()
 	{
 		return this.fields;
 	}
@@ -71,7 +73,7 @@ public class WebuiFactoryImpl implements WebuiFactory {
  * --------------------------
  * P R I V A T E	
  */
-	private void fillFieldList(Class<?> clazz, String beanControllerName)
+	private void fillFieldList(Class<T> clazz, String beanControllerName)
 	{
 		this.fields = new ArrayList<FieldModel>();
 		for (Field field : clazz.getDeclaredFields())
@@ -85,6 +87,7 @@ public class WebuiFactoryImpl implements WebuiFactory {
 				fmodel.setPropertyName(field.getName());
 				fmodel.setBeanControllerName(beanControllerName);
 				fmodel.setClazz(field.getType());
+				fmodel.setRequired(webui.required());
 				this.fields.add(fmodel);				
 			}
 		}
@@ -92,19 +95,38 @@ public class WebuiFactoryImpl implements WebuiFactory {
 	
 	private void buildInputText(FieldModel field, HtmlPanelGrid panel)
 	{
-		InputText input = new InputText();
-		OutputLabel label = new OutputLabel();
-					
-		label.setValue(field.getCaption());
-		label.setFor(input.getId());
-		
+		/*
+		 * Input text box
+		 */
+		InputText input = new InputText();				
 		FacesContext context = FacesContext.getCurrentInstance();
 		Application app = context.getApplication();
 		ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(), this.elValue(field), field.getClazz());
 		input.setValueExpression("value", valueEx);
+		input.setId(field.getPropertyName());
+		input.setRequired(field.isRequired());
+					
+		/*
+		 * Label
+		 */
+		OutputLabel label = new OutputLabel();
+		label.setValue(field.getCaption());
+		label.setFor(input.getId());
 		
+		/*
+		 * message validation
+		 */
+		Message message = new Message();
+		message.setFor(input.getId());
+		message.setDisplay("icon");
+		
+		
+		/*
+		 * add to form panel 
+		 */
 		panel.getChildren().add(label);
 		panel.getChildren().add(input);
+		panel.getChildren().add(message);
 	}
 	
 	private String elValue(FieldModel fmodel)

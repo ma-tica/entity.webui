@@ -11,11 +11,24 @@
 		<primefaces.version>6.0</primefaces.version>
 		<spring-security.version>4.1.2.RELEASE</spring-security.version>
 		<spring.version>4.3.2.RELEASE</spring.version>
-		<maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
+		<maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+		<maven-install-version>2.5.2</maven-install-version>
 		<mojarra.version>2.2.12</mojarra.version>
-
+		<release-train>Hopper-SR2</release-train>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.data</groupId>
+				<artifactId>spring-data-releasetrain</artifactId>
+				<version>${release-train}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
 <!-- Mojarra JSF -->
 		<dependency>
@@ -48,12 +61,19 @@
 			<artifactId>javax.el-api</artifactId>
 			<version>3.0.0</version>
 		</dependency>
+		
+<!-- repository -->		
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+		</dependency>
+		
 	</dependencies>
 
 
 
 	<build>
-		<finalName>entity.webui</finalName>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -64,6 +84,29 @@
 					<target>${java.version}</target>
 				</configuration>
 			</plugin>
+			
+			<!-- deploy maven bundle to local git repo -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>${maven-install-version}</version>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<artifactId>${project.artifactId}</artifactId>
+							<version>${project.version}</version>
+							<packaging>jar</packaging>
+							<file>target/${project.artifactId}-${project.version}.jar</file>
+							<localRepositoryPath>/home/matteo/Clienti/MATICA/maven-repo</localRepositoryPath>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
 		</plugins>
 	</build>
 </project>
