@@ -1,2 +1,2 @@
 # entity.webui
-Primefaces CRUD frameork
+Primefaces CRUD framework
