@@ -2,28 +2,40 @@ package entity.webui.factory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.el.ValueExpression;
 import javax.faces.application.Application;
-import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
+import org.primefaces.component.panelgrid.PanelGrid;
 
 import entity.webui.annotation.Webui;
+import entity.webui.annotation.WebuiField;
 import entity.webui.model.BaseEntityModel;
 import entity.webui.model.FieldModel;
 
 public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory {
 
-	Class<T> clazz;
+	//private Class<T> clazz;
 	
-	List<FieldModel> fields;
+	private List<FieldModel> fields;
 	
-	String beanName;
+	private List<FieldModel> shortListFields;
+	
+	private String beanName;
+	
+	private Webui clazzAnnotation;
+	
+	
+	private ResourceBundle labels; 
 	
 	/**
 	 * Constructor
@@ -33,23 +45,54 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	 */
 	public WebuiFactoryImpl(Class<T> clazz, String managedBeanName)
 	{
-		this.clazz = clazz;
+		
+		this.clazzAnnotation = this.readClassAnnotation(clazz);
 		this.beanName = managedBeanName;
 		this.fillFieldList(clazz, beanName);
 		
 	}
-	
-	@Override
-	public HtmlPanelGrid buildPanelGrid()
+
+	public WebuiFactoryImpl(Class<T> clazz)
 	{
-		HtmlPanelGrid panel = new HtmlPanelGrid();
-		panel.setColumns(6);
+		
+		this.clazzAnnotation = this.readClassAnnotation(clazz);
+		this.beanName = this.clazzAnnotation.beanControllerName();
+		this.fillFieldList(clazz, beanName);
+		
+	}
+
+
+	
+	public ResourceBundle getLabels() {
+		if (this.labels == null)
+		{
+			FacesContext context = FacesContext.getCurrentInstance();
+			this.labels = context.getApplication().getResourceBundle(context, "mclbl");
+
+		}
+		return this.labels;
+	}
+
+	@Override
+	public PanelGrid buildPanelGrid()
+	{
+		PanelGrid panel = new PanelGrid();
+		
+		/*
+		 * Sort fields
+		 */
+		this.sortFieldByFormPosition();
+		
+		/*
+		 * Instantiate the panel builder class
+		 */		
+		PanelBuilder panelBuilder = new PanelBuilder(panel, this.clazzAnnotation.panelColumns(), this.clazzAnnotation.title());
 		
 		for(FieldModel field : this.fields)
 		{
 			switch (field.getController()) {
 			case INPUT_TEXT:
-				this.buildInputText(field, panel);
+				this.buildInputText(field, panelBuilder);
 				break;
 
 			default:
@@ -62,9 +105,24 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	
 	
 	@Override
-	public List<FieldModel> buildFields()
+	public List<FieldModel> buildShortListFields()
 	{
-		return this.fields;
+		Collections.sort(this.shortListFields, new Comparator<FieldModel>() {
+
+			@Override
+			public int compare(FieldModel o1, FieldModel o2) {
+				if (o1.getShortListPosition() == o2.getShortListPosition()) {
+					return 0;
+				} else if (o1.getShortListPosition() > o2.getShortListPosition()) {
+					return 1;
+				} else {
+					return -1;
+				}
+
+			}
+		});
+
+		return this.shortListFields;
 	}
 	
 	
@@ -73,12 +131,18 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
  * --------------------------
  * P R I V A T E	
  */
+	private Webui readClassAnnotation(Class<T> clazz)
+	{	
+		return clazz.getAnnotation(Webui.class);
+	}
+	
 	private void fillFieldList(Class<T> clazz, String beanControllerName)
 	{
 		this.fields = new ArrayList<FieldModel>();
+		this.shortListFields = new ArrayList<FieldModel>();
 		for (Field field : clazz.getDeclaredFields())
 		{
-			Webui webui = field.getAnnotation(Webui.class);
+			WebuiField webui = field.getAnnotation(WebuiField.class);
 			if (webui != null)
 			{
 				FieldModel fmodel = new FieldModel();
@@ -88,12 +152,37 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 				fmodel.setBeanControllerName(beanControllerName);
 				fmodel.setClazz(field.getType());
 				fmodel.setRequired(webui.required());
+				fmodel.setShortListPosition(webui.shortListPosition());
+				fmodel.setColSpan(webui.colSpan());
+				fmodel.setFormPosition(webui.formPosition());
 				this.fields.add(fmodel);				
+				if (fmodel.getShortListPosition() > 0)
+				{
+					this.shortListFields.add(fmodel);
+				}
 			}
 		}
 	}
 	
-	private void buildInputText(FieldModel field, HtmlPanelGrid panel)
+	private void sortFieldByFormPosition()
+	{
+		Collections.sort(this.fields, new Comparator<FieldModel>() {
+
+			@Override
+			public int compare(FieldModel o1, FieldModel o2) {
+				if (o1.getFormPosition() == o2.getFormPosition()) {
+					return 0;
+				} else if (o1.getFormPosition() > o2.getFormPosition()) {
+					return 1;
+				} else {
+					return -1;
+				}
+
+			}
+		});
+	}
+	
+	private void buildInputText(FieldModel field, PanelBuilder builder)
 	{
 		/*
 		 * Input text box
@@ -102,31 +191,72 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		FacesContext context = FacesContext.getCurrentInstance();
 		Application app = context.getApplication();
 		ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(), this.elValue(field), field.getClazz());
-		input.setValueExpression("value", valueEx);
-		input.setId(field.getPropertyName());
+		input.setValueExpression("value", valueEx);		
+		input.setId(field.getId());
 		input.setRequired(field.isRequired());
+		
+		if (field.getCaption().startsWith("#{")) {
+			ValueExpression valueExCaption = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), field.getClazz());
+			input.setRequiredMessage(valueExCaption.getValue(context.getELContext()) + " " + this.getLabels().getString("common.ismandatory"));
+		}else{
+			input.setRequiredMessage(field.getCaption() + " " + this.getLabels().getString("common.ismandatory"));
+		}
+		input.setStyle("width: 100%;");
 					
 		/*
 		 * Label
 		 */
-		OutputLabel label = new OutputLabel();
-		label.setValue(field.getCaption());
-		label.setFor(input.getId());
+		OutputLabel label = this.buidLabel(field);
 		
 		/*
 		 * message validation
 		 */
-		Message message = new Message();
-		message.setFor(input.getId());
-		message.setDisplay("icon");
+		Message message = this.buildMessage(field);
+		
+		/*
+		 * input + message together in the same cell
+		 */
+		HtmlPanelGroup div = new HtmlPanelGroup();
+		div.getChildren().add(input);
+		div.getChildren().add(message);
+		
 		
 		
 		/*
 		 * add to form panel 
 		 */
-		panel.getChildren().add(label);
-		panel.getChildren().add(input);
-		panel.getChildren().add(message);
+		builder.addToPanel(label, 1);
+		builder.addToPanel(div, field.getColSpan());
+		//builder.addToPanel(message, 1);
+		
+	}
+	
+	
+	private OutputLabel buidLabel(FieldModel field)
+	{
+		OutputLabel label = new OutputLabel();
+		if (field.getCaption().startsWith("#{"))
+		{
+			FacesContext context = FacesContext.getCurrentInstance();
+			Application app = context.getApplication();
+			ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), field.getClazz());
+			label.setValueExpression("value", valueEx);
+			
+			
+		}else{
+			label.setValue(field.getCaption());
+		}
+		label.setFor(field.getId());
+		
+		return label;
+	}
+	
+	private Message buildMessage(FieldModel field)
+	{
+		Message message = new Message();
+		message.setFor(field.getId());
+		message.setDisplay("text");
+		return message;
 	}
 	
 	private String elValue(FieldModel fmodel)

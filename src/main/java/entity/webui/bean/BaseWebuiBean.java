@@ -8,6 +8,8 @@ import javax.faces.application.FacesMessage;
 import javax.faces.component.html.HtmlPanelGrid;
 import javax.faces.context.FacesContext;
 
+import org.primefaces.component.panelgrid.PanelGrid;
+
 import entity.webui.model.BaseEntityModel;
 import entity.webui.model.FieldModel;
 import entity.webui.service.BaseWebuiService;
@@ -25,7 +27,7 @@ public abstract class  BaseWebuiBean {
 	
 	protected List<BaseEntityModel> list;
 	
-	protected HtmlPanelGrid formPanel;
+	protected PanelGrid formPanel;
 
 	public abstract void init();
 	
@@ -48,7 +50,7 @@ public abstract class  BaseWebuiBean {
 	public List<FieldModel> getColumns() {
 		if (this.columns == null || this.columns.isEmpty())
 		{
-			this.columns = this.service.buildFields();
+			this.columns = this.service.buildShortListFields();
 		}
 		return columns;
 	}
@@ -75,7 +77,7 @@ public abstract class  BaseWebuiBean {
 		this.list = list;
 	}
 	
-	public HtmlPanelGrid getPanel()
+	public PanelGrid getPanel()
 	{
 		if (formPanel == null)
 		{
@@ -84,7 +86,7 @@ public abstract class  BaseWebuiBean {
 		return formPanel;
 	}
 
-	public void setPanel(HtmlPanelGrid panel)
+	public void setPanel(PanelGrid panel)
 	{
 		this.formPanel = panel;
 	}	

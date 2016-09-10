@@ -1,21 +1,29 @@
 package entity.webui.annotation;
 
-import java.lang.annotation.ElementType;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import entity.webui.model.FieldModel;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
+@Retention(RUNTIME)
+@Target(TYPE)
 public @interface Webui {
-
-	public String caption() default "";
+	/**
+	 * number of columns of HtmlPanelGrid
+	 * @return
+	 */
+	public int panelColumns();
 	
-	public FieldModel.Controller controller() default FieldModel.Controller.INPUT_TEXT; 
 	
-	public boolean required() default false;
+	/**
+	 * name of the primefaces bean controller that extends 
+	 */
+	public String beanControllerName();
 	
-	
+	/**
+	 * Header of panel
+	 * @return
+	 */
+	public String title() default "";
 }

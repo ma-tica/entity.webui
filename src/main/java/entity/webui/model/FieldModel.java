@@ -17,6 +17,9 @@ public class FieldModel {
 	private String beanControllerName;
 	private Class<?> clazz;
 	private boolean required;
+	private int shortListPosition;
+	private int formPosition;
+	private int colSpan;
 
 	/**
 	 * @return the caption
@@ -108,5 +111,52 @@ public class FieldModel {
 	}
 	
 	
+	
+	/**
+	 * @return the shortListPosition
+	 */
+	public int getShortListPosition() {
+		return shortListPosition;
+	}
+
+	/**
+	 * @param shortListPosition the shortListPosition to set
+	 */
+	public void setShortListPosition(int shortListPosition) {
+		this.shortListPosition = shortListPosition;
+	}
+
+	/**
+	 * @return the formPosition
+	 */
+	public int getFormPosition() {
+		return formPosition;
+	}
+
+	/**
+	 * @param formPosition the formPosition to set
+	 */
+	public void setFormPosition(int formPosition) {
+		this.formPosition = formPosition;
+	}
+
+	/**
+	 * @return the colSpan
+	 */
+	public int getColSpan() {
+		return colSpan;
+	}
+
+	/**
+	 * @param colSpan the colSpan to set
+	 */
+	public void setColSpan(int colSpan) {
+		this.colSpan = colSpan;
+	}
+
+	public String getId()
+	{
+		return this.getPropertyName();
+	}
 	
 }

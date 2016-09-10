@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.faces.component.html.HtmlPanelGrid;
 
+import org.primefaces.component.panelgrid.PanelGrid;
+
 import entity.webui.factory.WebuiFactory;
 import entity.webui.factory.WebuiFactoryImpl;
 import entity.webui.model.BaseEntityModel;
@@ -56,13 +58,13 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	}
 
 	@Override
-	public HtmlPanelGrid buildPanelGrid() {
+	public PanelGrid buildPanelGrid() {
 		return this.webuiFactory.buildPanelGrid();		
 	}
 
 	@Override
-	public List<FieldModel> buildFields() {
-		return this.webuiFactory.buildFields();
+	public List<FieldModel> buildShortListFields() {
+		return this.webuiFactory.buildShortListFields();
 	}
 
 

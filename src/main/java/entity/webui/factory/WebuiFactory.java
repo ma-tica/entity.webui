@@ -4,12 +4,14 @@ import java.util.List;
 
 import javax.faces.component.html.HtmlPanelGrid;
 
+import org.primefaces.component.panelgrid.PanelGrid;
+
 import entity.webui.model.FieldModel;
 
 public interface WebuiFactory {
 
-	HtmlPanelGrid buildPanelGrid();
+	PanelGrid buildPanelGrid();
 
-	List<FieldModel> buildFields();
+	List<FieldModel> buildShortListFields();
 
 }
