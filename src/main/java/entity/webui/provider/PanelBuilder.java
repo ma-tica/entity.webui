@@ -1,4 +1,4 @@
-package entity.webui.factory;
+package entity.webui.provider;
 
 import javax.faces.component.UIComponent;
 
@@ -24,7 +24,7 @@ class PanelBuilder {
 		this.panel = panel;
 		this.numColumns = numColumns;
 		
-		if (header != null & !header.isEmpty() )
+		if (header != null && !header.isEmpty() )
 		{
 			this.addHeader(header);
 		}

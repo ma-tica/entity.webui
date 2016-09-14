@@ -3,24 +3,33 @@ package entity.webui.model;
 public class FieldModel {
 
 	
-	public enum Controller {
+	public enum EditorComponent {
+		UNDEFINED,
 		INPUT_TEXT,
 		INPUT_NUMBER,
-		INPUT_DATE
+		INPUT_DATE,
+		SELECTION_ONE_MENU
 		;
 	}
 	
 	
 	private String caption;
-	private Controller controller;
+	private EditorComponent editorComponent;
 	private String propertyName;
 	private String beanControllerName;
-	private Class<?> clazz;
+	private Class<?> propertyType;
 	private boolean required;
 	private int shortListPosition;
 	private int formPosition;
 	private int colSpan;
-
+	
+	/**
+	 * Controller bean if field is a BaseModelEntity object
+	 * It's need for editor component like SelecetOneMenu 
+	 */
+	private String relatedBeanControllerName;
+	
+	
 	/**
 	 * @return the caption
 	 */
@@ -39,16 +48,16 @@ public class FieldModel {
 	/**
 	 * @return the controller
 	 */
-	public Controller getController() {
-		return controller;
+	public EditorComponent getEditorComponent() {
+		return editorComponent;
 	}
 
 	/**
 	 * @param controller 
 	 * 			 the controller to set
 	 */
-	public void setController(Controller controller) {
-		this.controller = controller;
+	public void setEditorComponent(EditorComponent editorComponent) {
+		this.editorComponent = editorComponent;
 	}
 
 	/**
@@ -81,18 +90,19 @@ public class FieldModel {
 		this.beanControllerName = beanControllerName;
 	}
 
+
 	/**
-	 * @return the clazz
+	 * @return the propertyType
 	 */
-	public Class<?> getClazz() {
-		return clazz;
+	public Class<?> getPropertyType() {
+		return propertyType;
 	}
 
 	/**
-	 * @param clazz the clazz to set
+	 * @param propertyType the propertyType to set
 	 */
-	public void setClazz(Class<?> clazz) {
-		this.clazz = clazz;
+	public void setPropertyType(Class<?> propertyType) {
+		this.propertyType = propertyType;
 	}
 
 	/**
@@ -152,6 +162,21 @@ public class FieldModel {
 	 */
 	public void setColSpan(int colSpan) {
 		this.colSpan = colSpan;
+	}
+
+
+	/**
+	 * @return the relatedBeanControllerName
+	 */
+	public String getRelatedBeanControllerName() {
+		return relatedBeanControllerName;
+	}
+
+	/**
+	 * @param relatedBeanControllerName the relatedBeanControllerName to set
+	 */
+	public void setRelatedBeanControllerName(String relatedBeanControllerName) {
+		this.relatedBeanControllerName = relatedBeanControllerName;
 	}
 
 	public String getId()

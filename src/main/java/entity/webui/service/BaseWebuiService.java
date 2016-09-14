@@ -2,7 +2,7 @@ package entity.webui.service;
 
 import java.util.List;
 
-import org.primefaces.component.panelgrid.PanelGrid;
+import org.primefaces.component.panel.Panel;
 
 import entity.webui.model.BaseEntityModel;
 import entity.webui.model.FieldModel;
@@ -14,7 +14,7 @@ public interface BaseWebuiService {
 
 	<T extends BaseEntityModel> List<T> buildList();
 	
-	PanelGrid buildPanelGrid();
+	Panel buildPanelGrid();
 	
 	List<FieldModel> buildShortListFields();
 	

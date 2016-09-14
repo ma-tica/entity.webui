@@ -3,9 +3,7 @@ package entity.webui.service;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.faces.component.html.HtmlPanelGrid;
-
-import org.primefaces.component.panelgrid.PanelGrid;
+import org.primefaces.component.panel.Panel;
 
 import entity.webui.factory.WebuiFactory;
 import entity.webui.factory.WebuiFactoryImpl;
@@ -36,8 +34,8 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 
 	@Override
 	public void save() {
-		this.repository.save(this.selected);
-		list.add(this.selected);
+		T entity = this.repository.save(this.selected);
+		list.add(entity );
 	}
 
 	@Override
@@ -58,7 +56,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	}
 
 	@Override
-	public PanelGrid buildPanelGrid() {
+	public Panel buildPanelGrid() {
 		return this.webuiFactory.buildPanelGrid();		
 	}
 

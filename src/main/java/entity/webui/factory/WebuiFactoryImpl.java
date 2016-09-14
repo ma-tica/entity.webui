@@ -1,39 +1,42 @@
 package entity.webui.factory;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.el.ValueExpression;
-import javax.faces.application.Application;
-import javax.faces.component.html.HtmlPanelGroup;
+import javax.el.MethodExpression;
 import javax.faces.context.FacesContext;
+import javax.faces.event.MethodExpressionActionListener;
 
-import org.primefaces.component.inputtext.InputText;
-import org.primefaces.component.message.Message;
-import org.primefaces.component.outputlabel.OutputLabel;
-import org.primefaces.component.panelgrid.PanelGrid;
+import org.primefaces.component.commandbutton.CommandButton;
+import org.primefaces.component.panel.Panel;
+import org.primefaces.component.tabview.Tab;
+import org.primefaces.component.tabview.TabView;
 
-import entity.webui.annotation.Webui;
-import entity.webui.annotation.WebuiField;
+import entity.webui.common.Utility;
 import entity.webui.model.BaseEntityModel;
 import entity.webui.model.FieldModel;
+import entity.webui.provider.ChildType;
+import entity.webui.provider.WebuiDatatableProvider;
+import entity.webui.provider.WebuiPanelProvider;
 
 public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory {
 
 	//private Class<T> clazz;
 	
-	private List<FieldModel> fields;
+	//private List<FieldModel> fields;
 	
 	private List<FieldModel> shortListFields;
 	
-	private String beanName;
+	//private List<ChildType> children;
 	
-	private Webui clazzAnnotation;
+	//private String beanName;
 	
+	//private Webui clazzAnnotation;
+	
+	
+	private Class<T> clazz;
 	
 	private ResourceBundle labels; 
 	
@@ -43,21 +46,22 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	 * @param clazz
 	 * @param beanName
 	 */
-	public WebuiFactoryImpl(Class<T> clazz, String managedBeanName)
-	{
-		
-		this.clazzAnnotation = this.readClassAnnotation(clazz);
-		this.beanName = managedBeanName;
-		this.fillFieldList(clazz, beanName);
-		
-	}
+//	public WebuiFactoryImpl(Class<T> clazz, String managedBeanName)
+//	{
+//		
+//		//this.clazzAnnotation = this.readClassAnnotation(clazz);
+//		this.beanName = managedBeanName;
+//		this.fillFieldList(clazz, beanName);
+//		
+//	}
 
 	public WebuiFactoryImpl(Class<T> clazz)
 	{
 		
-		this.clazzAnnotation = this.readClassAnnotation(clazz);
-		this.beanName = this.clazzAnnotation.beanControllerName();
-		this.fillFieldList(clazz, beanName);
+		//this.clazzAnnotation = this.readClassAnnotation(clazz);
+		//this.beanName = this.clazzAnnotation.beanControllerName();
+		//this.fillFieldList(clazz, beanName);
+		this.clazz = clazz;
 		
 	}
 
@@ -74,31 +78,46 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	}
 
 	@Override
-	public PanelGrid buildPanelGrid()
+	public Panel buildPanelGrid()
 	{
-		PanelGrid panel = new PanelGrid();
-		
-		/*
-		 * Sort fields
-		 */
-		this.sortFieldByFormPosition();
-		
-		/*
-		 * Instantiate the panel builder class
-		 */		
-		PanelBuilder panelBuilder = new PanelBuilder(panel, this.clazzAnnotation.panelColumns(), this.clazzAnnotation.title());
-		
-		for(FieldModel field : this.fields)
-		{
-			switch (field.getController()) {
-			case INPUT_TEXT:
-				this.buildInputText(field, panelBuilder);
-				break;
 
-			default:
-				break;
-			}
+		/*
+		 * scan the Entity class
+		 */
+		ClassScanner<T> scanner = new ClassScanner<T>(this.clazz);
+			
+		this.shortListFields = scanner.getShortListFields();
+		
+		Panel panel = new Panel();
+		panel.setHeader(scanner.getClazzAnnotation().title());
+		
+		/*
+		 * Main header Panel
+		 */
+//		LayoutUnit north = new LayoutUnit();
+//		north.setPosition("center");
+//		north.setSize("200");
+			
+		
+		WebuiPanelProvider panelProvider = new WebuiPanelProvider(scanner.getFields(), scanner.getClazzAnnotation().panelColumns(), 
+																null, null, this.getLabels());
+		
+		panel.getChildren().add(panelProvider.buildPanelGrid());
+		
+//		north.getChildren().add(panelProvider.buildPanelGrid());
+		
+		
+		/*
+		 * Children panels
+		 */
+		if (scanner.getChildren() != null && !scanner.getChildren().isEmpty())
+		{
+			
+			panel.getChildren().add(this.buildChildrenPanels(scanner.getChildren()));
+			
 		}
+		
+		
 		
 		return panel;
 	}
@@ -125,143 +144,112 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		return this.shortListFields;
 	}
 	
-	
-	
+
 /*
  * --------------------------
  * P R I V A T E	
  */
-	private Webui readClassAnnotation(Class<T> clazz)
-	{	
-		return clazz.getAnnotation(Webui.class);
-	}
+//	private Webui readClassAnnotation(Class<T> clazz)
+//	{	
+//		return clazz.getAnnotation(Webui.class);
+//	}
+//	
+//	private void fillFieldList(Class<T> clazz, String beanControllerName)
+//	{
+//		this.fields = new ArrayList<FieldModel>();
+//		this.shortListFields = new ArrayList<FieldModel>();
+//		this.children = new ArrayList<ChildType>();
+//		for (Field field : clazz.getDeclaredFields())
+//		{
+//			WebuiField webui = field.getAnnotation(WebuiField.class);
+//			if (webui != null)
+//			{
+//				FieldModel fmodel = new FieldModel();
+//				fmodel.setCaption(webui.caption());
+//				
+//				fmodel.setController(webui.controller());
+//				fmodel.setPropertyName(field.getName());
+//				fmodel.setBeanControllerName(beanControllerName);
+//				fmodel.setClazz(field.getType());
+//				fmodel.setRequired(webui.required());
+//				fmodel.setShortListPosition(webui.shortListPosition());
+//				fmodel.setColSpan(webui.colSpan());
+//				fmodel.setFormPosition(webui.formPosition());
+//				this.fields.add(fmodel);				
+//				if (fmodel.getShortListPosition() > 0)
+//				{
+//					this.shortListFields.add(fmodel);
+//				}
+//			}else{
+//				if (field.getAnnotation(Transient.class ) == null)
+//				{
+//					/*
+//					 * Children data
+//					 */
+//					if (field.getType().equals(List.class))
+//					{
+//						Type listType = field.getType(); 
+//						if (listType instanceof ParameterizedType)
+//						{
+//							Type elementType = ((ParameterizedType) listType).getActualTypeArguments()[0];
+//							this.children.add(new ChildType(field.getName(), elementType) );
+//						
+//						}
+//						
+//						
+//					}
+//				}
+//			}
+//		}
+//	}
+//	
 	
-	private void fillFieldList(Class<T> clazz, String beanControllerName)
-	{
-		this.fields = new ArrayList<FieldModel>();
-		this.shortListFields = new ArrayList<FieldModel>();
-		for (Field field : clazz.getDeclaredFields())
-		{
-			WebuiField webui = field.getAnnotation(WebuiField.class);
-			if (webui != null)
-			{
-				FieldModel fmodel = new FieldModel();
-				fmodel.setCaption(webui.caption());
-				fmodel.setController(webui.controller());
-				fmodel.setPropertyName(field.getName());
-				fmodel.setBeanControllerName(beanControllerName);
-				fmodel.setClazz(field.getType());
-				fmodel.setRequired(webui.required());
-				fmodel.setShortListPosition(webui.shortListPosition());
-				fmodel.setColSpan(webui.colSpan());
-				fmodel.setFormPosition(webui.formPosition());
-				this.fields.add(fmodel);				
-				if (fmodel.getShortListPosition() > 0)
-				{
-					this.shortListFields.add(fmodel);
-				}
-			}
-		}
-	}
 	
-	private void sortFieldByFormPosition()
+	
+	private TabView buildChildrenPanels(List<ChildType> children)
 	{
-		Collections.sort(this.fields, new Comparator<FieldModel>() {
+		TabView tabview = new TabView();
 
-			@Override
-			public int compare(FieldModel o1, FieldModel o2) {
-				if (o1.getFormPosition() == o2.getFormPosition()) {
-					return 0;
-				} else if (o1.getFormPosition() > o2.getFormPosition()) {
-					return 1;
-				} else {
-					return -1;
-				}
-
-			}
-		});
-	}
-	
-	private void buildInputText(FieldModel field, PanelBuilder builder)
-	{
-		/*
-		 * Input text box
-		 */
-		InputText input = new InputText();				
-		FacesContext context = FacesContext.getCurrentInstance();
-		Application app = context.getApplication();
-		ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(), this.elValue(field), field.getClazz());
-		input.setValueExpression("value", valueEx);		
-		input.setId(field.getId());
-		input.setRequired(field.isRequired());
-		
-		if (field.getCaption().startsWith("#{")) {
-			ValueExpression valueExCaption = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), field.getClazz());
-			input.setRequiredMessage(valueExCaption.getValue(context.getELContext()) + " " + this.getLabels().getString("common.ismandatory"));
-		}else{
-			input.setRequiredMessage(field.getCaption() + " " + this.getLabels().getString("common.ismandatory"));
-		}
-		input.setStyle("width: 100%;");
-					
-		/*
-		 * Label
-		 */
-		OutputLabel label = this.buidLabel(field);
-		
-		/*
-		 * message validation
-		 */
-		Message message = this.buildMessage(field);
-		
-		/*
-		 * input + message together in the same cell
-		 */
-		HtmlPanelGroup div = new HtmlPanelGroup();
-		div.getChildren().add(input);
-		div.getChildren().add(message);
-		
-		
-		
-		/*
-		 * add to form panel 
-		 */
-		builder.addToPanel(label, 1);
-		builder.addToPanel(div, field.getColSpan());
-		//builder.addToPanel(message, 1);
-		
-	}
-	
-	
-	private OutputLabel buidLabel(FieldModel field)
-	{
-		OutputLabel label = new OutputLabel();
-		if (field.getCaption().startsWith("#{"))
+		for (ChildType child : children)
 		{
-			FacesContext context = FacesContext.getCurrentInstance();
-			Application app = context.getApplication();
-			ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), field.getClazz());
-			label.setValueExpression("value", valueEx);
+			tabview.getChildren().add(this.buildChildrenTab(child));
 			
-			
-		}else{
-			label.setValue(field.getCaption());
 		}
-		label.setFor(field.getId());
 		
-		return label;
+		return tabview;
 	}
 	
-	private Message buildMessage(FieldModel field)
+	private Tab buildChildrenTab(ChildType child)
 	{
-		Message message = new Message();
-		message.setFor(field.getId());
-		message.setDisplay("text");
-		return message;
+		Tab tab = new Tab();
+		ClassScanner<BaseEntityModel> childScanner = new ClassScanner<BaseEntityModel>(child.getPropertyType());
+		
+		
+		tab.setTitle(childScanner.getClazzAnnotation().title());
+		
+		String listValueGetterSetter = String.format("#{%s.%s.%s}", child.getParentBeanName(), "selected", child.getName());
+		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
+																	this.getLabels(), listValueGetterSetter, child.getPropertyType());
+
+//		WebuiPanelProvider panelProvider = new WebuiPanelProvider(childScanner.getFields(), childScanner.getClazzAnnotation().panelColumns(), 
+//																  null, child.getParentField(), this.getLabels());
+
+		//Bottone +
+		CommandButton plus = new CommandButton();
+		plus.setValue("ADD");
+		MethodExpression actionListener = Utility.createMethodExp("#{operatori.addChild()}");
+		plus.setActionExpression(actionListener);
+		plus.setUpdate("@form");
+		tab.getChildren().add(plus);
+		
+		
+		tab.getChildren().add( dataTableProvider.buildDataTable());
+		
+		
+		return tab;
+				
 	}
 	
-	private String elValue(FieldModel fmodel)
-	{
-		String el = "#{%s.%s.%s}";
-		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName());
-	}
+	
+	
 }

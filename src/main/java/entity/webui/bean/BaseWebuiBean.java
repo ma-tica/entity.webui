@@ -5,17 +5,19 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.component.html.HtmlPanelGrid;
+import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 
-import org.primefaces.component.panelgrid.PanelGrid;
+import org.primefaces.component.layout.Layout;
+import org.primefaces.component.panel.Panel;
 
 import entity.webui.model.BaseEntityModel;
 import entity.webui.model.FieldModel;
 import entity.webui.service.BaseWebuiService;
 
 //public abstract class  BaseWebuiBean<T extends BaseEntityModel> {
-public abstract class  BaseWebuiBean {
+
+public  abstract class  BaseWebuiBean {
 
 	
 	private static final String XHTML_ROWID = "rowId";
@@ -27,7 +29,7 @@ public abstract class  BaseWebuiBean {
 	
 	protected List<BaseEntityModel> list;
 	
-	protected PanelGrid formPanel;
+	protected Panel formPanel;
 
 	public abstract void init();
 	
@@ -77,7 +79,7 @@ public abstract class  BaseWebuiBean {
 		this.list = list;
 	}
 	
-	public PanelGrid getPanel()
+	public Panel getPanel()
 	{
 		if (formPanel == null)
 		{
@@ -86,7 +88,7 @@ public abstract class  BaseWebuiBean {
 		return formPanel;
 	}
 
-	public void setPanel(PanelGrid panel)
+	public void setPanel(Panel panel)
 	{
 		this.formPanel = panel;
 	}	
