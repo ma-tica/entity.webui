@@ -92,6 +92,7 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		UIComponent input = null;
 		switch (field.getEditorComponent()) {
 		case INPUT_TEXT:
+		case INPUT_DATE:
 			input = this.buildInputText(field);
 			break;
 		case SELECTION_ONE_MENU:

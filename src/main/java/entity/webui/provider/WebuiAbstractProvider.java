@@ -120,7 +120,7 @@ abstract class WebuiAbstractProvider {
 		
 		somenu.setConverter(new SelectItemsConverter());
 		//somenu.setValueExpression("converter", this.createValueExp("omnifaces.SelectItemsConverter", String.class));
-		somenu.setConverterMessage("al va noooo");
+		
 		
 		UISelectItems items = new UISelectItems();
 		String selectItemsExp = String.format("#{%s.%s}", field.getRelatedBeanControllerName(), "findAll()");

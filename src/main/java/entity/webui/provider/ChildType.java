@@ -36,9 +36,20 @@ public class ChildType<T extends BaseEntityModel> {
 		return this.propertyType;
 	}
 	
-	public String getParentField()
+	public String getGetterSetterValueName()
 	{
 		return String.format("%s.%s.%s", this.parentBeanName, "selected", this.name);
+	}
+
+	public String getAddValueMethodName()
+	{
+		return String.format("%s.add%s()", this.parentBeanName, this.propertyType.getSimpleName());
+	}
+
+	public String getDeleteValueMethodName(String varName)
+	{
+		//return String.format("%s.delete%s(%s)", this.parentBeanName, this.propertyType.getSimpleName(), varName);
+		return String.format("%s.remove(%s)", getGetterSetterValueName(), varName);
 	}
 
 }

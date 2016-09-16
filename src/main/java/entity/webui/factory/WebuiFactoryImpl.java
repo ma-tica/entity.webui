@@ -126,21 +126,24 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	@Override
 	public List<FieldModel> buildShortListFields()
 	{
-		Collections.sort(this.shortListFields, new Comparator<FieldModel>() {
-
-			@Override
-			public int compare(FieldModel o1, FieldModel o2) {
-				if (o1.getShortListPosition() == o2.getShortListPosition()) {
-					return 0;
-				} else if (o1.getShortListPosition() > o2.getShortListPosition()) {
-					return 1;
-				} else {
-					return -1;
+		if (this.shortListFields != null )
+		{
+		
+			Collections.sort(this.shortListFields, new Comparator<FieldModel>() {
+	
+				@Override
+				public int compare(FieldModel o1, FieldModel o2) {
+					if (o1.getShortListPosition() == o2.getShortListPosition()) {
+						return 0;
+					} else if (o1.getShortListPosition() > o2.getShortListPosition()) {
+						return 1;
+					} else {
+						return -1;
+					}
+	
 				}
-
-			}
-		});
-
+			});
+		}
 		return this.shortListFields;
 	}
 	
@@ -210,26 +213,26 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	{
 		TabView tabview = new TabView();
 
-		for (ChildType child : children)
+		for (ChildType childType : children)
 		{
-			tabview.getChildren().add(this.buildChildrenTab(child));
+			tabview.getChildren().add(this.buildChildrenTab(childType));
 			
 		}
 		
 		return tabview;
 	}
 	
-	private Tab buildChildrenTab(ChildType child)
+	private Tab buildChildrenTab(ChildType childType)
 	{
 		Tab tab = new Tab();
-		ClassScanner<BaseEntityModel> childScanner = new ClassScanner<BaseEntityModel>(child.getPropertyType());
+		ClassScanner<BaseEntityModel> childScanner = new ClassScanner<BaseEntityModel>(childType.getPropertyType());
 		
 		
 		tab.setTitle(childScanner.getClazzAnnotation().title());
 		
-		String listValueGetterSetter = String.format("#{%s.%s.%s}", child.getParentBeanName(), "selected", child.getName());
+		String listValueGetterSetter = String.format("#{%s}" , childType.getGetterSetterValueName()); 
 		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
-																	this.getLabels(), listValueGetterSetter, child.getPropertyType());
+																	this.getLabels(), listValueGetterSetter, childType);
 
 //		WebuiPanelProvider panelProvider = new WebuiPanelProvider(childScanner.getFields(), childScanner.getClazzAnnotation().panelColumns(), 
 //																  null, child.getParentField(), this.getLabels());
@@ -237,9 +240,10 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		//Bottone +
 		CommandButton plus = new CommandButton();
 		plus.setValue("ADD");
-		MethodExpression actionListener = Utility.createMethodExp("#{operatori.addChild()}");
+		String addmethod = String.format("#{%s}" , childType.getAddValueMethodName());
+		MethodExpression actionListener = Utility.createMethodExp(addmethod);
 		plus.setActionExpression(actionListener);
-		plus.setUpdate("@form");
+		plus.setUpdate(childType.getName()+"_datatable");
 		tab.getChildren().add(plus);
 		
 		

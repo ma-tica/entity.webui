@@ -19,18 +19,21 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 
 	private List<FieldModel> fields;	
 	private String listValueGetterSetter;
-	private Class<T> clazz;
+	private ChildType childType;
 
-	public WebuiDatatableProvider(List<FieldModel> fields, ResourceBundle labelProvider, String listValueGetterSetter,Class<T> clazz) {
+	
+	
+	public WebuiDatatableProvider(List<FieldModel> fields, ResourceBundle labelProvider, String listValueGetterSetter,ChildType childType) {
 		this.fields = fields;
 		this.labelProvider = labelProvider;
 		this.listValueGetterSetter = listValueGetterSetter;
-		this.clazz=clazz;
+		this.childType=childType;
 	}
 
 	public DataTable buildDataTable() {
 		DataTable table = new DataTable();
 		table.setValueExpression("value", Utility.createValueExp(this.listValueGetterSetter, List.class));
+		table.setId(childType.getName()+"_datatable");
 		
 		String var = this.fields.get(0).getBeanControllerName();
 		table.setVar(this.fields.get(0).getBeanControllerName());
@@ -46,9 +49,10 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		//Bottone -
 		CommandButton remove = new CommandButton();
 		remove.setValue("DEL");
-		MethodExpression actionListener = Utility.createMethodExp("#{operatori.deleteChild("+var+")}");
+		String deleteMethod = String.format("#{%s}", childType.getDeleteValueMethodName(var));
+		MethodExpression actionListener = Utility.createMethodExp(deleteMethod, new Class[]{childType.getPropertyType()});
 		remove.setActionExpression(actionListener);
-		remove.setUpdate("@form");
+		remove.setUpdate(table.getId());
 		Column column = new Column();
 		column.getChildren().add(remove);
 		table.getChildren().add(column);
