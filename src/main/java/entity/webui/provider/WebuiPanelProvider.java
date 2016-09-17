@@ -161,6 +161,9 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		case INPUT_TEXT:		
 			input = this.buildInputText(fmodel);
 			break;
+		case INPUT_TEXTAREA:		
+			input = this.buildInputTextArea(fmodel);
+			break;
 		case INPUT_DATE:
 			input = this.buildInputCalendar(fmodel, false);
 			break;
@@ -169,6 +172,9 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 			break;
 		case SELECTION_ONE_MENU:
 			input = this.buildSelectOneMenu(fmodel);
+			break;
+		case BOOLEAN_CHECKBOX:
+			input = this.buildSelectBooleanCheckBox(fmodel);
 			break;
 		default:
 			break;
@@ -191,10 +197,12 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		 */
 		Message message = null;
 		switch (fmodel.getEditorComponent()) {
-		case INPUT_TEXT:		
+		case INPUT_TEXT:
+		case INPUT_TEXTAREA:			
 		case INPUT_DATE:
 		case INPUT_DATETIME:
 		case SELECTION_ONE_MENU:
+		case BOOLEAN_CHECKBOX:
 			message = this.buildMessage(fmodel);
 			break;
 		default:

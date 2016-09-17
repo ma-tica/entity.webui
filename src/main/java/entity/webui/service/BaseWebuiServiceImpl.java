@@ -1,7 +1,6 @@
 package entity.webui.service;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -12,7 +11,6 @@ import entity.webui.common.Utility;
 import entity.webui.factory.WebuiFactory;
 import entity.webui.factory.WebuiFactoryImpl;
 import entity.webui.model.BaseEntityModel;
-import entity.webui.model.EPersistanceState;
 import entity.webui.model.FieldModel;
 import entity.webui.repository.BaseMongoRepository;
 

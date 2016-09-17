@@ -11,8 +11,10 @@ import java.util.List;
 
 import org.springframework.data.annotation.Transient;
 
-import entity.webui.annotation.Webui;
-import entity.webui.annotation.WebuiField;
+import entity.webui.annotation.MCSelectable;
+import entity.webui.annotation.MCWebui;
+import entity.webui.annotation.MCWebuiField;
+import entity.webui.annotation.MCWebuiFieldEvent;
 import entity.webui.model.BaseEntityModel;
 import entity.webui.model.FieldModel;
 import entity.webui.model.FieldModel.EditorComponent;
@@ -29,7 +31,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	private Class<T> clazz;
 
 	
-	private Webui clazzAnnotation;
+	private MCWebui clazzAnnotation;
 	
 	/**
 	 * Constructor
@@ -40,7 +42,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	public ClassScanner(Class<T> clazz)
 	{
 		this.clazz = clazz;
-		this.clazzAnnotation =clazz.getAnnotation(Webui.class);
+		this.clazzAnnotation =clazz.getAnnotation(MCWebui.class);
 	
 		this.scan();
 	}
@@ -78,7 +80,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	/**
 	 * @return the clazzAnnotation
 	 */
-	public Webui getClazzAnnotation() {
+	public MCWebui getClazzAnnotation() {
 		return clazzAnnotation;
 	}
 
@@ -105,14 +107,14 @@ class ClassScanner<T extends BaseEntityModel> {
 		this.shortListFields = new ArrayList<FieldModel>();
 		this.children = new ArrayList<ChildType>();
 		
-		Webui webui = clazz.getAnnotation(Webui.class);
+		MCWebui webui = clazz.getAnnotation(MCWebui.class);
 		
 		for (Field field : this.clazz.getDeclaredFields())
 		{
-			WebuiField webuifield = field.getAnnotation(WebuiField.class);
+			FieldModel fmodel = new FieldModel();
+			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
 			if (webuifield != null)
-			{
-				FieldModel fmodel = new FieldModel();
+			{				
 				fmodel.setCaption(webuifield.caption());				
 				fmodel.setEditorComponent(this.retrieveEditorComponentField(webuifield, field));
 				fmodel.setPropertyName(field.getName());				
@@ -126,32 +128,41 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setDefaultValue(webuifield.defaultValue());
 				fmodel.setVisibleExpression(webuifield.visible());
 				fmodel.setReadonlyExpression(webuifield.readonly());
+				fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()"));
+				
 				this.fields.add(fmodel);				
 				if (fmodel.getShortListPosition() > 0)
 				{
 					this.shortListFields.add(fmodel);
 				}
-			}else{
-				if (field.getAnnotation(Transient.class ) == null)
+			}
+			
+			MCSelectable selectable = field.getAnnotation(MCSelectable.class);
+			if (selectable != null)
+			{
+				fmodel.setFillSelectionListExpression(selectable.value());
+			}
+
+			MCWebuiFieldEvent event = field.getAnnotation(MCWebuiFieldEvent.class);
+			if (event != null)
+			{
+				fmodel.setEvent(event.event());
+				fmodel.setEventUpdateExpression(event.update());
+				fmodel.setEventListenerExpression(event.listener());
+			}
+			
+			if (field.getAnnotation(Transient.class ) == null)
+			{
+				/*
+				 * Children data
+				 */
+				if (field.getType().equals(List.class))
 				{
-					/*
-					 * Children data
-					 */
-					if (field.getType().equals(List.class))
-					{
-						Type elementType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-						//if (listType instanceof ParameterizedType)
-						//{
-							//Type elementType = ((ParameterizedType) listType).getActualTypeArguments()[0];
-//						Class.forName(elementType.getTypeName()
-							this.children.add(new ChildType(webui.beanControllerName(), field.getName(), (Class)elementType ));
-						
-						//}
-						
-						
-					}
+					Type elementType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+					this.children.add(new ChildType(webui.beanControllerName(), field.getName(), (Class)elementType ));
 				}
 			}
+					
 		}
 	}
 	
@@ -162,7 +173,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	 * @param field
 	 * @return
 	 */
-	private EditorComponent retrieveEditorComponentField(WebuiField webuifield, Field field)
+	private EditorComponent retrieveEditorComponentField(MCWebuiField webuifield, Field field)
 	{
 		/*
 		 * Not defined by developer
@@ -190,7 +201,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	{
 		if (ClassScanner.implementBaseEntityModel(field.getType()))
 		{
-			Webui relwebui =  field.getType().getAnnotation(Webui.class);
+			MCWebui relwebui =  field.getType().getAnnotation(MCWebui.class);
 			if (relwebui != null)
 			{
 				return relwebui.beanControllerName();

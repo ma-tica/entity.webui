@@ -11,13 +11,19 @@ import javax.faces.application.Application;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
+
 import javax.faces.context.FacesContext;
+import javax.faces.event.AjaxBehaviorListener;
 
 import org.omnifaces.converter.SelectItemsConverter;
+import org.primefaces.behavior.ajax.AjaxBehavior;
+import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.calendar.Calendar;
 import org.primefaces.component.inputtext.InputText;
+import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
+import org.primefaces.component.selectbooleancheckbox.SelectBooleanCheckbox;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 import entity.webui.common.Utility;
@@ -33,27 +39,19 @@ abstract class WebuiAbstractProvider {
 	 * @param field
 	 * @return
 	 */
-	OutputLabel buidLabel(FieldModel field)
+	OutputLabel buidLabel(FieldModel fmodel)
 	{
 		OutputLabel label = new OutputLabel();
 		
 		/*
 		 * Label can contains expression #{....}
 		 */
-//		if (field.getCaption().startsWith("#{"))
-//		{
-//			FacesContext context = FacesContext.getCurrentInstance();
-//			Application app = context.getApplication();
-//			ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), String.class);
-//			label.setValueExpression("value", valueEx);
-//		}else{
-//			label.setValue(field.getCaption());
-//		}
-//		
-		label.setValueExpression("value", Utility.createExpression(field.getCaption(), String.class));
+
+		String caption = fmodel.getCaption().isEmpty() ? fmodel.getPropertyName() : fmodel.getCaption();
+		label.setValueExpression("value", Utility.createExpression(caption, String.class));
 		
-		label.setFor(field.getId());
-		label.setId(field.getId() + "_label");
+		label.setFor(fmodel.getId());
+		label.setId(fmodel.getId() + "_label");
 		
 		return label;
 	}
@@ -94,21 +92,35 @@ abstract class WebuiAbstractProvider {
 		input.setStyle("width: 100%;");
 		
 		
-		input.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
+		input.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
+		
 		
 		return input;
 	}
 
+	
+	protected InputTextarea buildInputTextArea(FieldModel fmodel)
+	{
+		InputTextarea input = new InputTextarea();
+		
+		
+		this.partialBuildeComponent(fmodel, input);		
+		
+		
+		input.setStyle("width: 100%;");
+		
+		
+		input.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
+		
+		
+		return input;
+	}
+	
 	protected Calendar buildInputCalendar(FieldModel fmodel, boolean time)
 	{
 		Calendar calendar = new Calendar();
 		
 		this.partialBuildeComponent(fmodel, calendar);
-		
-		
-		
-		
-		
 		
 		if (time)
 		{
@@ -137,34 +149,80 @@ abstract class WebuiAbstractProvider {
 		
 		somenu.setConverter(new SelectItemsConverter());	
 		
-		UISelectItems items = new UISelectItems();
-		String selectItemsExp = String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()");
-		items.setValueExpression("value", Utility.createExpression(selectItemsExp, List.class));
-		items.setValueExpression("var", Utility.createExpression("itm", String.class));
-		items.setValueExpression("itemLabel", Utility.createExpression("#{itm.selectionLabel}", String.class));
-		items.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
-		
-		UISelectItem item = new UISelectItem();
-		item.setItemLabel("");
-		item.setItemValue("");
-		item.setNoSelectionOption(true);
-		
-		
-		
-		somenu.getChildren().add(item);
-		somenu.getChildren().add(items);
-		
+		if (fmodel.getPropertyType().isEnum()) {
+			UISelectItem item = new UISelectItem();
+			item.setItemLabel("");
+			item.setItemValue("");
+			item.setNoSelectionOption(true);
+			somenu.getChildren().add(item);
+
+			for(int i=0; i < fmodel.getPropertyType().getEnumConstants().length; i++)
+			{
+				
+				item = new UISelectItem();
+				item.setItemLabel(fmodel.getPropertyType().getEnumConstants()[i].toString());
+				item.setItemValue(fmodel.getPropertyType().getEnumConstants()[i]);
+				somenu.getChildren().add(item);
+			}
+			
+		}else if (fmodel.getPropertyType().getName().equals("java.lang.Boolean") || 
+				fmodel.getPropertyType().getName().equals("boolean") ) {
+			UISelectItem item;
+			if (fmodel.getPropertyType().getName().equals("java.lang.Boolean")) {
+				item = new UISelectItem();
+				item.setItemLabel("");
+				item.setItemValue("");
+				item.setNoSelectionOption(true);
+				somenu.getChildren().add(item);
+			}
+
+			item = new UISelectItem();
+			item.setValueExpression("itemLabel", Utility.createExpression("Si", String.class));
+			item.setItemValue(true);
+			somenu.getChildren().add(item);
+
+			item = new UISelectItem();
+			item.setValueExpression("itemLabel", Utility.createExpression("No", String.class));
+			item.setItemValue(false);
+			somenu.getChildren().add(item);
+
+		}else{
+			UISelectItems items = new UISelectItems();
+			String selectItemsExp;
+
+			selectItemsExp = fmodel.getFillSelectionListExpression(); // String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()");
+			items.setValueExpression("value", Utility.createExpression(selectItemsExp, List.class));
+			items.setValueExpression("var", Utility.createExpression("itm", String.class));
+			items.setValueExpression("itemLabel", Utility.createExpression("#{itm.selectionLabel}", String.class));
+			items.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
+			
+			UISelectItem item = new UISelectItem();
+			item.setItemLabel("");
+			item.setItemValue("");
+			item.setNoSelectionOption(true);
+			somenu.getChildren().add(item);
+			somenu.getChildren().add(items);
+		}
 		
 		
 		
 		somenu.setStyle("width: 80%;");
-		
-		
+			
+		somenu.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		somenu.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
-		
-		
+				
 		return somenu;
 	}
+	
+	protected SelectBooleanCheckbox buildSelectBooleanCheckBox(FieldModel fmodel)
+	{
+		SelectBooleanCheckbox checkbox = new SelectBooleanCheckbox();
+		
+		this.partialBuildeComponent(fmodel, checkbox);
+		
+		return checkbox;	
+
+	}	
 	
 	private void partialBuildeComponent(FieldModel fmodel, UIInput input)
 	{
@@ -187,6 +245,11 @@ abstract class WebuiAbstractProvider {
 		input.setValueExpression("required", Utility.createExpression(fmodel.getRequiredExpression(), boolean.class));
 		input.setValueExpression("rendered", Utility.createExpression(fmodel.getVisibleExpression(), boolean.class));
 		
+		
+		if (fmodel.getEvent() != null && !fmodel.getEvent().isEmpty())
+		{
+			input.addClientBehavior(fmodel.getEvent(), Utility.createAjaxBejhaviour(fmodel.getEventListenerExpression(), fmodel.getEventUpdateExpression()));
+		}
 		
 		
 		

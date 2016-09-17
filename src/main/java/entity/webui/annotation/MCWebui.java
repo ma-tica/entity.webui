@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface Webui {
+public @interface MCWebui {
 	/**
 	 * number of columns of HtmlPanelGrid
 	 * @return

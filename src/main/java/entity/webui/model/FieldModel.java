@@ -1,7 +1,5 @@
 package entity.webui.model;
 
-import javax.faces.component.UIInput;
-
 public class FieldModel {
 
 	
@@ -11,7 +9,9 @@ public class FieldModel {
 		INPUT_NUMBER,
 		INPUT_DATE,
 		INPUT_DATETIME,
-		SELECTION_ONE_MENU
+		INPUT_TEXTAREA,
+		SELECTION_ONE_MENU,
+		BOOLEAN_CHECKBOX
 		;
 	}
 	
@@ -29,6 +29,12 @@ public class FieldModel {
 	//private UIInput inputEditorController;
 	private String visibleExpression;
 	private String readonlyExpression;
+	private String fillSelectionListExpression;
+	
+	
+	private String eventUpdateExpression;
+	private String eventListenerExpression;
+	private String event;
 	
 	/**
 	 * Controller bean if field is a BaseModelEntity object
@@ -230,9 +236,41 @@ public class FieldModel {
 		this.readonlyExpression = readonlyExpression;
 	}
 
+	public String getFillSelectionListExpression() {
+		return fillSelectionListExpression;
+	}
+
+	public void setFillSelectionListExpression(String fillSelectionListExpression) {
+		this.fillSelectionListExpression = fillSelectionListExpression;
+	}
+
 	public String getId()
 	{
 		return this.getPropertyName();
+	}
+
+	public String getEventUpdateExpression() {
+		return eventUpdateExpression;
+	}
+
+	public void setEventUpdateExpression(String eventUpdateExpression) {
+		this.eventUpdateExpression = eventUpdateExpression;
+	}
+
+	public String getEventListenerExpression() {
+		return eventListenerExpression;
+	}
+
+	public void setEventListenerExpression(String eventListenerExpression) {
+		this.eventListenerExpression = eventListenerExpression;
+	}
+
+	public String getEvent() {
+		return event;
+	}
+
+	public void setEvent(String event) {
+		this.event = event;
 	}
 	
 }

@@ -9,7 +9,7 @@ import entity.webui.model.FieldModel;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface WebuiField {
+public @interface MCWebuiField {
 
 	public String caption() default "";
 	
@@ -28,5 +28,9 @@ public @interface WebuiField {
 	public String visible() default "true";
 	
 	public String readonly() default "false";
+	
+	
+	
+	
 	
 }

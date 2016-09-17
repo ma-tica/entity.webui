@@ -1,5 +1,7 @@
 package entity.webui.model;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Transient;
 
 public abstract class BaseEntityModelImpl implements BaseEntityModel {
@@ -8,7 +10,8 @@ public abstract class BaseEntityModelImpl implements BaseEntityModel {
 	private boolean newInstance;
 	
 	
-	
+
+
 	@Override
 	public boolean isNewInstance() {
 		return newInstance;

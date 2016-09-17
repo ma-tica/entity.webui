@@ -90,7 +90,8 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		this.fields = scanner.getFields();
 		
 		Panel panel = new Panel();
-		panel.setHeader(Utility.createValue(scanner.getClazzAnnotation().title(), String.class));
+		String title = scanner.getClazzAnnotation().title().isEmpty() ? scanner.getClazzAnnotation().beanControllerName() : scanner.getClazzAnnotation().title(); 
+		panel.setHeader(Utility.createValue(title, String.class));
 		
 		/*
 		 * Main header Panel
