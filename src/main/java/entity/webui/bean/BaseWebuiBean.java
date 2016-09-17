@@ -104,6 +104,15 @@ public  abstract class  BaseWebuiBean {
 		this.service.setSelected(selected);
 	}
 
+	/**
+	 * Used for selection editor components
+	 * @return
+	 */
+	public List<BaseEntityModel> findAll()
+	{
+		return this.service.findAll();
+	}
+	
 /*
  * ---------------------------------
  * C O M M A N D
@@ -120,6 +129,7 @@ public  abstract class  BaseWebuiBean {
 	public void create()
 	{
 		this.service.create();
+		this.service.setDefaultValue();
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "addnew"));
 
@@ -142,4 +152,16 @@ public  abstract class  BaseWebuiBean {
 	
 
 	public abstract String goToHome();
+	
+	
+/*
+ * ---------------------------------------
+ * P R I V A T E	
+ */
+	
+	private void setDefaultValues()
+	{
+		
+	}
+	
 }

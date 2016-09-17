@@ -1,13 +1,18 @@
 package entity.webui.service;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 import org.primefaces.component.panel.Panel;
 
+import entity.webui.common.Utility;
 import entity.webui.factory.WebuiFactory;
 import entity.webui.factory.WebuiFactoryImpl;
 import entity.webui.model.BaseEntityModel;
+import entity.webui.model.EPersistanceState;
 import entity.webui.model.FieldModel;
 import entity.webui.repository.BaseMongoRepository;
 
@@ -20,6 +25,31 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	
 	protected BaseMongoRepository<T, S> repository;
 	
+	@SuppressWarnings("unchecked")
+	public T create()
+	{
+		T entity = this.getInstanceOfT();
+		this.selected = entity;
+		this.selected.setNewInstanceState(true);
+		return this.selected;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	T getInstanceOfT()
+    {
+        ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
+        Class<T> type = (Class<T>) superClass.getActualTypeArguments()[0];
+        try
+        {
+            return type.newInstance();
+        }
+        catch (Exception e)
+        {
+            // Oops, no default constructor
+            throw new RuntimeException(e);
+        }
+    }
 	
 	@Override
 	public List<T> buildList() {
@@ -34,8 +64,13 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 
 	@Override
 	public void save() {
+		
 		T entity = this.repository.save(this.selected);
-		list.add(entity );
+		if (this.selected.isNewInstance())
+		{
+			list.add(entity );
+		}
+		entity.setNewInstanceState(false);
 	}
 
 	@Override
@@ -65,7 +100,38 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 		return this.webuiFactory.buildShortListFields();
 	}
 
+	@Override
+	public List<FieldModel> getFields() {
+		return this.webuiFactory.getFields();
+	}
+	
+	
+	@Override
+	public void setDefaultValue()
+	{	
+		for(FieldModel fmodel : this.getFields())
+		{
+			if (fmodel.getDefaultValue() != null && !fmodel.getDefaultValue().isEmpty())
+			{
+				
+				try {
+					Method method = this.getSelected().getClass().getMethod("set" + Utility.capitalize(fmodel.getPropertyName()), fmodel.getPropertyType());
+					method.invoke(this.getSelected(), Utility.createValue(fmodel.getDefaultValue(), fmodel.getPropertyType()));
+					
+				} catch (Exception e) {					
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				} 
+				
+			}
+		}
 
+	}
 
+	@Override
+	public List<T> findAll()
+	{
+		return this.repository.findAll();
+	}
 	
 }

@@ -12,4 +12,6 @@ public interface WebuiFactory {
 
 	List<FieldModel> buildShortListFields();
 
+	List<FieldModel> getFields();
+
 }

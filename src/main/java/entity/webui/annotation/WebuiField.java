@@ -15,7 +15,7 @@ public @interface WebuiField {
 	
 	public FieldModel.EditorComponent editorComponent() default FieldModel.EditorComponent.UNDEFINED; 
 	
-	public boolean required() default false;
+	public String required() default "false";
 	
 	public int shortListPosition() default 0;
 	
@@ -23,5 +23,10 @@ public @interface WebuiField {
 	
 	public int colSpan() default 1;
 	
+	public String defaultValue() default "";
+	
+	public String visible() default "true";
+	
+	public String readonly() default "false";
 	
 }

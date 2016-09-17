@@ -25,7 +25,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 
 	//private Class<T> clazz;
 	
-	//private List<FieldModel> fields;
+	private List<FieldModel> fields;
 	
 	private List<FieldModel> shortListFields;
 	
@@ -87,26 +87,20 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		ClassScanner<T> scanner = new ClassScanner<T>(this.clazz);
 			
 		this.shortListFields = scanner.getShortListFields();
+		this.fields = scanner.getFields();
 		
 		Panel panel = new Panel();
-		panel.setHeader(scanner.getClazzAnnotation().title());
+		panel.setHeader(Utility.createValue(scanner.getClazzAnnotation().title(), String.class));
 		
 		/*
 		 * Main header Panel
 		 */
-//		LayoutUnit north = new LayoutUnit();
-//		north.setPosition("center");
-//		north.setSize("200");
-			
-		
-		WebuiPanelProvider panelProvider = new WebuiPanelProvider(scanner.getFields(), scanner.getClazzAnnotation().panelColumns(), 
+		WebuiPanelProvider panelProvider = new WebuiPanelProvider(this.fields, scanner.getClazzAnnotation().panelColumns(), 
 																null, null, this.getLabels());
 		
 		panel.getChildren().add(panelProvider.buildPanelGrid());
 		
-//		north.getChildren().add(panelProvider.buildPanelGrid());
-		
-		
+				
 		/*
 		 * Children panels
 		 */
@@ -146,68 +140,18 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		}
 		return this.shortListFields;
 	}
+
+	@Override
+	public List<FieldModel> getFields()
+	{
+		return this.fields;
+	}
 	
 
 /*
  * --------------------------
  * P R I V A T E	
  */
-//	private Webui readClassAnnotation(Class<T> clazz)
-//	{	
-//		return clazz.getAnnotation(Webui.class);
-//	}
-//	
-//	private void fillFieldList(Class<T> clazz, String beanControllerName)
-//	{
-//		this.fields = new ArrayList<FieldModel>();
-//		this.shortListFields = new ArrayList<FieldModel>();
-//		this.children = new ArrayList<ChildType>();
-//		for (Field field : clazz.getDeclaredFields())
-//		{
-//			WebuiField webui = field.getAnnotation(WebuiField.class);
-//			if (webui != null)
-//			{
-//				FieldModel fmodel = new FieldModel();
-//				fmodel.setCaption(webui.caption());
-//				
-//				fmodel.setController(webui.controller());
-//				fmodel.setPropertyName(field.getName());
-//				fmodel.setBeanControllerName(beanControllerName);
-//				fmodel.setClazz(field.getType());
-//				fmodel.setRequired(webui.required());
-//				fmodel.setShortListPosition(webui.shortListPosition());
-//				fmodel.setColSpan(webui.colSpan());
-//				fmodel.setFormPosition(webui.formPosition());
-//				this.fields.add(fmodel);				
-//				if (fmodel.getShortListPosition() > 0)
-//				{
-//					this.shortListFields.add(fmodel);
-//				}
-//			}else{
-//				if (field.getAnnotation(Transient.class ) == null)
-//				{
-//					/*
-//					 * Children data
-//					 */
-//					if (field.getType().equals(List.class))
-//					{
-//						Type listType = field.getType(); 
-//						if (listType instanceof ParameterizedType)
-//						{
-//							Type elementType = ((ParameterizedType) listType).getActualTypeArguments()[0];
-//							this.children.add(new ChildType(field.getName(), elementType) );
-//						
-//						}
-//						
-//						
-//					}
-//				}
-//			}
-//		}
-//	}
-//	
-	
-	
 	
 	private TabView buildChildrenPanels(List<ChildType> children)
 	{
@@ -234,8 +178,6 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
 																	this.getLabels(), listValueGetterSetter, childType);
 
-//		WebuiPanelProvider panelProvider = new WebuiPanelProvider(childScanner.getFields(), childScanner.getClazzAnnotation().panelColumns(), 
-//																  null, child.getParentField(), this.getLabels());
 
 		//Bottone +
 		CommandButton plus = new CommandButton();

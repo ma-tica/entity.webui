@@ -1,5 +1,7 @@
 package entity.webui.model;
 
+import javax.faces.component.UIInput;
+
 public class FieldModel {
 
 	
@@ -8,6 +10,7 @@ public class FieldModel {
 		INPUT_TEXT,
 		INPUT_NUMBER,
 		INPUT_DATE,
+		INPUT_DATETIME,
 		SELECTION_ONE_MENU
 		;
 	}
@@ -18,10 +21,14 @@ public class FieldModel {
 	private String propertyName;
 	private String beanControllerName;
 	private Class<?> propertyType;
-	private boolean required;
+	private String requiredExpression;
 	private int shortListPosition;
 	private int formPosition;
 	private int colSpan;
+	private String defaultValue;
+	//private UIInput inputEditorController;
+	private String visibleExpression;
+	private String readonlyExpression;
 	
 	/**
 	 * Controller bean if field is a BaseModelEntity object
@@ -75,6 +82,14 @@ public class FieldModel {
 		this.propertyName = propertyName;
 	}
 
+	public String getRequiredExpression() {
+		return requiredExpression;
+	}
+
+	public void setRequiredExpression(String requiredExpression) {
+		this.requiredExpression = requiredExpression;
+	}
+
 	/**
 	 * @return the beanControllerName
 	 */
@@ -105,20 +120,6 @@ public class FieldModel {
 		this.propertyType = propertyType;
 	}
 
-	/**
-	 * @return the required
-	 */
-	public boolean isRequired() {
-		return required;
-	}
-
-	/**
-	 * @param required 
-	 * 			the required to set
-	 */
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
 	
 	
 	
@@ -177,6 +178,56 @@ public class FieldModel {
 	 */
 	public void setRelatedBeanControllerName(String relatedBeanControllerName) {
 		this.relatedBeanControllerName = relatedBeanControllerName;
+	}
+
+	/**
+	 * @return the defaultValue
+	 */
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	/**
+	 * @param defaultValue the defaultValue to set
+	 */
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+//	/**
+//	 * @return the inputEditorController
+//	 */
+//	public UIInput getInputEditorController() {
+//		return inputEditorController;
+//	}
+//
+//	/**
+//	 * @param inputEditorController the inputEditorController to set
+//	 */
+//	public void setInputEditorController(UIInput inputEditorController) {
+//		this.inputEditorController = inputEditorController;
+//	}
+
+	/**
+	 * @return the visibleExpression
+	 */
+	public String getVisibleExpression() {
+		return visibleExpression;
+	}
+
+	/**
+	 * @param visibleExpression the visibleExpression to set
+	 */
+	public void setVisibleExpression(String visibleExpression) {
+		this.visibleExpression = visibleExpression;
+	}
+
+	public String getReadonlyExpression() {
+		return readonlyExpression;
+	}
+
+	public void setReadonlyExpression(String readonlyExpression) {
+		this.readonlyExpression = readonlyExpression;
 	}
 
 	public String getId()

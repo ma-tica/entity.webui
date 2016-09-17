@@ -19,11 +19,11 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 
 	private List<FieldModel> fields;	
 	private String listValueGetterSetter;
-	private ChildType childType;
+	private ChildType<?> childType;
 
 	
 	
-	public WebuiDatatableProvider(List<FieldModel> fields, ResourceBundle labelProvider, String listValueGetterSetter,ChildType childType) {
+	public WebuiDatatableProvider(List<FieldModel> fields, ResourceBundle labelProvider, String listValueGetterSetter, ChildType<?> childType) {
 		this.fields = fields;
 		this.labelProvider = labelProvider;
 		this.listValueGetterSetter = listValueGetterSetter;
@@ -32,7 +32,7 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 
 	public DataTable buildDataTable() {
 		DataTable table = new DataTable();
-		table.setValueExpression("value", Utility.createValueExp(this.listValueGetterSetter, List.class));
+		table.setValueExpression("value", Utility.createExpression(this.listValueGetterSetter, List.class));
 		table.setId(childType.getName()+"_datatable");
 		
 		String var = this.fields.get(0).getBeanControllerName();

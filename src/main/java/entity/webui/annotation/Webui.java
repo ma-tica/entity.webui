@@ -14,16 +14,24 @@ public @interface Webui {
 	 * @return
 	 */
 	public int panelColumns();
-	
+
+	/**
+	 * Jsf id of panel Grid
+	 */
+	//public String panelId();
 	
 	/**
-	 * name of the primefaces bean controller that extends 
+	 * name of the main primefaces bean controller that extends 
 	 */
-	public String beanControllerName();
+	public String beanControllerName() ;
+	
 	
 	/**
 	 * Header of panel
 	 * @return
 	 */
 	public String title() default "";
+	
+	
+	
 }

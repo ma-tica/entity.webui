@@ -119,10 +119,13 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setBeanControllerName(webui.beanControllerName());
 				fmodel.setRelatedBeanControllerName(this.retrieveRelatedBeanControllerName(field));
 				fmodel.setPropertyType(field.getType());
-				fmodel.setRequired(webuifield.required());
+				fmodel.setRequiredExpression(webuifield.required());
 				fmodel.setShortListPosition(webuifield.shortListPosition());
 				fmodel.setColSpan(webuifield.colSpan());
 				fmodel.setFormPosition(webuifield.formPosition());
+				fmodel.setDefaultValue(webuifield.defaultValue());
+				fmodel.setVisibleExpression(webuifield.visible());
+				fmodel.setReadonlyExpression(webuifield.readonly());
 				this.fields.add(fmodel);				
 				if (fmodel.getShortListPosition() > 0)
 				{

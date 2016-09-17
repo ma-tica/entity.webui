@@ -1,6 +1,9 @@
 package entity.webui.provider;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.el.ValueExpression;
@@ -11,6 +14,7 @@ import javax.faces.component.UISelectItems;
 import javax.faces.context.FacesContext;
 
 import org.omnifaces.converter.SelectItemsConverter;
+import org.primefaces.component.calendar.Calendar;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
@@ -36,16 +40,20 @@ abstract class WebuiAbstractProvider {
 		/*
 		 * Label can contains expression #{....}
 		 */
-		if (field.getCaption().startsWith("#{"))
-		{
-			FacesContext context = FacesContext.getCurrentInstance();
-			Application app = context.getApplication();
-			ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), field.getPropertyType());
-			label.setValueExpression("value", valueEx);
-		}else{
-			label.setValue(field.getCaption());
-		}
+//		if (field.getCaption().startsWith("#{"))
+//		{
+//			FacesContext context = FacesContext.getCurrentInstance();
+//			Application app = context.getApplication();
+//			ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), String.class);
+//			label.setValueExpression("value", valueEx);
+//		}else{
+//			label.setValue(field.getCaption());
+//		}
+//		
+		label.setValueExpression("value", Utility.createExpression(field.getCaption(), String.class));
+		
 		label.setFor(field.getId());
+		label.setId(field.getId() + "_label");
 		
 		return label;
 	}
@@ -59,11 +67,13 @@ abstract class WebuiAbstractProvider {
 		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName());
 	}
 
-	protected Message buildMessage(FieldModel field)
+	protected Message buildMessage(FieldModel fmodel)
 	{
 		Message message = new Message();
-		message.setFor(field.getId());
+		message.setFor(fmodel.getId());
 		message.setDisplay("text");
+		message.setId(fmodel.getId()+"_message");
+		
 		return message;
 	}
 	
@@ -73,61 +83,66 @@ abstract class WebuiAbstractProvider {
 	 * @param field
 	 * @return
 	 */
-	protected InputText buildInputText(FieldModel field)
+	protected InputText buildInputText(FieldModel fmodel)
 	{
 		InputText input = new InputText();
 		
-//		/*
-//		 * create the value expression for Value attribute
-//		 */
-//		FacesContext context = FacesContext.getCurrentInstance();
-//		Application app = context.getApplication();
-//		ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(), this.elValue(field), field.getClazz());
-//		input.setValueExpression("value", valueEx);		
-//		
-//		
-//		/*
-//		 * Label can contains expression #{....}
-//		 */
-//		if (field.getCaption().startsWith("#{")) {
-//			ValueExpression valueExCaption = app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), field.getClazz());
-//			input.setRequiredMessage(valueExCaption.getValue(context.getELContext()) + " " + labelProvider.getString("common.ismandatory"));
-//		}else{
-//			input.setRequiredMessage(field.getCaption() + " " + labelProvider.getString("common.ismandatory"));
-//		}
 		
-		this.partialBuildeComponent(field, input);		
+		this.partialBuildeComponent(fmodel, input);		
 		
 		
 		input.setStyle("width: 100%;");
-		input.setId(field.getId());
-		input.setRequired(field.isRequired());
+		
+		
+		input.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		
 		return input;
 	}
 
-	protected SelectOneMenu buildSelectOneMenu(FieldModel field)
+	protected Calendar buildInputCalendar(FieldModel fmodel, boolean time)
+	{
+		Calendar calendar = new Calendar();
+		
+		this.partialBuildeComponent(fmodel, calendar);
+		
+		
+		
+		
+		
+		
+		if (time)
+		{
+			Locale locale = FacesContext.getCurrentInstance().getELContext().getLocale();
+			SimpleDateFormat f = (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale);
+			calendar.setPattern(f.toPattern());
+		}
+		
+		calendar.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
+		calendar.setMode("popup");
+		calendar.setShowOn("button");
+		
+		return calendar;
+	}
+	
+	/**
+	 * Select One Menu
+	 * @param field
+	 * @return
+	 */
+	protected SelectOneMenu buildSelectOneMenu(FieldModel fmodel)
 	{
 		SelectOneMenu somenu = new SelectOneMenu();
 		
-		this.partialBuildeComponent(field, somenu);
+		this.partialBuildeComponent(fmodel, somenu);
 		
-//		String valueExp = String.format("#{%s.%s}", field.getBeanControllerName(),"selectedUser");
-//		somenu.setValueExpression("value", this.createValueExp(valueExp, field.getClazz()));
-
-		
-		
-		
-		somenu.setConverter(new SelectItemsConverter());
-		//somenu.setValueExpression("converter", this.createValueExp("omnifaces.SelectItemsConverter", String.class));
-		
+		somenu.setConverter(new SelectItemsConverter());	
 		
 		UISelectItems items = new UISelectItems();
-		String selectItemsExp = String.format("#{%s.%s}", field.getRelatedBeanControllerName(), "findAll()");
-		items.setValueExpression("value", Utility.createValueExp(selectItemsExp, List.class));
-		items.setValueExpression("var", Utility.createValueExp("itm", String.class));
-		items.setValueExpression("itemLabel", Utility.createValueExp("#{itm.name}", String.class));
-		items.setValueExpression("itemValue", Utility.createValueExp("#{itm}", field.getPropertyType()));	
+		String selectItemsExp = String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()");
+		items.setValueExpression("value", Utility.createExpression(selectItemsExp, List.class));
+		items.setValueExpression("var", Utility.createExpression("itm", String.class));
+		items.setValueExpression("itemLabel", Utility.createExpression("#{itm.selectionLabel}", String.class));
+		items.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
 		
 		UISelectItem item = new UISelectItem();
 		item.setItemLabel("");
@@ -141,38 +156,40 @@ abstract class WebuiAbstractProvider {
 		
 		
 		
-		somenu.setId(field.getId());
-		somenu.setStyle("width: 80%;");
-		somenu.setRequired(field.isRequired());
 		
+		somenu.setStyle("width: 80%;");
+		
+		
+		somenu.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		
 		
 		return somenu;
 	}
 	
-	private void partialBuildeComponent(FieldModel field, UIInput input)
+	private void partialBuildeComponent(FieldModel fmodel, UIInput input)
 	{
 		
 		/*
 		 * create the value expression for Value attribute
 		 */
-//		FacesContext context = FacesContext.getCurrentInstance();
-//		Application app = context.getApplication();		
-//		ValueExpression valueEx = app.getExpressionFactory().createValueExpression(context.getELContext(), this.elValue(field), field.getClazz());
-		input.setValueExpression("value", Utility.createValueExp(this.elValue(field), field.getPropertyType()));		
+		input.setValueExpression("value", Utility.createExpression(this.elValue(fmodel), fmodel.getPropertyType()));		
 		
 		
 		/*
 		 * Label can contains expression #{....}
 		 */
-		if (field.getCaption().startsWith("#{")) {
-			ValueExpression valueExCaption = Utility.createValueExp(field.getCaption(), field.getPropertyType()) ;
-			//		app.getExpressionFactory().createValueExpression(context.getELContext(),field.getCaption(), field.getClazz());
-			//input.setRequiredMessage(valueExCaption.getValue(context.getELContext()) + " " + labelProvider.getString("common.ismandatory"));
-			input.setRequiredMessage(valueExCaption.getValue(Utility.getELContext()) + " " + labelProvider.getString("common.ismandatory"));
-		}else{
-			input.setRequiredMessage(field.getCaption() + " " + labelProvider.getString("common.ismandatory"));
-		}
+		
+		//input.setRequiredMessage(Utility.createValue(stringExpression, type)(fmodel.getCaption(), String.class) + " " + labelProvider.getString("common.ismandatory"));
+		input.setValueExpression("requiredMessage", Utility.createExpression(fmodel.getCaption()+ " " + labelProvider.getString("common.ismandatory"), String.class) );
+		
+		
+		input.setId(fmodel.getId());
+		input.setValueExpression("required", Utility.createExpression(fmodel.getRequiredExpression(), boolean.class));
+		input.setValueExpression("rendered", Utility.createExpression(fmodel.getVisibleExpression(), boolean.class));
+		
+		
+		
+		
 		
 	}
 	

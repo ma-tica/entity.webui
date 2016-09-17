@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIInput;
 import javax.faces.component.html.HtmlPanelGroup;
 
+import org.primefaces.component.column.Column;
 import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.panelgrid.PanelGrid;
+import org.primefaces.component.row.Row;
 
+import entity.webui.common.Utility;
 import entity.webui.model.FieldModel;
 
 public class WebuiPanelProvider extends WebuiAbstractProvider {
@@ -42,6 +46,68 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		this.labelProvider = labelProvider;
 	}
 	
+	/**
+	 * Compose the row an fields into a primeface PanelGrid
+	 * 
+	 * @author matteo
+	 *
+	 */
+	class PanelBuilder {
+
+		private int childCount = 0;
+		private Row row;
+		private int numColumns;
+		private PanelGrid panel;
+		
+		public PanelBuilder(PanelGrid panel, int numColumns, String header)
+		{
+			this.panel = panel;
+			this.numColumns = numColumns;
+			
+			if (header != null && !header.isEmpty() )
+			{				
+				this.addHeader(Utility.createValue(header, String.class));
+				//this.addHeader(Utility.createExpression(header, String.class));
+			}
+		}
+		
+		public void addToPanel(UIComponent component, int colspan)
+		{
+			
+			if (childCount == 0 || childCount >= this.numColumns )
+			{
+				/*
+				 * add a row
+				 */
+				this.childCount = 0;
+				this.row = new Row();
+				this.panel.getChildren().add(row);
+			}
+				
+			Column col = new Column();
+			col.setColspan(colspan);	
+			
+			col.getChildren().add(component);
+			this.row.getChildren().add(col);
+			this.childCount += colspan;
+		}
+		
+		
+		private void addHeader(String header)
+		{
+			Row rowHeader = new Row();
+			Column colHeader = new Column();
+			colHeader.setColspan(this.numColumns);
+			OutputLabel lbl = new OutputLabel();
+			lbl.setValue(header);
+			colHeader.getChildren().add(lbl);
+			rowHeader.getChildren().add(colHeader);
+			
+			this.panel.getFacets().put("header", rowHeader);
+			
+		}
+	}
+	
 	
 	
 	public PanelGrid buildPanelGrid()
@@ -61,6 +127,7 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 
 		for(FieldModel field : this.fields)
 		{
+			
 			this.buildFieldController(field, panelBuilder);
 		}
 
@@ -87,47 +154,81 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 	}
 	
 	
-	private void buildFieldController(FieldModel field, PanelBuilder builder) {
+	private void buildFieldController(FieldModel fmodel, PanelBuilder builder) {
 		
 		UIComponent input = null;
-		switch (field.getEditorComponent()) {
-		case INPUT_TEXT:
+		switch (fmodel.getEditorComponent()) {
+		case INPUT_TEXT:		
+			input = this.buildInputText(fmodel);
+			break;
 		case INPUT_DATE:
-			input = this.buildInputText(field);
+			input = this.buildInputCalendar(fmodel, false);
+			break;
+		case INPUT_DATETIME:
+			input = this.buildInputCalendar(fmodel, true);
 			break;
 		case SELECTION_ONE_MENU:
-			input = this.buildSelectOneMenu(field);
-			//input = this.buildInputText(field);
+			input = this.buildSelectOneMenu(fmodel);
+			break;
+		default:
+			break;
+		}
+		
+		
+		if (!input.isRendered() )
+		{
+			return ;
+		}
+		
+		/*
+		 * Label
+		 */
+		OutputLabel label = this.buidLabel(fmodel);
+		
+		
+		/*
+		 * message validation
+		 */
+		Message message = null;
+		switch (fmodel.getEditorComponent()) {
+		case INPUT_TEXT:		
+		case INPUT_DATE:
+		case INPUT_DATETIME:
+		case SELECTION_ONE_MENU:
+			message = this.buildMessage(fmodel);
 			break;
 		default:
 			break;
 		}
 		
 		/*
-		 * Label
-		 */
-		OutputLabel label = this.buidLabel(field);
-		
-		/*
-		 * message validation
-		 */
-		Message message = this.buildMessage(field);
-		
-		/*
 		 * input + message together in the same cell
 		 */
-		HtmlPanelGroup div = new HtmlPanelGroup();
-		div.getChildren().add(input);
-		div.getChildren().add(message);
-		
+		HtmlPanelGroup div = null;
+		if (message != null) {
+			div = new HtmlPanelGroup();
+			div.getChildren().add(input);
+			div.getChildren().add(message);
+		}else{
+			
+		}
 		
 		
 		/*
 		 * add to form panel 
 		 */
 		builder.addToPanel(label, 1);
-		builder.addToPanel(div, field.getColSpan());
-		//builder.addToPanel(message, 1);
+		if (div != null) {
+			builder.addToPanel(div, fmodel.getColSpan());
+		}else{
+			builder.addToPanel(input, fmodel.getColSpan());
+		}
+		
+		/*
+		 * store the input editor controller into the fields list
+		 * for future manipulation after creation
+		 */
+		//fmodel.setInputEditorController((UIInput) input);
 		
 	}
 	
