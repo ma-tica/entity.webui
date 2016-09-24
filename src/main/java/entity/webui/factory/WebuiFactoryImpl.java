@@ -13,6 +13,7 @@ import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
+import org.primefaces.component.tooltip.Tooltip;
 
 import entity.webui.common.Utility;
 import entity.webui.model.BaseEntityModel;
@@ -182,12 +183,20 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 
 		//Bottone +
 		CommandButton plus = new CommandButton();
-		plus.setValue("ADD");
+		//plus.setValue("ADD");
+		plus.setIcon("fa fa-plus");
+		plus.setId(childType.getName() + "_plus_button");
 		String addmethod = String.format("#{%s}" , childType.getAddValueMethodName());
 		MethodExpression actionListener = Utility.createMethodExp(addmethod);
 		plus.setActionExpression(actionListener);
 		plus.setUpdate(childType.getName()+"_datatable");
+		
+		Tooltip plustooltip = new Tooltip();
+		plustooltip.setFor(plus.getId());
+		plustooltip.setValue("Add new " + childType.getName()) ;
+		
 		tab.getChildren().add(plus);
+		tab.getChildren().add(plustooltip);
 		
 		
 		tab.getChildren().add( dataTableProvider.buildDataTable());

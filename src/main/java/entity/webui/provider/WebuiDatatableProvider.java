@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.el.MethodExpression;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 
 import org.primefaces.component.column.Column;
@@ -39,16 +40,22 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		table.setVar(this.fields.get(0).getBeanControllerName());
 
 		for (FieldModel fmodel : this.fields) {
-			Column column = new Column();
-			OutputLabel header = this.buidLabel(fmodel);
-			column.setHeader(header);
-			column.getChildren().add(this.buildFieldController(fmodel));
-			table.getChildren().add(column);
+			UIComponent input = null;
+			input =  this.buildFieldController(fmodel);
+			if (input.isRendered())
+			{
+				Column column = new Column();
+				OutputLabel header = this.buidLabel(fmodel);
+				column.setHeader(header);
+				column.getChildren().add(this.buildFieldController(fmodel));
+				table.getChildren().add(column);
+			}
 		}
 
 		//Bottone -
 		CommandButton remove = new CommandButton();
-		remove.setValue("DEL");
+		//remove.setValue("remove");
+		remove.setIcon("fa fa-fw fa-remove");
 		String deleteMethod = String.format("#{%s}", childType.getDeleteValueMethodName(var));
 		MethodExpression actionListener = Utility.createMethodExp(deleteMethod, new Class[]{childType.getPropertyType()});
 		remove.setActionExpression(actionListener);
@@ -61,15 +68,20 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		return table;
 	}
 
-	private UIInput buildFieldController(FieldModel field) {
+	private UIInput buildFieldController(FieldModel fmodel) {
 
 		UIInput input = null;
-		switch (field.getEditorComponent()) {
+		switch (fmodel.getEditorComponent()) {
 		case INPUT_TEXT:
-			input = this.buildInputText(field);
+			input = this.buildInputText(fmodel);
+			break;
+		case INPUT_DATE:
+			input = this.buildInputCalendar(fmodel, false);
+			break;
+		case INPUT_DATETIME:
+			input = this.buildInputCalendar(fmodel, true);
 			break;
 		case SELECTION_ONE_MENU:
-			input = this.buildSelectOneMenu(field);
 			break;
 		default:
 			break;

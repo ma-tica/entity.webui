@@ -15,7 +15,7 @@ import javax.faces.component.UISelectItems;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorListener;
 
-import org.omnifaces.converter.SelectItemsConverter;
+
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.calendar.Calendar;
@@ -27,6 +27,7 @@ import org.primefaces.component.selectbooleancheckbox.SelectBooleanCheckbox;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 import entity.webui.common.Utility;
+import entity.webui.converter.SelectItemsConverter;
 import entity.webui.model.FieldModel;
 
 abstract class WebuiAbstractProvider {

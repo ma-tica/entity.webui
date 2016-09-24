@@ -1,5 +1,6 @@
 package entity.webui.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ import entity.webui.service.BaseWebuiService;
 
 //public abstract class  BaseWebuiBean<T extends BaseEntityModel> {
 
-public  abstract class  BaseWebuiBean {
+public  abstract class  BaseWebuiBean implements Serializable {
 
 	
 	private static final String XHTML_ROWID = "rowId";
