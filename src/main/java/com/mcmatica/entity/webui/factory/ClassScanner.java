@@ -11,14 +11,16 @@ import java.util.List;
 
 import org.springframework.data.annotation.Transient;
 
+import com.mcmatica.entity.webui.annotation.MCDetailList;
 import com.mcmatica.entity.webui.annotation.MCSelectable;
 import com.mcmatica.entity.webui.annotation.MCWebui;
 import com.mcmatica.entity.webui.annotation.MCWebuiField;
 import com.mcmatica.entity.webui.annotation.MCWebuiFieldEvent;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
+import com.mcmatica.entity.webui.model.DetailListModel;
+import com.mcmatica.entity.webui.model.EventModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.model.FieldModel.EditorComponent;
-import com.mcmatica.entity.webui.provider.ChildType;
 
 class ClassScanner<T extends BaseEntityModel> {
 
@@ -26,7 +28,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	
 	private List<FieldModel> shortListFields;
 
-	private List<ChildType> children;
+	private List<DetailListModel> children;
 	
 	private Class<T> clazz;
 
@@ -70,7 +72,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	/**
 	 * @return the children
 	 */
-	public List<ChildType> getChildren() {
+	public List<DetailListModel> getChildren() {
 		return children;
 	}
 
@@ -114,12 +116,15 @@ class ClassScanner<T extends BaseEntityModel> {
 	{
 		this.fields = new ArrayList<FieldModel>();
 		this.shortListFields = new ArrayList<FieldModel>();
-		this.children = new ArrayList<ChildType>();
+		this.children = new ArrayList<DetailListModel>();
 		
 		MCWebui webui = clazz.getAnnotation(MCWebui.class);
 		
 		for (Field field : this.clazz.getDeclaredFields())
 		{
+			
+			System.out.println(field.getName());
+			
 			FieldModel fmodel = new FieldModel();
 			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
 			if (webuifield != null)
@@ -155,21 +160,31 @@ class ClassScanner<T extends BaseEntityModel> {
 			MCWebuiFieldEvent event = field.getAnnotation(MCWebuiFieldEvent.class);
 			if (event != null)
 			{
-				fmodel.setEvent(event.event());
-				fmodel.setEventUpdateExpression(event.update());
-				fmodel.setEventListenerExpression(event.listener());
+				fmodel.setEvent(new EventModel(event.update(), event.listener(), event.event()));
 			}
 			
-			if (field.getAnnotation(Transient.class ) == null)
+			/*
+			 * Children data
+			 */
+			if (field.getType().equals(List.class) && field.getAnnotation(MCDetailList.class) != null)
 			{
-				/*
-				 * Children data
-				 */
-				if (field.getType().equals(List.class))
+				Type elementType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+				
+				MCDetailList detailList = field.getAnnotation(MCDetailList.class);
+				DetailListModel lmodel = new DetailListModel();
+				lmodel.setSelectionName(detailList.selection());
+				lmodel.setPropertyName(field.getName());
+				lmodel.setPropertyType((Class)elementType);
+				lmodel.setBeanControllerName(webui.beanControllerName());
+				lmodel.setParentProperyName(detailList.parentPropertyName());
+				
+				
+				MCWebuiFieldEvent eventlist = field.getAnnotation(MCWebuiFieldEvent.class);
+				if (eventlist != null)
 				{
-					Type elementType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-					this.children.add(new ChildType(webui.beanControllerName(), field.getName(), (Class)elementType ));
+					lmodel.setEvent(new EventModel(eventlist.update(), eventlist.listener(), eventlist.event()));
 				}
+				this.children.add(lmodel);
 			}
 					
 		}

@@ -38,7 +38,7 @@ public abstract class BaseEntityModelImpl implements BaseEntityModel {
 
 	@Override
 	public String getSelectionLabel() {
-		return this.getId();
+		return Long.toString(this.getIdValue());
 	}
 	
 }

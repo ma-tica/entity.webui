@@ -1,18 +1,19 @@
-package com.mcmatica.entity.webui.provider;
+package com.mcmatica.entity.webui.model;
 
-import com.mcmatica.entity.webui.model.BaseEntityModel;
-
-public class ChildType<T extends BaseEntityModel> {
+public class DetailListModel_old<T extends BaseEntityModel> {
 
 	private String name;
 	private String parentBeanName;
 	private Class<T> propertyType;
+	private EventModel event;
+
 	
-	public ChildType(String parentBeanName, String name, Class<T> propertyType) {
+	public DetailListModel_old(String parentBeanName, String name, Class<T> propertyType, EventModel event) {
 		super();
 		this.parentBeanName= parentBeanName;
 		this.name = name;
 		this.propertyType = propertyType;
+		this.event = event;
 	}
 
 	
@@ -50,6 +51,16 @@ public class ChildType<T extends BaseEntityModel> {
 	{
 		//return String.format("%s.delete%s(%s)", this.parentBeanName, this.propertyType.getSimpleName(), varName);
 		return String.format("%s.remove(%s)", getGetterSetterValueName(), varName);
+	}
+
+
+	public EventModel getEvent() {
+		return event;
+	}
+
+
+	public void setEvent(EventModel event) {
+		this.event = event;
 	}
 
 }

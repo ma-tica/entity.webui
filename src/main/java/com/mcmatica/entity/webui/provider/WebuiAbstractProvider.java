@@ -247,9 +247,9 @@ abstract class WebuiAbstractProvider {
 		input.setValueExpression("rendered", Utility.createExpression(fmodel.getVisibleExpression(), boolean.class));
 		
 		
-		if (fmodel.getEvent() != null && !fmodel.getEvent().isEmpty())
+		if (fmodel.getEvent() != null && !fmodel.getEvent().getEventName().isEmpty())
 		{
-			input.addClientBehavior(fmodel.getEvent(), Utility.createAjaxBejhaviour(fmodel.getEventListenerExpression(), fmodel.getEventUpdateExpression()));
+			input.addClientBehavior(fmodel.getEvent().getEventName(), Utility.createAjaxBehaviour(fmodel.getEvent().getEventListenerExpression(), fmodel.getEvent().getEventUpdateExpression()));
 		}
 		
 		

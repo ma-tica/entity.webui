@@ -26,8 +26,7 @@ public class AutoIncrementIdListener extends AbstractMongoEventListener<BaseEnti
 	@Override
 	public void onBeforeConvert(BeforeConvertEvent<BaseEntityModel> event) {
 
-		System.out.println("onBeforeConvert: {}:"+ event.getSource());
-
+		
 		for ( Field field : event.getSource().getClass().getDeclaredFields())
 		{
 			if (field.getAnnotation(Id.class) != null)
@@ -60,7 +59,7 @@ public class AutoIncrementIdListener extends AbstractMongoEventListener<BaseEnti
 
 	@Override
 	public void onAfterConvert(AfterConvertEvent<BaseEntityModel> event) {
-		System.out.println("onAfterConvert: {}:"+ event.getSource());
+		
 		super.onAfterConvert(event);
 	}
 

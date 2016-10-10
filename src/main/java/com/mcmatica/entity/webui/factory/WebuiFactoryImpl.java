@@ -22,8 +22,8 @@ import org.primefaces.component.tooltip.Tooltip;
 
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
+import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.FieldModel;
-import com.mcmatica.entity.webui.provider.ChildType;
 import com.mcmatica.entity.webui.provider.WebuiDatatableProvider;
 import com.mcmatica.entity.webui.provider.WebuiPanelProvider;
 
@@ -216,11 +216,12 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
  * P R I V A T E	
  */
 	
-	private TabView buildChildrenPanels(List<ChildType> children)
+	private TabView buildChildrenPanels(List<DetailListModel> children)
 	{
 		TabView tabview = new TabView();
+		tabview.setId("detail_tabview");
 
-		for (ChildType childType : children)
+		for (DetailListModel childType : children)
 		{
 			tabview.getChildren().add(this.buildChildrenTab(childType));
 			
@@ -229,44 +230,110 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		return tabview;
 	}
 	
-	private Tab buildChildrenTab(ChildType childType)
+	private Tab buildChildrenTab(DetailListModel childType)
 	{
 		Tab tab = new Tab();
-		ClassScanner<BaseEntityModel> childScanner = new ClassScanner<BaseEntityModel>(childType.getPropertyType());
+		ClassScanner<BaseEntityModel> childScanner = new ClassScanner(childType.getPropertyType());
 		
 		
-		tab.setTitle(childScanner.getClazzAnnotation().title());
-		
-		String listValueGetterSetter = String.format("#{%s}" , childType.getGetterSetterValueName()); 
-		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
-																	this.getLabels(), listValueGetterSetter, childType);
-
-
-		//Bottone +
-		CommandButton plus = new CommandButton();
-		//plus.setValue("ADD");
-		plus.setIcon("fa fa-plus");
-		plus.setId(childType.getName() + "_plus_button");
-		String addmethod = String.format("#{%s}" , childType.getAddValueMethodName());
-		MethodExpression actionListener = Utility.createMethodExp(addmethod);
-		plus.setActionExpression(actionListener);
-		plus.setUpdate(childType.getName()+"_datatable");
-		
-		Tooltip plustooltip = new Tooltip();
-		plustooltip.setFor(plus.getId());
-		plustooltip.setValue("Add new " + childType.getName()) ;
-		
-		tab.getChildren().add(plus);
-		tab.getChildren().add(plustooltip);
+		//tab.setTitle(childScanner.getClazzAnnotation().title());
+		tab.setValueExpression("title", Utility.createExpression(childScanner.getClazzAnnotation().title(), String.class));
 		
 		
-		tab.getChildren().add( dataTableProvider.buildDataTable());
+//		String listValueGetterSetter = String.format("#{%s}" , childType.getGetterSetterValueName()); 
+//		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
+//																	this.getLabels(), listValueGetterSetter, childType);
+//
+//
+//		//Bottone +
+//		CommandButton plus = new CommandButton();
+//		//plus.setValue("ADD");
+//		plus.setIcon("fa fa-plus");
+//		plus.setId(childType.getName() + "_plus_button");
+//		String addmethod = String.format("#{%s}" , childType.getAddValueMethodName());
+//		MethodExpression actionListener = Utility.createMethodExp(addmethod);
+//		plus.setActionExpression(actionListener);
+//		plus.setUpdate(childType.getName()+"_datatable");
+//		
+//		Tooltip plustooltip = new Tooltip();
+//		plustooltip.setFor(plus.getId());
+//		plustooltip.setValue("Add new " + childType.getName()) ;
+//		
+//		tab.getChildren().add(plus);
+//		tab.getChildren().add(plustooltip);
+//		
+//		
+//		tab.getChildren().add( dataTableProvider.buildDataTable());
+		
+		tab.getChildren().add(this.buildChildrenPanel(childType, childScanner, null));
+		
+		
 		
 		
 		return tab;
 				
 	}
 	
+	
+	private Panel buildChildrenPanel(DetailListModel detailList, ClassScanner<BaseEntityModel> childScanner, String title)
+	{
+		String listValueGetterSetter = String.format("#{%s}" , detailList.getGetterSetterValueName()); 
+		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
+																	this.getLabels(), listValueGetterSetter, detailList);
+
+
+		//Bottone +
+		CommandButton plus = new CommandButton();
+		plus.setIcon("fa fa-plus");
+		plus.setId(detailList.getPropertyName() + "_plus_button");
+		String addmethod = String.format("#{%s}" , detailList.getAddValueMethodName());
+		MethodExpression actionListener = Utility.createMethodExp(addmethod);
+		plus.setActionExpression(actionListener);
+		plus.setUpdate(detailList.getPropertyName()+"_datatable");
+
+		/*
+		 * Tooltip bottone
+		 */
+		Tooltip plustooltip = new Tooltip();
+		plustooltip.setFor(plus.getId());
+		plustooltip.setValue("Add new " + detailList.getPropertyName()) ;
+
+		/*
+		 * Panel
+		 */
+		
+		Panel panel = new Panel();
+		panel.setId(detailList.getPropertyName() + "_panel");
+		if (title != null)
+		{
+			panel.setValueExpression("header", Utility.createExpression(title, String.class));
+		}
+		panel.getChildren().add(plus);
+		panel.getChildren().add(plustooltip);
+		panel.getChildren().add(dataTableProvider.buildDataTable());
+
+		/*
+		 * Sub Children panels
+		 */
+		for (DetailListModel subDetailModel : childScanner.getChildren())
+		{
+			System.out.println(subDetailModel.getPropertyName() + " " + subDetailModel.getPropertyType());
+			
+			
+			ClassScanner<BaseEntityModel> subChildScanner = new ClassScanner<BaseEntityModel>((Class<BaseEntityModel>) subDetailModel.getPropertyType());
+			panel.getChildren().add(this.buildChildrenPanel(subDetailModel, subChildScanner, subDetailModel.getPropertyName()));
+					
+			
+			
+
+		}
+		
+
+		
+		return panel;
+		
+		
+	}
 	
 	
 }

@@ -32,9 +32,9 @@ public class FieldModel {
 	private String fillSelectionListExpression;
 	
 	
-	private String eventUpdateExpression;
-	private String eventListenerExpression;
-	private String event;
+//	private String eventUpdateExpression;
+//	private String eventListenerExpression;
+	private EventModel event;
 	
 	/**
 	 * Controller bean if field is a BaseModelEntity object
@@ -249,27 +249,27 @@ public class FieldModel {
 		return this.getPropertyName();
 	}
 
-	public String getEventUpdateExpression() {
-		return eventUpdateExpression;
-	}
+//	public String getEventUpdateExpression() {
+//		return eventUpdateExpression;
+//	}
+//
+//	public void setEventUpdateExpression(String eventUpdateExpression) {
+//		this.eventUpdateExpression = eventUpdateExpression;
+//	}
+//
+//	public String getEventListenerExpression() {
+//		return eventListenerExpression;
+//	}
+//
+//	public void setEventListenerExpression(String eventListenerExpression) {
+//		this.eventListenerExpression = eventListenerExpression;
+//	}
 
-	public void setEventUpdateExpression(String eventUpdateExpression) {
-		this.eventUpdateExpression = eventUpdateExpression;
-	}
-
-	public String getEventListenerExpression() {
-		return eventListenerExpression;
-	}
-
-	public void setEventListenerExpression(String eventListenerExpression) {
-		this.eventListenerExpression = eventListenerExpression;
-	}
-
-	public String getEvent() {
+	public EventModel getEvent() {
 		return event;
 	}
 
-	public void setEvent(String event) {
+	public void setEvent(EventModel event) {
 		this.event = event;
 	}
 	

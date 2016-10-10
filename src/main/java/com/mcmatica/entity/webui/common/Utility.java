@@ -86,7 +86,7 @@ public class Utility {
 	 * @param listenerExpression
 	 * @return
 	 */
-	public static AjaxBehavior createAjaxBejhaviour(String listenerExpression, String update) {
+	public static AjaxBehavior createAjaxBehaviour(String listenerExpression, String update) {
 		FacesContext context = FacesContext.getCurrentInstance();
 		AjaxBehavior ajaxBehavior = (AjaxBehavior) context.getApplication().createBehavior(AjaxBehavior.BEHAVIOR_ID);
 		if (listenerExpression != null && !listenerExpression.isEmpty()) {
