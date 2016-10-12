@@ -68,6 +68,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 		if (this.selected.isNewInstance())
 		{
 			list.add(entity );
+			
 		}
 		entity.setNewInstanceState(false);
 	}

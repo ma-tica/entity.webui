@@ -8,10 +8,13 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.html.HtmlOutputText;
 
+import org.primefaces.component.celleditor.CellEditor;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.editor.Editor;
 import org.primefaces.component.outputlabel.OutputLabel;
+import org.primefaces.component.roweditor.RowEditor;
 import org.primefaces.component.tooltip.Tooltip;
 
 import com.mcmatica.entity.webui.common.Utility;
@@ -38,6 +41,8 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 	
 	public DataTable buildDataTable() {
 		DataTable table = new DataTable();
+		
+
 		table.setValueExpression("value", Utility.createExpression(this.listValueGetterSetter, List.class));
 
 		String var = detailListModel.getPropertyName() ; //this.fields.get(0).getBeanControllerName();
@@ -46,6 +51,10 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 
 		table.setSelectionMode("single");
 		table.setValueExpression("rowKey", Utility.createExpression("#{" + var + ".id}", String.class));
+		table.setEditable(true);
+		table.setEditMode("cell");
+//		table.setLiveResize(true);
+//		table.setNativeElements(true);
 //		String expr = String.format("#{%s.%s}", this.fields.get(0).getBeanControllerName(), "selected" );
 //		table.setValueExpression("selection", Utility.createExpression(expr,  this.childType.getPropertyType()));
 
@@ -70,8 +79,16 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		//}
 		
 		
-		
+		/*
+		 * Radio button per selezione riga
+		 */
 
+		Column selectionColumn = new Column();
+//		selectionColumn.setSelectionMode("single");
+		selectionColumn.setStyle("width:10px; text-align:center");
+		table.getChildren().add(selectionColumn);
+		
+		
 		for (FieldModel fmodel : this.fields) {
 			UIComponent input = null;
 			input = this.buildFieldController(fmodel);
@@ -88,10 +105,17 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				header.setValueExpression("value", Utility.createExpression(caption, String.class));			
 				column.setHeader(header);
 				
-				HtmlOutputText cell = new HtmlOutputText();			
+				
+				CellEditor cell = new CellEditor();
+				
+				HtmlOutputText outputcell = new HtmlOutputText();			
 				String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
-				cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));	
-
+				outputcell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));	
+				cell.getFacets().put("output", outputcell);
+				
+				input.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+				cell.getFacets().put("input", input);
+				
 				column.getChildren().add(cell);
 				
 				table.getChildren().add(column);
@@ -99,6 +123,16 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 			}
 		}
 
+		/*
+		 * Row editor
+		 */
+		
+//		Column editorColumn = new Column();
+//		editorColumn.setStyle("width:32px");
+//		RowEditor rowEdior = new RowEditor();
+//		editorColumn.getChildren().add(rowEdior);
+//		table.getChildren().add(editorColumn);
+		
 		table.setId(detailListModel.getPropertyName() + "_datatable");
 
 		/*
@@ -121,7 +155,10 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 //		minustooltip.setValue("Delete " + childType.getName()) ;
 
 		Column column = new Column();
+		column.setStyle("width:32px");
 		column.getChildren().add(remove);
+		
+		
 		table.getChildren().add(column);
 
 		return table;

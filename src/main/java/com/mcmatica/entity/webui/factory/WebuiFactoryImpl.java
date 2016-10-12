@@ -131,7 +131,8 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		table.setValueExpression("value", Utility.createExpression( expr, List.class));
 		table.setVar("item");
 		table.setSelectionMode("single");
-		//table.setRowKey("#{item.id}");
+		expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "listFiltered");
+		table.setValueExpression("filteredValue", Utility.createExpression( expr, List.class));
 		table.setValueExpression("rowKey", Utility.createExpression("#{item.id}", String.class));
 		expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "selected" );
 		table.setValueExpression("selection", Utility.createExpression(expr, scanner.getAnnotatedCalssType()));
@@ -150,24 +151,27 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		for (FieldModel fmodel : this.shortListFields)
 		{
 			Column column = new Column();
+			String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
 			
 			/*
 			 * Header
 			 */
-			HtmlOutputText header = new HtmlOutputText();
+//			HtmlOutputText header = new HtmlOutputText();
 			String caption = fmodel.getCaption().isEmpty() ? fmodel.getPropertyName() : fmodel.getCaption();
-			header.setValueExpression("value", Utility.createExpression(caption, String.class));			
-			column.setHeader(header);
+//			header.setValueExpression("value", Utility.createExpression(caption, String.class));						
+//			column.setHeader(header);
+			column.setValueExpression("headerText", Utility.createExpression(caption, String.class));
+			
 			
 			/*
 			 * Cell
-			 */
-			
-			HtmlOutputText cell = new HtmlOutputText();			
-			String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
-			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));						
-			
+			 */			
+			HtmlOutputText cell = new HtmlOutputText();						
+			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));									
 			column.getChildren().add(cell);
+			
+			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
+			column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
 			
 			table.getChildren().add(column);
 			
@@ -317,8 +321,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		 */
 		for (DetailListModel subDetailModel : childScanner.getChildren())
 		{
-			System.out.println(subDetailModel.getPropertyName() + " " + subDetailModel.getPropertyType());
-			
+					
 			
 			ClassScanner<BaseEntityModel> subChildScanner = new ClassScanner<BaseEntityModel>((Class<BaseEntityModel>) subDetailModel.getPropertyType());
 			panel.getChildren().add(this.buildChildrenPanel(subDetailModel, subChildScanner, subDetailModel.getPropertyName()));

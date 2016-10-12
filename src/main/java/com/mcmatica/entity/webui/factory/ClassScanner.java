@@ -123,7 +123,7 @@ class ClassScanner<T extends BaseEntityModel> {
 		for (Field field : this.clazz.getDeclaredFields())
 		{
 			
-			System.out.println(field.getName());
+			
 			
 			FieldModel fmodel = new FieldModel();
 			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);

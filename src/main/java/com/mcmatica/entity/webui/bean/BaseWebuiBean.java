@@ -29,6 +29,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	protected List<BaseEntityModel> list;
 	
+	protected List<BaseEntityModel> listFiltered;
 
 	protected Panel formPanel;
 	
@@ -50,6 +51,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		if (this.list == null)
 		{
 			this.list = this.service.buildList();
+			this.listFiltered = this.service.buildList();
 		}
 		return list;
 	}
@@ -59,6 +61,19 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public void setList(List<BaseEntityModel> list) {
 		this.list = list;
 	}
+	
+	public List<BaseEntityModel> getListFiltered() {
+		if (this.listFiltered == null) {
+			this.listFiltered = this.service.buildList();
+		}
+		return listFiltered;
+	}
+
+
+	public void setListFiltered(List<BaseEntityModel> listFiltered) {
+		this.listFiltered = listFiltered;
+	}
+	
 	
 	public Panel getPanel()
 	{
@@ -128,6 +143,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	{
 		this.service.save();
 		this.editing = false;
+		this.listFiltered = null;
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "save"));
 	}
@@ -160,6 +176,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 
 	public abstract String goToHome();
+
+
 	
 	
 /*
