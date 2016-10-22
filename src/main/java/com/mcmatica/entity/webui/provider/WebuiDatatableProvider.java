@@ -45,7 +45,7 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 
 		table.setValueExpression("value", Utility.createExpression(this.listValueGetterSetter, List.class));
 
-		String var = detailListModel.getPropertyName() ; //this.fields.get(0).getBeanControllerName();
+		String var = "item"; //detailListModel.getPropertyName() ; //this.fields.get(0).getBeanControllerName();
 		table.setVar(var);
 		table.setId(detailListModel.getPropertyName());
 
@@ -80,9 +80,8 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		
 		
 		/*
-		 * Radio button per selezione riga
+		 * Column per selezione riga
 		 */
-
 		Column selectionColumn = new Column();
 //		selectionColumn.setSelectionMode("single");
 		selectionColumn.setStyle("width:10px; text-align:center");

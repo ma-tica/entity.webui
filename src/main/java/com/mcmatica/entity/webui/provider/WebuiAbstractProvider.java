@@ -246,14 +246,17 @@ abstract class WebuiAbstractProvider {
 		input.setValueExpression("required", Utility.createExpression(fmodel.getRequiredExpression(), boolean.class));
 		input.setValueExpression("rendered", Utility.createExpression(fmodel.getVisibleExpression(), boolean.class));
 		
-		
+		/*
+		 * Add custom event
+		 */
 		if (fmodel.getEvent() != null && !fmodel.getEvent().getEventName().isEmpty())
 		{
 			input.addClientBehavior(fmodel.getEvent().getEventName(), Utility.createAjaxBehaviour(fmodel.getEvent().getEventListenerExpression(), fmodel.getEvent().getEventUpdateExpression()));
 		}
 		
-		
-		
+		if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
+			input.addClientBehavior("change", Utility.createAjaxBehaviour(fmodel.getChangeEventExpression(), null));
+		}
 		
 	}
 	

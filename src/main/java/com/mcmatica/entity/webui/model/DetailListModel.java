@@ -3,7 +3,7 @@ package com.mcmatica.entity.webui.model;
 public class DetailListModel {
 	
 	private String selectionName;
-	private String parentProperyName;
+	private String parentPropertyName;
 	private String propertyName;
 	private String beanControllerName;
 	private Class<?> propertyType;
@@ -56,7 +56,7 @@ public class DetailListModel {
 	
 	public String getGetterSetterValueName()
 	{
-		return String.format("%s.%s.%s", this.beanControllerName, this.parentProperyName, this.propertyName);
+		return String.format("%s.%s.%s", this.beanControllerName, this.parentPropertyName, this.propertyName);
 	}
 	
 	public String getAddValueMethodName()
@@ -66,16 +66,16 @@ public class DetailListModel {
 
 	public String getDeleteValueMethodName(String varName)
 	{
-		//return String.format("%s.delete%s(%s)", this.parentBeanName, this.propertyType.getSimpleName(), varName);
-		return String.format("%s.remove(%s)", this.getGetterSetterValueName(), varName);
+		//return String.format("%s.remove(%s)", this.getGetterSetterValueName(), varName);
+		return String.format("%s.removeFieldListItem('%s', %s)", this.beanControllerName, this.propertyName, varName );
 	}
 
-	public String getParentProperyName() {
-		return parentProperyName;
+	public String getParentPropertyName() {
+		return parentPropertyName;
 	}
 
-	public void setParentProperyName(String parentProperyName) {
-		this.parentProperyName = parentProperyName;
+	public void setParentPropertyName(String parentPropertyName) {
+		this.parentPropertyName = parentPropertyName;
 	}
 
 

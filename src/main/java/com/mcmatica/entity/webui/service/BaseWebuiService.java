@@ -32,8 +32,10 @@ public interface BaseWebuiService {
 	
 	<T extends BaseEntityModel> T create();
 	
-	void setDefaultValue();
+	void setDefaultValues();
 	
 	<T extends BaseEntityModel> List<T> findAll();
+
+	boolean isEditing();
 	
 }

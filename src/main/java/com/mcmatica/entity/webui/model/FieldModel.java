@@ -273,4 +273,8 @@ public class FieldModel {
 		this.event = event;
 	}
 	
+	public String getChangeEventExpression()
+	{
+		return String.format("#{%s.onChangeField}", this.beanControllerName);
+	}
 }

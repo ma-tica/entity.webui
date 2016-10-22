@@ -176,7 +176,7 @@ class ClassScanner<T extends BaseEntityModel> {
 				lmodel.setPropertyName(field.getName());
 				lmodel.setPropertyType((Class)elementType);
 				lmodel.setBeanControllerName(webui.beanControllerName());
-				lmodel.setParentProperyName(detailList.parentPropertyName());
+				lmodel.setParentPropertyName(detailList.parentPropertyName());
 				
 				
 				MCWebuiFieldEvent eventlist = field.getAnnotation(MCWebuiFieldEvent.class);

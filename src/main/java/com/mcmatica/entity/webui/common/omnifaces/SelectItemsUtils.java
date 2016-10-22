@@ -14,8 +14,6 @@
 package com.mcmatica.entity.webui.common.omnifaces;
 
 
-import static com.mcmatica.entity.webui.common.Utility.isEmpty;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -57,7 +55,7 @@ public final class SelectItemsUtils {
 			SelectItem item = items.next();
 			if (item instanceof SelectItemGroup) {
 				SelectItem subitems[] = ((SelectItemGroup) item).getSelectItems();
-				if (!isEmpty(subitems)) {
+				if (subitems != null && subitems.length > 0) {
 					Object object = findValueByStringConversion(context, component, new ArrayIterator(subitems), value, converter);
 					if (object != null) {
 						return object;
@@ -96,7 +94,7 @@ public final class SelectItemsUtils {
 			SelectItem item = items.next();
 			if (item instanceof SelectItemGroup) {
 				SelectItem subitems[] = ((SelectItemGroup) item).getSelectItems();
-				if (!isEmpty(subitems)) {
+				if (subitems != null && subitems.length > 0) {
 					collect(new ArrayIterator(subitems), values);
 				}
 			} else if (!item.isNoSelectionOption()) {

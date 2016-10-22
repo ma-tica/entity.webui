@@ -16,5 +16,7 @@ public interface  BaseMongoRepository<T,ID extends Serializable> extends MongoRe
 	T getById(String id);
 	
 	List<T> findAll();
+
+	
 	
 }

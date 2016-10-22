@@ -42,10 +42,8 @@ public class AutoIncrementIdListener extends AbstractMongoEventListener<BaseEnti
 					}
 					break;
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -57,45 +55,6 @@ public class AutoIncrementIdListener extends AbstractMongoEventListener<BaseEnti
 	}
 
 
-	@Override
-	public void onAfterConvert(AfterConvertEvent<BaseEntityModel> event) {
-		
-		super.onAfterConvert(event);
-	}
-
-	
-//	@Override
-//	public void onBeforeSave(BeforeSaveEvent<BaseEntityModel> event) {
-//		for ( Field field : event.getSource().getClass().getDeclaredFields())
-//		{
-//			if (field.getAnnotation(Id.class) != null)
-//			{
-//				try {
-//					ReflectionUtils.makeAccessible(field); 
-//					
-//					
-//					if (field.get(event.getSource()) == null || field.get(event.getSource()).toString().isEmpty())
-//					{
-//
-//						String nextid = this.nextId(event.getSource());
-//						
-//						field.set(event.getSource(), nextid);
-//						break;
-//					}
-//				} catch (IllegalArgumentException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				} catch (IllegalAccessException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		
-//		
-//		
-//		super.onBeforeSave(event);
-//	}
 	
 	private <T extends BaseEntityModel> String nextId(T source)
 	{

@@ -1,5 +1,7 @@
 package com.mcmatica.entity.webui.model;
 
+import java.util.List;
+
 public interface BaseEntityModel {
 
 	String getId();
@@ -15,5 +17,7 @@ public interface BaseEntityModel {
 	void setNewInstanceState(boolean value);
 	
 	String getSelectionLabel();
+
+	List<BaseEntityModel> getFieldListItemsRemoved(String childListName);
 	
 }

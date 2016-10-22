@@ -15,11 +15,11 @@ import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.repository.BaseMongoRepository;
 
-//public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends Serializable> implements BaseWebuiService<T>, WebuiFactory {
 public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends Serializable> implements BaseWebuiService, WebuiFactory {	
 
 	protected WebuiFactoryImpl<T> webuiFactory;
 	protected T selected;
+	protected T originalSelected;
 	protected List<T> list;
 	
 	protected BaseMongoRepository<T, S> repository;
@@ -28,7 +28,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	public T create()
 	{
 		T entity = this.getInstanceOfT();
-		this.selected = entity;
+		this.setSelected(entity);
 		this.selected.setNewInstanceState(true);
 		return this.selected;
 	}
@@ -71,11 +71,18 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 			
 		}
 		entity.setNewInstanceState(false);
+		this.restIsEditing();		
 	}
 
 	@Override
 	public <G extends BaseEntityModel> void setSelected(G selected) {
-		this.selected =  (T) selected;		
+		this.selected =  (T) selected;	
+		/**
+		 * Save the original value of selected Item
+		 */
+//		if (this.originalSelected == null) {
+			this.restIsEditing();
+//		}
 	}
 
 	@Override
@@ -87,7 +94,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	public <G extends BaseEntityModel> void delete(G selected) {
 		this.repository.delete(this.selected);
 		list.remove(this.selected);
-		this.selected = null;		
+		this.setSelected (null);		
 	}
 
 	@Override
@@ -113,7 +120,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	
 	
 	@Override
-	public void setDefaultValue()
+	public void setDefaultValues()
 	{	
 		for(FieldModel fmodel : this.getFields())
 		{
@@ -140,6 +147,36 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 		return this.repository.findAll();
 	}
 
-
+	@Override
+	public boolean isEditing()
+	{
+		boolean result = false;
+		try {
+			if (Utility.areEquals(this.originalSelected, this.getSelected()))
+			{
+				result = false;
+			}else{
+				result = true;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	private void restIsEditing()
+	{
+		try {
+			if (this.selected != null) {
+				this.originalSelected = Utility.cloneEntity(this.selected);
+			}else{
+				this.originalSelected = null;
+			}
+		} catch (Exception e) {				
+			e.printStackTrace();
+		}
+		
+	}
 	
 }
