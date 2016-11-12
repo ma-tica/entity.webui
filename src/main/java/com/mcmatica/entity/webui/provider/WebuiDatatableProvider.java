@@ -6,8 +6,11 @@ import java.util.ResourceBundle;
 import javax.el.MethodExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
+import javax.faces.component.behavior.ClientBehaviorBase;
 import javax.faces.component.html.HtmlOutputText;
 
+import org.primefaces.behavior.ajax.AjaxBehavior;
+import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.celleditor.CellEditor;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
@@ -42,29 +45,30 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 	public DataTable buildDataTable() {
 		DataTable table = new DataTable();
 		
-
+		/* value */
 		table.setValueExpression("value", Utility.createExpression(this.listValueGetterSetter, List.class));
 
+		/* var */
 		String var = "item"; //detailListModel.getPropertyName() ; //this.fields.get(0).getBeanControllerName();
 		table.setVar(var);
-		table.setId(detailListModel.getPropertyName());
+		
+		/* Id */
+		//table.setId(detailListModel.getPropertyName());
+		table.setId(detailListModel.getPropertyName() + "_datatable");
 
+		/* selection mode */
 		table.setSelectionMode("single");
 		table.setValueExpression("rowKey", Utility.createExpression("#{" + var + ".id}", String.class));
+		String expr = String.format("#{%s}", detailListModel.getSelection());
+		table.setValueExpression("selection", Utility.createExpression(expr,  this.detailListModel.getPropertyType()));		
+
+		/* editable */
 		table.setEditable(true);
 		table.setEditMode("cell");
-//		table.setLiveResize(true);
-//		table.setNativeElements(true);
-//		String expr = String.format("#{%s.%s}", this.fields.get(0).getBeanControllerName(), "selected" );
-//		table.setValueExpression("selection", Utility.createExpression(expr,  this.childType.getPropertyType()));
 
-		String expr = String.format("#{%s}", detailListModel.getSelection());
-		table.setValueExpression("selection", Utility.createExpression(expr,  this.detailListModel.getPropertyType()));
-		
-		
-		
-		//expr = String.format("#{%s.%s.%s.%s}", this.childType.getParentBeanName(), "selected" ,this.fields.get(0).getBeanControllerName() , "selected" );
-		//table.addClientBehavior("rowSelect", Utility.createAjaxBejhaviour(expr , ":form_main"));
+		/* table style */
+		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
+
 		
 		
 		if (this.detailListModel.getEvent() != null && !this.detailListModel.getEvent().getEventName().isEmpty()) {
@@ -73,17 +77,12 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 									this.detailListModel.getEvent().getEventUpdateExpression()));
 		}
 		
-		//if (fmodel.getEvent() != null && !fmodel.getEvent().isEmpty())
-		//{
-		//	input.addClientBehavior(fmodel.getEvent(), Utility.createAjaxBejhaviour(fmodel.getEventListenerExpression(), fmodel.getEventUpdateExpression()));
-		//}
 		
 		
 		/*
 		 * Column per selezione riga
 		 */
 		Column selectionColumn = new Column();
-//		selectionColumn.setSelectionMode("single");
 		selectionColumn.setStyle("width:10px; text-align:center");
 		table.getChildren().add(selectionColumn);
 		
@@ -92,31 +91,27 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 			UIComponent input = null;
 			input = this.buildFieldController(fmodel);
 			if (input.isRendered()) {
-//				Column column = new Column();
-//				OutputLabel header = this.buidLabel(fmodel);
-//				column.setHeader(header);
-//				column.getChildren().add(this.buildFieldController(fmodel));
-//				table.getChildren().add(column);
 				
+				/* column header */
 				Column column = new Column();
 				HtmlOutputText header = new HtmlOutputText();
 				String caption = fmodel.getCaption().isEmpty() ? fmodel.getPropertyName() : fmodel.getCaption();
 				header.setValueExpression("value", Utility.createExpression(caption, String.class));			
 				column.setHeader(header);
 				
-				
-				CellEditor cell = new CellEditor();
-				
+				/* cell editor */
+				CellEditor cell = new CellEditor();				
 				HtmlOutputText outputcell = new HtmlOutputText();			
 				String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
 				outputcell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));	
-				cell.getFacets().put("output", outputcell);
-				
+				cell.getFacets().put("output", outputcell);				
 				input.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
-				cell.getFacets().put("input", input);
+				cell.getFacets().put("input", input);						
 				
+				/* add cell editor to the colum */
 				column.getChildren().add(cell);
 				
+				/* add column to table */
 				table.getChildren().add(column);
 
 			}
@@ -132,7 +127,7 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 //		editorColumn.getChildren().add(rowEdior);
 //		table.getChildren().add(editorColumn);
 		
-		table.setId(detailListModel.getPropertyName() + "_datatable");
+		
 
 		/*
 		 *  Bottone -
@@ -145,6 +140,14 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				new Class[] { detailListModel.getPropertyType() });
 		remove.setActionExpression(actionListener);
 		remove.setUpdate(table.getId());
+		
+		MethodExpression innerActionListener = Utility.createMethodExp("onRemoveChild",
+				new Class[] { detailListModel.getPropertyType() });
+		
+		
+// Non serve		remove.addClientBehavior("click", Utility.createAjaxBehaviour(detailListModel.getChangeEventExpression(), null));
+		
+		
 		
 		/*
 		 * Tootltip Button
@@ -177,7 +180,7 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 			input = this.buildInputCalendar(fmodel, true);
 			break;
 		case SELECTION_ONE_MENU:
-			break;
+			input = this.buildSelectOneMenu(fmodel);
 		default:
 			break;
 		}

@@ -26,15 +26,17 @@ public class FieldModel {
 	private int formPosition;
 	private int colSpan;
 	private String defaultValue;
-	//private UIInput inputEditorController;
 	private String visibleExpression;
 	private String readonlyExpression;
 	private String fillSelectionListExpression;
-	
-	
-//	private String eventUpdateExpression;
-//	private String eventListenerExpression;
 	private EventModel event;
+	private String gridCaption;
+	private String gridWidth;
+	
+	private boolean formField;
+	private boolean shortGridField;
+	
+
 	
 	/**
 	 * Controller bean if field is a BaseModelEntity object
@@ -47,6 +49,10 @@ public class FieldModel {
 	 * @return the caption
 	 */
 	public String getCaption() {
+		if (caption == null || caption.isEmpty())
+		{
+			return propertyName;
+		}
 		return caption;
 	}
 
@@ -276,5 +282,42 @@ public class FieldModel {
 	public String getChangeEventExpression()
 	{
 		return String.format("#{%s.onChangeField}", this.beanControllerName);
+	}
+
+	public String getGridCaption() {
+		if (gridCaption == null || gridCaption.isEmpty())
+		{
+			return this.getCaption();
+		}
+		return gridCaption;
+		
+	}
+
+	public void setGridCaption(String gridCaption) {
+		this.gridCaption = gridCaption;
+	}
+
+	public String getGridWidth() {
+		return gridWidth;
+	}
+
+	public void setGridWidth(String gridWidth) {
+		this.gridWidth = gridWidth;
+	}
+
+	public boolean isFormField() {
+		return formField;
+	}
+
+	public void setFormField(boolean formField) {
+		this.formField = formField;
+	}
+
+	public boolean isShortGridField() {
+		return shortGridField;
+	}
+
+	public void setShortGridField(boolean shortGridField) {
+		this.shortGridField = shortGridField;
 	}
 }

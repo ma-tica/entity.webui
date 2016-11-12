@@ -125,10 +125,9 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		PanelBuilder panelBuilder = new PanelBuilder(panel, this.columnNum, this.title);
 
 
-		for(FieldModel field : this.fields)
+		for(FieldModel fmodel : this.fields)
 		{
-			
-			this.buildFieldController(field, panelBuilder);
+			this.buildFieldController(fmodel, panelBuilder);
 		}
 
 		

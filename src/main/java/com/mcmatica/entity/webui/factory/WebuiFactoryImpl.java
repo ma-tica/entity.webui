@@ -9,6 +9,7 @@ import javax.el.MethodExpression;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 import javax.faces.event.MethodExpressionActionListener;
+import javax.faces.model.ListDataModel;
 import javax.xml.crypto.Data;
 
 import org.primefaces.component.column.Column;
@@ -21,6 +22,7 @@ import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.tooltip.Tooltip;
 
 import com.mcmatica.entity.webui.common.Utility;
+import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.FieldModel;
@@ -127,23 +129,26 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	{
 		DataTable table = new DataTable();
 		
+		/* value */
 		String expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "list");
-		table.setValueExpression("value", Utility.createExpression( expr, List.class));
+		table.setValueExpression("value", Utility.createExpression( expr, BaseEntityDataModel.class));
+		
+		/* var */
 		table.setVar("item");
 		table.setSelectionMode("single");
+		
+		/* filtered value */
 		expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "listFiltered");
 		table.setValueExpression("filteredValue", Utility.createExpression( expr, List.class));
-		table.setValueExpression("rowKey", Utility.createExpression("#{item.id}", String.class));
+		
+		//table.setValueExpression("rowKey", Utility.createExpression("#{item.id}", String.class));
+		
+		/* selection */
 		expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "selected" );
 		table.setValueExpression("selection", Utility.createExpression(expr, scanner.getAnnotatedCalssType()));
 		
-		/*
-		 * Checkbox
-		 */
-//		<p:column selectionMode="single" style="width:16px;text-align:center"/>
-//		Column chkbox = new Column();
-//		chkbox.setSelectionMode("single");
-//		table.getChildren().add(chkbox);
+		/* table style */
+		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
 		
 		/*
 		 * columns
@@ -151,26 +156,34 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		for (FieldModel fmodel : this.shortListFields)
 		{
 			Column column = new Column();
-			String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+			
 			
 			/*
 			 * Header
 			 */
-//			HtmlOutputText header = new HtmlOutputText();
-			String caption = fmodel.getCaption().isEmpty() ? fmodel.getPropertyName() : fmodel.getCaption();
-//			header.setValueExpression("value", Utility.createExpression(caption, String.class));						
-//			column.setHeader(header);
+			
+			/* caption */
+			String caption = fmodel.getGridCaption();
 			column.setValueExpression("headerText", Utility.createExpression(caption, String.class));
+			
+			/* width */
+			column.setValueExpression("width", Utility.createExpression(fmodel.getGridWidth(), String.class));
 			
 			
 			/*
 			 * Cell
 			 */			
-			HtmlOutputText cell = new HtmlOutputText();						
+			
+			/* cell value */
+			HtmlOutputText cell = new HtmlOutputText();
+			String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
 			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));									
 			column.getChildren().add(cell);
 			
+			/* filter by */
 			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
+			
+			/* filter match mode */
 			column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
 			
 			table.getChildren().add(column);

@@ -16,9 +16,7 @@ public @interface MCWebuiField {
 	public FieldModel.EditorComponent editorComponent() default FieldModel.EditorComponent.UNDEFINED; 
 	
 	public String required() default "false";
-	
-	public int shortListPosition() default 0;
-	
+		
 	public int formPosition() default 0;
 	
 	public int colSpan() default 1;

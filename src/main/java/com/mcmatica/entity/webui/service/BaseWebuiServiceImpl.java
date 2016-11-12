@@ -1,13 +1,21 @@
 package com.mcmatica.entity.webui.service;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
+
+import javax.faces.model.ListDataModel;
 
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.util.ReflectionUtils;
 
+import com.mcmatica.entity.webui.annotation.MCCascadeSave;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.factory.WebuiFactory;
 import com.mcmatica.entity.webui.factory.WebuiFactoryImpl;
@@ -25,6 +33,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	protected BaseMongoRepository<T, S> repository;
 	
 	@SuppressWarnings("unchecked")
+	@Override
 	public T create()
 	{
 		T entity = this.getInstanceOfT();
@@ -34,8 +43,9 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	}
 
 	
-	@SuppressWarnings("unchecked")
-	T getInstanceOfT()
+	
+	@SuppressWarnings("unchecked")	
+	public T getInstanceOfT()
     {
         ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
         Class<T> type = (Class<T>) superClass.getActualTypeArguments()[0];
@@ -75,6 +85,12 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	}
 
 	@Override
+	public void cancel()
+	{
+		this.setSelected(this.repository.getById(this.selected.getId()));
+	}
+	
+	@Override
 	public <G extends BaseEntityModel> void setSelected(G selected) {
 		this.selected =  (T) selected;	
 		/**
@@ -91,7 +107,16 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	}
 
 	@Override
-	public <G extends BaseEntityModel> void delete(G selected) {
+	public void delete() {
+		
+		//Cascade delete
+		execSaveBeforeDelete = false;
+		this.performeCascadeDelete(this.selected);		
+		if (execSaveBeforeDelete)
+		{
+			this.repository.save(this.selected);
+		}
+		
 		this.repository.delete(this.selected);
 		list.remove(this.selected);
 		this.setSelected (null);		
@@ -178,5 +203,51 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 		}
 		
 	}
+
+	Boolean execSaveBeforeDelete = false;
 	
+	private <G extends BaseEntityModel> void performeCascadeDelete(G source )
+	{
+		
+		ReflectionUtils.doWithFields(source.getClass(), new ReflectionUtils.FieldCallback() {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				ReflectionUtils.makeAccessible(field);
+
+				if (field.isAnnotationPresent(DBRef.class) && field.isAnnotationPresent(MCCascadeSave.class)) {
+				MCCascadeSave cascadeSave = field.getAnnotation(MCCascadeSave.class);
+				if (cascadeSave.cascadeDelete())
+				{
+					/*
+					 * Execute Cascade Deleting
+					 */
+					//cascadeDeleting(field, (BaseEntityModel) event.getDBObject());
+					prepareCascadeDeleting(field, source);
+					execSaveBeforeDelete = true;
+				}
+			}
+				
+			}
+		});
+	}
+	
+	
+	private <G extends BaseEntityModel> void prepareCascadeDeleting(Field field, BaseEntityModel source)
+			throws IllegalArgumentException, IllegalAccessException {
+		if (field.getType().equals(List.class)) {
+			List<G> items = (List) field.get(source);
+
+			// //Type elementType = ((ParameterizedType)
+			// field.getGenericType()).getActualTypeArguments()[0];
+			// Iterator iterator = field. ((List) field).iterator();
+			// while(iterator.hasNext())
+			// {
+
+			for (G listItem : items)
+
+				source.getFieldListItemsRemoved(field.getName()).add(listItem);
+
+		}
+
+	}
+
 }

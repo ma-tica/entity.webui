@@ -9,13 +9,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.data.annotation.Transient;
-
 import com.mcmatica.entity.webui.annotation.MCDetailList;
 import com.mcmatica.entity.webui.annotation.MCSelectable;
 import com.mcmatica.entity.webui.annotation.MCWebui;
 import com.mcmatica.entity.webui.annotation.MCWebuiField;
 import com.mcmatica.entity.webui.annotation.MCWebuiFieldEvent;
+import com.mcmatica.entity.webui.annotation.MCWebuiGridColumn;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.EventModel;
@@ -125,43 +124,73 @@ class ClassScanner<T extends BaseEntityModel> {
 			
 			
 			
-			FieldModel fmodel = new FieldModel();
+			FieldModel fmodel = null;
 			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
 			if (webuifield != null)
-			{				
+			{			
+				fmodel = new FieldModel();
 				fmodel.setCaption(webuifield.caption());				
-				fmodel.setEditorComponent(this.retrieveEditorComponentField(webuifield, field));
-				fmodel.setPropertyName(field.getName());				
-				fmodel.setBeanControllerName(webui.beanControllerName());
-				fmodel.setRelatedBeanControllerName(this.retrieveRelatedBeanControllerName(field));
-				fmodel.setPropertyType(field.getType());
+				fmodel.setEditorComponent(this.retrieveEditorComponentField(webuifield, field));								
 				fmodel.setRequiredExpression(webuifield.required());
-				fmodel.setShortListPosition(webuifield.shortListPosition());
+//				fmodel.setShortListPosition(webuifield.shortListPosition());
 				fmodel.setColSpan(webuifield.colSpan());
 				fmodel.setFormPosition(webuifield.formPosition());
 				fmodel.setDefaultValue(webuifield.defaultValue());
 				fmodel.setVisibleExpression(webuifield.visible());
 				fmodel.setReadonlyExpression(webuifield.readonly());
 				fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()"));
+				fmodel.setFormField(true);
 				
-				this.fields.add(fmodel);				
-				if (fmodel.getShortListPosition() > 0)
-				{
-					this.shortListFields.add(fmodel);
-				}
+				this.fillWebuiProperties(field, fmodel, webui);
+				
 			}
 			
+			MCWebuiGridColumn webuigridcolumn = field.getAnnotation(MCWebuiGridColumn.class);
+			if (webuigridcolumn != null)
+			{
+				if (fmodel == null ) {
+					fmodel = new FieldModel();
+					this.fillWebuiProperties(field, fmodel, webui);
+				}
+				fmodel.setShortListPosition(webuigridcolumn.shortListPosition());
+				fmodel.setGridCaption(webuigridcolumn.caption());
+				fmodel.setGridWidth(webuigridcolumn.width());
+				fmodel.setShortGridField(true);
+			}
+
 			MCSelectable selectable = field.getAnnotation(MCSelectable.class);
 			if (selectable != null)
 			{
+				if (fmodel == null ) {
+					fmodel = new FieldModel();
+					this.fillWebuiProperties(field, fmodel, webui);
+				}
 				fmodel.setFillSelectionListExpression(selectable.value());
 			}
 
 			MCWebuiFieldEvent event = field.getAnnotation(MCWebuiFieldEvent.class);
 			if (event != null)
 			{
+				if (fmodel == null ) {
+					fmodel = new FieldModel();
+					this.fillWebuiProperties(field, fmodel, webui);
+				}
 				fmodel.setEvent(new EventModel(event.update(), event.listener(), event.event()));
 			}
+
+			if (fmodel != null )
+			{
+				if (fmodel.isFormField()) {
+					this.fields.add(fmodel);	
+				}
+				if (fmodel.isShortGridField())
+				{
+					this.shortListFields.add(fmodel);
+				}
+			}
+
+			
+
 			
 			/*
 			 * Children data
@@ -188,6 +217,15 @@ class ClassScanner<T extends BaseEntityModel> {
 			}
 					
 		}
+	}
+	
+	private void fillWebuiProperties(Field field, FieldModel fmodel, MCWebui webui)
+	{
+		fmodel.setPropertyName(field.getName());
+		fmodel.setBeanControllerName(webui.beanControllerName());
+		fmodel.setRelatedBeanControllerName(this.retrieveRelatedBeanControllerName(field));
+		fmodel.setPropertyType(field.getType());
+
 	}
 	
 	/**

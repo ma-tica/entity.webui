@@ -11,12 +11,15 @@ import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.ListDataModel;
 
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.SelectableDataModel;
 
 import com.mcmatica.entity.webui.common.Utility;
+import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.service.BaseWebuiService;
@@ -35,7 +38,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	protected List<FieldModel> columns = new ArrayList<FieldModel>();
 	
-	protected List<BaseEntityModel> list;
+	protected BaseEntityDataModel<BaseEntityModel> list;
 	
 	protected List<BaseEntityModel> listFiltered;
 	
@@ -55,19 +58,22 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 
 
-	public List<BaseEntityModel> getList() {
+	public BaseEntityDataModel<BaseEntityModel> getList() {
 		if (this.list == null)
 		{
-			this.list = this.service.buildList();
+			List<BaseEntityModel> tlist = this.service.buildList();
+			this.list = new BaseEntityDataModel<BaseEntityModel>(tlist);
 			//this.listFiltered = this.service.buildList();
-			this.listFiltered = this.list;
+			this.listFiltered = tlist;
 		}
-		return list;
+		
+		
+		return this.list;
 	}
 
 
 
-	public void setList(List<BaseEntityModel> list) {
+	public void setList(BaseEntityDataModel<BaseEntityModel> list) {
 		this.list = list;
 	}
 	
@@ -157,7 +163,6 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public void save()
 	{
 		this.service.save();
-//		this.listFiltered = null;
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "save"));
 	}
@@ -166,7 +171,6 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	{
 		this.service.create();
 		this.service.setDefaultValues();
-//		this.editing = true;
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "addnew"));
 
@@ -174,11 +178,20 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public void delete()
 	{
-		this.service.delete(this.service.getSelected());
-//		this.editing = false;
+		this.service.delete();
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "delete"));
 		
+	}
+	
+	public void cancel()
+	{
+		this.service.cancel();
+		
+		BaseEntityModel e = this.list.getRowData(this.getSelected().getId());
+		e = this.getSelected();
+		
+		//this.setSelected(this.service.getSelected());
 	}
 	
 	public void refresh()
@@ -186,6 +199,12 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "refresh"));
 		
+	}
+	
+	public void next() 
+	{
+		BaseEntityModel d = this.list.getRowData("000000000017");
+		this.service.setSelected(d);
 	}
 	
 	public void removeFieldListItem(String childListName, BaseEntityModel item) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
@@ -199,13 +218,28 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		List<BaseEntityModel> list =  (List<BaseEntityModel>) mth.invoke(this.getSelected());
 		list.remove(item);
 		
+		/*
+		 * Update the User interface
+		 */
+		this.updateUI();
 	}
 	
 	public void onChangeField(AjaxBehaviorEvent event)
 	{
-		RequestContext.getCurrentInstance().update("form_toolbar");
+		this.updateUI();
 	}
 	
+
+	/**
+	 * Used to refresh the user interface
+	 * 
+	 * TODO : migliorare !!!!!!!
+	 */
+	private void updateUI()
+	{
+		RequestContext.getCurrentInstance().update("form_toolbar");
+		RequestContext.getCurrentInstance().update("form_grid");
+	}
 	
 	public abstract String goToHome();
 

@@ -70,6 +70,11 @@ public class DetailListModel {
 		return String.format("%s.removeFieldListItem('%s', %s)", this.beanControllerName, this.propertyName, varName );
 	}
 
+//	public String getChangeEventExpression()
+//	{
+//		return String.format("#{%s.onChangeField}", this.beanControllerName);
+//	}
+
 	public String getParentPropertyName() {
 		return parentPropertyName;
 	}

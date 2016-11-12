@@ -48,7 +48,7 @@ abstract class WebuiAbstractProvider {
 		 * Label can contains expression #{....}
 		 */
 
-		String caption = fmodel.getCaption().isEmpty() ? fmodel.getPropertyName() : fmodel.getCaption();
+		String caption = fmodel.getCaption();
 		label.setValueExpression("value", Utility.createExpression(caption, String.class));
 		
 		label.setFor(fmodel.getId());
@@ -254,6 +254,9 @@ abstract class WebuiAbstractProvider {
 			input.addClientBehavior(fmodel.getEvent().getEventName(), Utility.createAjaxBehaviour(fmodel.getEvent().getEventListenerExpression(), fmodel.getEvent().getEventUpdateExpression()));
 		}
 		
+		/*
+		 * Add the default onChangeEnvent managed by the BaseWebuiBean class
+		 */
 		if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
 			input.addClientBehavior("change", Utility.createAjaxBehaviour(fmodel.getChangeEventExpression(), null));
 		}

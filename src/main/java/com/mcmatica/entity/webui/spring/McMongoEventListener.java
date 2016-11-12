@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
+import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.util.ReflectionUtils;
 
@@ -30,8 +31,39 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 	@Autowired
 	private MongoOperations mongoOperations;
 
+	//@Override
+//	public void onBeforeDelete(final BeforeDeleteEvent<BaseEntityModel> event) {
+//		//super.onBeforeDelete(event);
+//		
+//		
+//		ReflectionUtils.doWithFields(event.getType(), new ReflectionUtils.FieldCallback() {
+//			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+//				ReflectionUtils.makeAccessible(field);
+//				
+//				
+//				/*
+//				 * Execute Cascade delete
+//				 */				
+//				if (field.isAnnotationPresent(DBRef.class) && field.isAnnotationPresent(MCCascadeSave.class)) {
+//					MCCascadeSave cascadeSave = field.getAnnotation(MCCascadeSave.class);
+//					if (cascadeSave.cascadeDelete())
+//					{
+//						/*
+//						 * Execute Cascade Deleting
+//						 */
+//						//cascadeDeleting(field, (BaseEntityModel) event.getDBObject());
+//						cascadeDeleting(field, event.getDBObject());
+//					}
+//				}
+//
+//			}
+//		});
+//	}
+
+
 	@Override
 	public void onBeforeConvert(final BeforeConvertEvent<BaseEntityModel> event) {
+		super.onBeforeConvert(event);
 		ReflectionUtils.doWithFields(event.getSource().getClass(), new ReflectionUtils.FieldCallback() {
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
 				ReflectionUtils.makeAccessible(field);
@@ -163,7 +195,10 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 		
 		BaseEntityModel result = mongoOperations.findOne(qry, source.getClass());
 		
-		Long id = Long.parseLong(result.getId());
+		Long id = 0l;
+		if (result != null) {
+			id = Long.parseLong(result.getId());			
+		}
 		id = id +1;
 		
 		return  String.format("%0" + Constant.ID_LENGTH + "d", id);

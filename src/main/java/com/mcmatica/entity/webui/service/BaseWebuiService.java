@@ -28,7 +28,7 @@ public interface BaseWebuiService {
 
 	<T extends BaseEntityModel> T getById(String id);
 
-	<T extends BaseEntityModel> void delete(T selected);
+	void delete();
 	
 	<T extends BaseEntityModel> T create();
 	
@@ -37,5 +37,7 @@ public interface BaseWebuiService {
 	<T extends BaseEntityModel> List<T> findAll();
 
 	boolean isEditing();
+
+	void cancel();
 	
 }

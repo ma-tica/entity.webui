@@ -32,6 +32,9 @@ public @interface MCWebui {
 	 */
 	public String title() default "";
 	
-	
+//	/**
+//	 * set which jsf component update when the selected item enter in status 'editing'
+//	 */
+//	public String updateOnEditing() default "";
 	
 }

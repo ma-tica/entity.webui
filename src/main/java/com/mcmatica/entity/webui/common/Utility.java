@@ -202,14 +202,18 @@ public class Utility {
 						// field.getGenericType()).getActualTypeArguments()[0];
 						List<T> firstListItems = (List<T>) field.get(first);
 						List<T> secondListItems = (List<T>) otherField.get(second);
-						if (firstListItems == null && secondListItems != null) {
+						if (firstListItems == null && secondListItems == null) {
+							return true;
+						} else if (firstListItems == null && secondListItems != null) {
 							return false;
-						} else if (firstListItems != null && secondListItems == null) {
+						} else if (firstListItems != null & secondListItems == null) {
 							return false;
-						} else if (firstListItems.size() != secondListItems.size())
+						} else if (firstListItems.size() != secondListItems.size())						
 						{
 							return false;
 						} else {
+							
+							
 							for (int i = 0; i < firstListItems.size(); i++) {
 								T firtsListItem = firstListItems.get(i);
 								T secondListItem = secondListItems.get(i);
@@ -234,6 +238,9 @@ public class Utility {
 
 				}
 			}
+			
+			
+			
 			return true;
 		} else {
 			throw new Exception("Cannot get differences from objects of diferent classes ");
