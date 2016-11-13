@@ -127,8 +127,11 @@ class ClassScanner<T extends BaseEntityModel> {
 			FieldModel fmodel = null;
 			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
 			if (webuifield != null)
-			{			
+			{	
+				
 				fmodel = new FieldModel();
+				this.fillWebuiProperties(field, fmodel, webui);
+				
 				fmodel.setCaption(webuifield.caption());				
 				fmodel.setEditorComponent(this.retrieveEditorComponentField(webuifield, field));								
 				fmodel.setRequiredExpression(webuifield.required());
@@ -141,7 +144,7 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()"));
 				fmodel.setFormField(true);
 				
-				this.fillWebuiProperties(field, fmodel, webui);
+				
 				
 			}
 			
@@ -154,7 +157,7 @@ class ClassScanner<T extends BaseEntityModel> {
 				}
 				fmodel.setShortListPosition(webuigridcolumn.shortListPosition());
 				fmodel.setGridCaption(webuigridcolumn.caption());
-				fmodel.setGridWidth(webuigridcolumn.width());
+			//	fmodel.setGridWidth(webuigridcolumn.width());
 				fmodel.setShortGridField(true);
 			}
 

@@ -9,6 +9,7 @@ import javax.el.MethodExpression;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 import javax.faces.event.MethodExpressionActionListener;
+import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.xml.crypto.Data;
 
@@ -131,7 +132,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		
 		/* value */
 		String expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "list");
-		table.setValueExpression("value", Utility.createExpression( expr, BaseEntityDataModel.class));
+		table.setValueExpression("value", Utility.createExpression( expr, DataModel.class));
 		
 		/* var */
 		table.setVar("item");
@@ -150,6 +151,9 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		/* table style */
 		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
 		
+		/* lazy */
+		table.setValueExpression("lazy", Utility.createExpression("true", Boolean.class));
+		
 		/*
 		 * columns
 		 */
@@ -167,7 +171,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 			column.setValueExpression("headerText", Utility.createExpression(caption, String.class));
 			
 			/* width */
-			column.setValueExpression("width", Utility.createExpression(fmodel.getGridWidth(), String.class));
+//			column.setValueExpression("width", Utility.createExpression(fmodel.getGridWidth(), String.class));
 			
 			
 			/*

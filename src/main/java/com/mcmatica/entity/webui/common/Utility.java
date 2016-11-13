@@ -180,6 +180,33 @@ public class Utility {
 		return cloned;
 	}
 
+	public static <T extends BaseEntityModel> void copyEntity(T original, T copied) throws Exception {
+		for (Field field : original.getClass().getDeclaredFields()) {
+			if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+				field.setAccessible(true);
+				Field copiedField = copied.getClass().getDeclaredField(field.getName());
+				copiedField.setAccessible(true);
+
+				if (field.getType().equals(List.class)) {
+					List<T> originalListItems = (List<T>) field.get(original);
+					List<T> copiedListItems = null;
+					if (originalListItems != null) {
+						copiedListItems = new ArrayList<T>();
+						for (int i = 0; i < originalListItems.size(); i++) {
+							T originalListItem = originalListItems.get(i);
+							copiedListItems.add(cloneEntity(originalListItem));
+						}
+					}
+					copiedField.set(copied, copiedListItems);	
+				} else {
+					copiedField.set(copied, field.get(original));
+				}
+			}
+		}
+		
+	}
+	
+	
 	/**
 	 * Look for different field values between tow BaseEntitModel object
 	 * 

@@ -90,6 +90,7 @@ abstract class WebuiAbstractProvider {
 		this.partialBuildeComponent(fmodel, input);		
 		
 		
+		
 		input.setStyle("width: 100%;");
 		
 		
@@ -107,7 +108,7 @@ abstract class WebuiAbstractProvider {
 		
 		this.partialBuildeComponent(fmodel, input);		
 		
-		
+				
 		input.setStyle("width: 100%;");
 		
 		
@@ -206,7 +207,7 @@ abstract class WebuiAbstractProvider {
 		}
 		
 		
-		
+
 		somenu.setStyle("width: 80%;");
 			
 		somenu.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
@@ -260,7 +261,7 @@ abstract class WebuiAbstractProvider {
 		if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
 			input.addClientBehavior("change", Utility.createAjaxBehaviour(fmodel.getChangeEventExpression(), null));
 		}
-		
+
 	}
 	
 }

@@ -4,11 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.List;
-
-import javax.faces.model.ListDataModel;
 
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
@@ -19,6 +15,7 @@ import com.mcmatica.entity.webui.annotation.MCCascadeSave;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.factory.WebuiFactory;
 import com.mcmatica.entity.webui.factory.WebuiFactoryImpl;
+import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.repository.BaseMongoRepository;
@@ -28,9 +25,9 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	protected WebuiFactoryImpl<T> webuiFactory;
 	protected T selected;
 	protected T originalSelected;
-	protected List<T> list;
+	protected BaseEntityDataModel<T> list;
 	
-	protected BaseMongoRepository<T, S> repository;
+	protected BaseMongoRepository<T> repository;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -61,13 +58,21 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
     }
 	
 	@Override
-	public List<T> buildList() {
-		this.list = this.repository.findAll();
+	public BaseEntityDataModel<T> buildList() {
+		//this.list = new BaseEntityDataModel(this.repository.findAll());
+		this.list = new BaseEntityDataModel(this.repository);
 		return list;
 	}
 
 	@Override
 	public T getSelected() {
+		
+//		if (this.list != null) {
+//			System.out.println("====>:"+ this.list.getRowData());
+//			System.out.println("====>:"+ this.list.getRowIndex());
+//			
+//			this.selected = list.getRowData();
+//		}
 		return this.selected;
 	}
 
@@ -85,14 +90,27 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	}
 
 	@Override
-	public void cancel()
+	public void cancel() 
 	{
-		this.setSelected(this.repository.getById(this.selected.getId()));
+		//this.setSelected(this.repository.getById(this.selected.getId()));
+		
+		try {
+			Utility.copyEntity(this.repository.getById(this.selected.getId()), this.selected );
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+//		this.list.setRowData(this.selected);
 	}
 	
 	@Override
 	public <G extends BaseEntityModel> void setSelected(G selected) {
 		this.selected =  (T) selected;	
+		
+		
+		
 		/**
 		 * Save the original value of selected Item
 		 */

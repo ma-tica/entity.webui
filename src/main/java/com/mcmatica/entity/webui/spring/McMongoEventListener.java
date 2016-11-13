@@ -123,32 +123,46 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 			if (fieldValue == null) {
 				return;
 			}
-			ContainsIdCallback callback = new ContainsIdCallback();
 			
-			if (field.getType().equals(List.class))
-			{
-				Type elementType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
-				ReflectionUtils.doWithFields((Class) elementType, callback);
-				if (!callback.isIdFound()) {
-					throw new MappingException("Cannot perform cascade save on child object without id set");
-				}
+//			if (field.isAnnotationPresent(DBRef.class) && field.isAnnotationPresent(MCCascadeSave.class)) {
+//				cascadeSaving(field, source);
+//				MCCascadeSave cascadeSave = field.getAnnotation(MCCascadeSave.class);
+//				if (cascadeSave.cascadeDelete())
+//				{
+//					/*
+//					 * Execute Cascade Deleting
+//					 */
+//					cascadeDeleting(field, source);
+//				}
+//				
+//			}else{
+			
+				ContainsIdCallback callback = new ContainsIdCallback();
 				
-				Iterator iterator = ((List) fieldValue).iterator();
-				while(iterator.hasNext())
+				if (field.getType().equals(List.class))
 				{
-					Object listItem = iterator.next();
-					mongoOperations.save(listItem);
+					Type elementType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+					ReflectionUtils.doWithFields((Class) elementType, callback);
+					if (!callback.isIdFound()) {
+						throw new MappingException("Cannot perform cascade save on child object without id set");
+					}
+					
+					Iterator iterator = ((List) fieldValue).iterator();
+					while(iterator.hasNext())
+					{
+						Object listItem = iterator.next();
+						mongoOperations.save(listItem);
+					}
+	
+				}else {
+	
+					ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
+					if (!callback.isIdFound()) {
+						throw new MappingException("Cannot perform cascade save on child object without id set");
+					}
+					mongoOperations.save(fieldValue);
 				}
-
-			}else {
-
-				ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
-				if (!callback.isIdFound()) {
-					throw new MappingException("Cannot perform cascade save on child object without id set");
-				}
-				mongoOperations.save(fieldValue);
-			}
-		
+//			}
 		
 	}
 	

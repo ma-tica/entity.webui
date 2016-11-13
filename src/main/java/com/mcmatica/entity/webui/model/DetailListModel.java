@@ -66,8 +66,8 @@ public class DetailListModel {
 
 	public String getDeleteValueMethodName(String varName)
 	{
-		//return String.format("%s.remove(%s)", this.getGetterSetterValueName(), varName);
-		return String.format("%s.removeFieldListItem('%s', %s)", this.beanControllerName, this.propertyName, varName );
+//		return String.format("%s.removeFieldListItem('%s', %s)", this.beanControllerName, this.propertyName, varName );
+		return String.format("%s.removeFieldListItem('%s', '%s', %s)", this.beanControllerName, this.parentPropertyName, this.propertyName, varName );
 	}
 
 //	public String getChangeEventExpression()

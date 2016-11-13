@@ -67,7 +67,7 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		table.setEditMode("cell");
 
 		/* table style */
-		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
+		//table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
 
 		
 		
@@ -101,10 +101,17 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				
 				/* cell editor */
 				CellEditor cell = new CellEditor();				
-				HtmlOutputText outputcell = new HtmlOutputText();			
+				HtmlOutputText outputcell = new HtmlOutputText();
+				//UIComponent outputcell = this.buildFieldController(fmodel);
+				
 				String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
-				outputcell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));	
-				cell.getFacets().put("output", outputcell);				
+				
+				outputcell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+				//outputcell.setValueExpression("readonly", Utility.createExpression("true", Boolean.class));
+				//outputcell.setId(outputcell.getId()+"_readonly");
+				
+				cell.getFacets().put("output", outputcell);	
+				
 				input.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
 				cell.getFacets().put("input", input);						
 				
@@ -187,6 +194,30 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		return input;
 	}
 
+//	private HtmlOutputText buildOutputFieldController(FieldModel fmodel, String valueExpression) {
+//
+//		HtmlOutputText output = null;
+//		switch (fmodel.getEditorComponent()) {
+//		case INPUT_TEXT:			
+//			output.setValueExpression("value", Utility.createExpression(valueExpression, fmodel.getPropertyType()));	
+//			break;
+//		case INPUT_DATE:
+//			input = this.buildInputCalendar(fmodel, false);
+//			break;
+//		case INPUT_DATETIME:
+//			input = this.buildInputCalendar(fmodel, true);
+//			break;
+//		case SELECTION_ONE_MENU:
+//			input = this.buildSelectOneMenu(fmodel);
+//			
+//			output.setValueExpression("value", Utility.createExpression("#{itm.selectionLabel}", String.class));
+//		default:
+//			break;
+//		}
+//		return output;
+//	}
+
+	
 	@Override
 	protected String elValue(FieldModel fmodel)
 	{		

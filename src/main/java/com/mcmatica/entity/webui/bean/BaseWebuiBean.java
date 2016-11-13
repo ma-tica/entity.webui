@@ -4,19 +4,15 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
-import javax.faces.model.ListDataModel;
 
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.SelectableDataModel;
 
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
@@ -32,7 +28,6 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 */
 	private static final long serialVersionUID = -7423178114110032725L;
 
-//	private static final String XHTML_ROWID = "rowId";
 	
 	protected BaseWebuiService service;
 	
@@ -45,8 +40,6 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	protected Panel formPanel;
 	
 	protected DataTable selectionGrid;
-	
-//	protected boolean editing;
 	
 	public abstract void init();
 	
@@ -61,10 +54,9 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public BaseEntityDataModel<BaseEntityModel> getList() {
 		if (this.list == null)
 		{
-			List<BaseEntityModel> tlist = this.service.buildList();
-			this.list = new BaseEntityDataModel<BaseEntityModel>(tlist);
+			this.list = this.service.buildList();
 			//this.listFiltered = this.service.buildList();
-			this.listFiltered = tlist;
+			this.listFiltered =  this.list.getData();
 		}
 		
 		
@@ -79,7 +71,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public List<BaseEntityModel> getListFiltered() {
 		if (this.listFiltered == null) {
-			this.listFiltered = this.service.buildList();
+			this.listFiltered = this.service.buildList().getData();
 		}
 		return listFiltered;
 	}
@@ -188,10 +180,13 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	{
 		this.service.cancel();
 		
-		BaseEntityModel e = this.list.getRowData(this.getSelected().getId());
-		e = this.getSelected();
+//		BaseEntityModel e = this.list.getRowData(this.getSelected().getId());
+//		e = this.getSelected();
 		
 		//this.setSelected(this.service.getSelected());
+		
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "cancel"));
 	}
 	
 	public void refresh()
@@ -207,15 +202,31 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		this.service.setSelected(d);
 	}
 	
-	public void removeFieldListItem(String childListName, BaseEntityModel item) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	public void removeFieldListItem(String getter, String childListName, BaseEntityModel item) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
+		
+		/*
+		 * FUNZIONA SOLO CON 2 LIVELLI AL MASSIMO ??!
+		 */
+		
 		/*
 		 * Put the removed item into the special list used for cascading save
 		 */
 		this.getSelected().getFieldListItemsRemoved(childListName).add(item);
 		
-		Method mth = this.getSelected().getClass().getMethod("get" + Utility.capitalize(childListName) );
-		List<BaseEntityModel> list =  (List<BaseEntityModel>) mth.invoke(this.getSelected());
+		//Method mth = this.getSelected().getClass().getMethod("get" + Utility.capitalize(childListName) );
+		
+		BaseEntityModel itemselected;
+		 
+		if (getter != null && !getter.isEmpty()) 
+		{
+			Method mthGetSelected = this.getClass().getMethod("get" + Utility.capitalize(getter) );
+			itemselected = (BaseEntityModel) mthGetSelected.invoke(this);
+		}else {
+			itemselected = this.getSelected();
+		}
+		Method mth = itemselected.getClass().getMethod("get" + Utility.capitalize(childListName) );
+		List<BaseEntityModel> list =  (List<BaseEntityModel>) mth.invoke(itemselected);
 		list.remove(item);
 		
 		/*
@@ -238,7 +249,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	private void updateUI()
 	{
 		RequestContext.getCurrentInstance().update("form_toolbar");
-		RequestContext.getCurrentInstance().update("form_grid");
+		//RequestContext.getCurrentInstance().update("form_grid");
 	}
 	
 	public abstract String goToHome();

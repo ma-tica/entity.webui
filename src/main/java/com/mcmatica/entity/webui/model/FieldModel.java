@@ -31,7 +31,7 @@ public class FieldModel {
 	private String fillSelectionListExpression;
 	private EventModel event;
 	private String gridCaption;
-	private String gridWidth;
+	//private String gridWidth;
 	
 	private boolean formField;
 	private boolean shortGridField;
@@ -297,13 +297,13 @@ public class FieldModel {
 		this.gridCaption = gridCaption;
 	}
 
-	public String getGridWidth() {
-		return gridWidth;
-	}
-
-	public void setGridWidth(String gridWidth) {
-		this.gridWidth = gridWidth;
-	}
+//	public String getGridWidth() {
+//		return gridWidth;
+//	}
+//
+//	public void setGridWidth(String gridWidth) {
+//		this.gridWidth = gridWidth;
+//	}
 
 	public boolean isFormField() {
 		return formField;
