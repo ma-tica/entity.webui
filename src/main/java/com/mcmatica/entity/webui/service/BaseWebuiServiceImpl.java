@@ -86,7 +86,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 			
 		}
 		entity.setNewInstanceState(false);
-		this.restIsEditing();		
+		this.resetIsEditing();		
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 		 * Save the original value of selected Item
 		 */
 //		if (this.originalSelected == null) {
-			this.restIsEditing();
+			this.resetIsEditing();
 //		}
 	}
 
@@ -208,7 +208,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 		return result;
 	}
 	
-	private void restIsEditing()
+	private void resetIsEditing()
 	{
 		try {
 			if (this.selected != null) {

@@ -140,6 +140,9 @@ public class Utility {
 	 * @throws NoSuchFieldException
 	 */
 	public static <T extends BaseEntityModel> T cloneEntity(T original) throws Exception {
+		if (original == null){
+			return null;
+		}
 		T cloned = null;
 		try {
 			cloned = (T) Class.forName(original.getClass().getName()).newInstance();
