@@ -20,6 +20,7 @@ import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.roweditor.RowEditor;
 import org.primefaces.component.tooltip.Tooltip;
 
+import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
@@ -104,15 +105,25 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				HtmlOutputText outputcell = new HtmlOutputText();
 				//UIComponent outputcell = this.buildFieldController(fmodel);
 				
-				String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+				String valueexpr;
+				if (fmodel.getFillSelectionListExpression() != null && !fmodel.getFillSelectionListExpression().isEmpty()) {
+					
+					valueexpr=  String.format("#{%s.%s.%s}", table.getVar(), fmodel.getPropertyName(), Constant.PROPERTY_SELECTION_LABEL);
+					System.out.println("--->>" + valueexpr);
+					outputcell.setValueExpression("value", Utility.createExpression(valueexpr, String.class));
+				}else{
+					valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+					outputcell.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
+				}
+
 				
-				outputcell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
 				//outputcell.setValueExpression("readonly", Utility.createExpression("true", Boolean.class));
 				//outputcell.setId(outputcell.getId()+"_readonly");
 				
 				cell.getFacets().put("output", outputcell);	
 				
-				input.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+				valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+				input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
 				cell.getFacets().put("input", input);						
 				
 				/* add cell editor to the colum */
@@ -188,6 +199,10 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 			break;
 		case SELECTION_ONE_MENU:
 			input = this.buildSelectOneMenu(fmodel);
+			break;
+		case AUTOCOMPLETE:
+			input = this.buildAutocomplete(fmodel);
+			break;
 		default:
 			break;
 		}

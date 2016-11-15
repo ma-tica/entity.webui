@@ -175,6 +175,9 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		case BOOLEAN_CHECKBOX:
 			input = this.buildSelectBooleanCheckBox(fmodel);
 			break;
+		case AUTOCOMPLETE:
+			input = this.buildAutocomplete(fmodel);
+			break;
 		default:
 			break;
 		}

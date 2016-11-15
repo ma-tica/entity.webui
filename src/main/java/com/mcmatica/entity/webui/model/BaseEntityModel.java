@@ -8,6 +8,10 @@ public interface BaseEntityModel {
 	
 	void setId(String id);
 	
+	/**
+	 * wrapper of String Id
+	 * @return
+	 */
 	Long getIdValue();
 	
 	void setIdValue(Long value);
@@ -16,6 +20,10 @@ public interface BaseEntityModel {
 	
 	void setNewInstanceState(boolean value);
 	
+	/**
+	 * Used for SelectOneMenu e autoComplete ui components
+	 * @return
+	 */
 	String getSelectionLabel();
 
 	List<BaseEntityModel> getFieldListItemsRemoved(String childListName);

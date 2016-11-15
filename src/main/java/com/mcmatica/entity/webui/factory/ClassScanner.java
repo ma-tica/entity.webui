@@ -9,6 +9,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.springframework.data.mongodb.core.mapping.DBRef;
+
 import com.mcmatica.entity.webui.annotation.MCDetailList;
 import com.mcmatica.entity.webui.annotation.MCSelectable;
 import com.mcmatica.entity.webui.annotation.MCWebui;
@@ -141,7 +143,7 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setDefaultValue(webuifield.defaultValue());
 				fmodel.setVisibleExpression(webuifield.visible());
 				fmodel.setReadonlyExpression(webuifield.readonly());
-				fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()"));
+				
 				fmodel.setFormField(true);
 				
 				

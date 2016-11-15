@@ -11,7 +11,8 @@ public class FieldModel {
 		INPUT_DATETIME,
 		INPUT_TEXTAREA,
 		SELECTION_ONE_MENU,
-		BOOLEAN_CHECKBOX
+		BOOLEAN_CHECKBOX,
+		AUTOCOMPLETE
 		;
 	}
 	
@@ -243,7 +244,17 @@ public class FieldModel {
 	}
 
 	public String getFillSelectionListExpression() {
-		return fillSelectionListExpression;
+		if (this.fillSelectionListExpression != null) {
+			return this.fillSelectionListExpression;
+		}
+		
+		if (this.getEditorComponent().equals(EditorComponent.SELECTION_ONE_MENU)) {
+			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "findAll()");
+		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {
+			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "complete");
+		}
+		
+		return null;
 	}
 
 	public void setFillSelectionListExpression(String fillSelectionListExpression) {

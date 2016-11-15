@@ -27,7 +27,13 @@ public  class  BaseMongoReplositoryImpl<T extends BaseEntityModel > implements B
 	public T getById(String id) {
 		Query qry = new Query();
 		qry.addCriteria(new Criteria("Id").is(id));
-		return (T) this.operations.find(qry, this.clazz); 
+		List<T> result = this.operations.find(qry, this.clazz);
+		if (result != null && !result.isEmpty())
+		{
+			return result.get(0);
+		}else{
+			return null;
+		}
 	}
 
 	@Override

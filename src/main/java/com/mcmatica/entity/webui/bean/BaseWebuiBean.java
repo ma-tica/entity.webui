@@ -130,6 +130,18 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		return this.service.findAll();
 	}
 
+	
+	/**
+	 * Used for autocomplete components
+	 * @param query
+	 * @return
+	 */
+	public List<BaseEntityModel> complete(String query)
+	{
+		return this.service.findAll();
+	}
+
+	
 	public boolean isEditing() {
 		if (this.getSelected() != null)
 		{

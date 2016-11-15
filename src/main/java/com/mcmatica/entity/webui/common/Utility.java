@@ -219,6 +219,15 @@ public class Utility {
 	 * @throws Exception
 	 */
 	public static <T extends BaseEntityModel> boolean areEquals(T first, T second) throws Exception {
+		if (first == null && second == null) {
+			return true;
+		}
+		if (first == null && second != null) {
+			return false;
+		}
+		if (first != null && second == null) {
+			return false;
+		}
 		if (first.getClass().getName().equals(second.getClass().getName())) {
 			// List<String> differences = new ArrayList<String>();
 			for (Field field : first.getClass().getDeclaredFields()) {

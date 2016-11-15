@@ -18,6 +18,7 @@ import javax.faces.event.AjaxBehaviorListener;
 
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
+import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.calendar.Calendar;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.inputtextarea.InputTextarea;
@@ -26,6 +27,7 @@ import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.selectbooleancheckbox.SelectBooleanCheckbox;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 
+import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.converter.SelectItemsConverter;
 import com.mcmatica.entity.webui.model.FieldModel;
@@ -66,6 +68,16 @@ abstract class WebuiAbstractProvider {
 		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName());
 	}
 
+	protected String elDbRefValue(FieldModel fmodel)
+	{		
+		/*
+		 * e.g. crud.selected.fieldname
+		 */
+		String el = "#{%s.%s.%s." + Constant.PROPERTY_SELECTION_LABEL + "}";
+		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName());
+	}
+
+	
 	protected Message buildMessage(FieldModel fmodel)
 	{
 		Message message = new Message();
@@ -89,7 +101,7 @@ abstract class WebuiAbstractProvider {
 		
 		this.partialBuildeComponent(fmodel, input);		
 		
-		
+
 		
 		input.setStyle("width: 100%;");
 		
@@ -195,7 +207,7 @@ abstract class WebuiAbstractProvider {
 			selectItemsExp = fmodel.getFillSelectionListExpression(); // String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()");
 			items.setValueExpression("value", Utility.createExpression(selectItemsExp, List.class));
 			items.setValueExpression("var", Utility.createExpression("itm", String.class));
-			items.setValueExpression("itemLabel", Utility.createExpression("#{itm.selectionLabel}", String.class));
+			items.setValueExpression("itemLabel", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
 			items.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
 			
 			UISelectItem item = new UISelectItem();
@@ -226,13 +238,42 @@ abstract class WebuiAbstractProvider {
 
 	}	
 	
+	
+	protected AutoComplete buildAutocomplete(FieldModel fmodel) {
+		AutoComplete auto = new AutoComplete();
+		
+		this.partialBuildeComponent(fmodel, auto);
+		
+		auto.setConverter(new SelectItemsConverter());	
+
+		
+		String selectItemsExp = fmodel.getFillSelectionListExpression();
+		auto.setCompleteMethod(Utility.createMethodExp(selectItemsExp, new Class[]{String.class}));
+		
+		auto.setValueExpression("var", Utility.createExpression("itm", String.class));
+		auto.setValueExpression("itemLabel", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
+		auto.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
+		auto.setDropdown(true);
+		auto.setDropdownMode("current");
+		auto.setForceSelection(true);
+		auto.setMaxResults(50);
+		auto.setCache(true);
+		
+		
+		auto.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
+		auto.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
+
+		
+		return auto;
+	}
+	
 	private void partialBuildeComponent(FieldModel fmodel, UIInput input)
 	{
 		
 		/*
 		 * create the value expression for Value attribute
 		 */
-		input.setValueExpression("value", Utility.createExpression(this.elValue(fmodel), fmodel.getPropertyType()));		
+		input.setValueExpression("value", Utility.createExpression(this.elValue(fmodel), fmodel.getPropertyType()));
 		
 		
 		/*
@@ -258,9 +299,9 @@ abstract class WebuiAbstractProvider {
 		/*
 		 * Add the default onChangeEnvent managed by the BaseWebuiBean class
 		 */
-		if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
+		//if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
 			input.addClientBehavior("change", Utility.createAjaxBehaviour(fmodel.getChangeEventExpression(), null));
-		}
+		//}
 
 	}
 	
