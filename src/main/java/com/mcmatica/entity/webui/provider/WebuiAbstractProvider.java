@@ -60,8 +60,14 @@ abstract class WebuiAbstractProvider {
 		/*
 		 * e.g. crud.selected.fieldname
 		 */
-		String el = "#{%s.%s.%s}";
-		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName());
+		String el;
+		if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+		{
+			el = String.format("#{%s.%s.%s.%s}", fmodel.getBeanControllerName(), "selected", fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+		}else{
+			el = String.format("#{%s.%s.%s}", fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName()); 
+		}
+		return el;
 	}
 
 	protected String elDbRefValue(FieldModel fmodel)

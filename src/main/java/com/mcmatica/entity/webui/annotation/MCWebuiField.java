@@ -29,6 +29,6 @@ public @interface MCWebuiField {
 	
 	public String width() default "";
 	
-	
+	public String valueExpressione() default "";
 	
 }

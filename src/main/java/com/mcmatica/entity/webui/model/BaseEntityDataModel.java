@@ -131,7 +131,7 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 		List<E> page;
 		
 //		Page<E> page;
-		if (filters != null)
+		if (filters != null && !filters.isEmpty())
 		{
 			Query qry = new Query();
 			Iterator<String> iterator = filters.keySet().iterator();

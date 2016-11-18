@@ -12,6 +12,7 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.mcmatica.entity.webui.annotation.MCDetailList;
+import com.mcmatica.entity.webui.annotation.MCLinkedField;
 import com.mcmatica.entity.webui.annotation.MCSelectable;
 import com.mcmatica.entity.webui.annotation.MCWebui;
 import com.mcmatica.entity.webui.annotation.MCWebuiField;
@@ -137,7 +138,6 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setCaption(webuifield.caption());				
 				fmodel.setEditorComponent(this.retrieveEditorComponentField(webuifield, field));								
 				fmodel.setRequiredExpression(webuifield.required());
-//				fmodel.setShortListPosition(webuifield.shortListPosition());
 				fmodel.setColSpan(webuifield.colSpan());
 				fmodel.setFormPosition(webuifield.formPosition());
 				fmodel.setDefaultValue(webuifield.defaultValue());
@@ -184,6 +184,20 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setEvent(new EventModel(event.update(), event.listener(), event.event()));
 			}
 
+			MCLinkedField linkedField = field.getAnnotation(MCLinkedField.class);
+			if (linkedField != null)
+			{
+				if (fmodel == null ) {
+					fmodel = new FieldModel();
+					this.fillWebuiProperties(field, fmodel, webui);
+				}
+				fmodel.setLinkedParentField(linkedField.parentField());
+				fmodel.setLinkedValueExpression(linkedField.valueExpression());
+				fmodel.setReadonlyExpression("true");
+			}
+					
+			
+			
 			if (fmodel != null )
 			{
 				if (fmodel.isFormField()) {

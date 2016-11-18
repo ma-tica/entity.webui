@@ -105,15 +105,24 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				if (fmodel.getFillSelectionListExpression() != null && !fmodel.getFillSelectionListExpression().isEmpty()) {
 					
 					valueexpr=  String.format("#{%s.%s.%s}", table.getVar(), fmodel.getPropertyName(), Constant.PROPERTY_SELECTION_LABEL);
-					System.out.println("--->>" + valueexpr);
 					outputcell.setValueExpression("value", Utility.createExpression(valueexpr, String.class));
 					
 				}else{
 					valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+					if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+					{
+						valueexpr = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+					}
+					
 					outputcell.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
+					
 				}
 				
 				valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+				if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+				{
+					valueexpr = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+				}
 				input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
 				cell.getFacets().put("input", input);
 				

@@ -32,8 +32,10 @@ public class FieldModel {
 	private String fillSelectionListExpression;
 	private EventModel event;
 	private String gridCaption;
-	//private String gridWidth;
 	private String width;
+	
+	private String linkedParentField;
+	private String linkedValueExpression;
 	
 	private boolean formField;
 	private boolean shortGridField;
@@ -339,5 +341,21 @@ public class FieldModel {
 
 	public void setWidth(String width) {
 		this.width = width;
+	}
+
+	public String getLinkedParentField() {
+		return linkedParentField;
+	}
+
+	public void setLinkedParentField(String linkedParentField) {
+		this.linkedParentField = linkedParentField;
+	}
+
+	public String getLinkedValueExpression() {
+		return linkedValueExpression;
+	}
+
+	public void setLinkedValueExpression(String linkedValueExpression) {
+		this.linkedValueExpression = linkedValueExpression;
 	}
 }

@@ -323,11 +323,13 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		/*
 		 * Loader gif
 		 */
-		GraphicImage img = new GraphicImage();
-		img.setName("img/ajax-loader.gif");
-		img.setId(detailList.getPropertyName() + "_jobber_gif");
-		img.setStyle("visibility: hidden");		
-		img.setStyleClass("detail_tabview_jobber_gif");
+		// TODO - da migliorare
+		
+//		GraphicImage img = new GraphicImage();
+//		img.setName("img/ajax-loader.gif");
+//		img.setId(detailList.getPropertyName() + "_jobber_gif");
+//		img.setStyle("visibility: hidden");		
+//		img.setStyleClass("detail_tabview_jobber_gif");
 	
 		
 		
@@ -343,7 +345,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		}
 		panel.getChildren().add(plus);
 		panel.getChildren().add(plustooltip);
-		panel.getChildren().add(img);
+		//panel.getChildren().add(img);
 		panel.getChildren().add(dataTableProvider.buildDataTable());
 
 		/*
