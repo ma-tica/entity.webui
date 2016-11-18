@@ -27,7 +27,7 @@ public @interface MCWebuiField {
 	
 	public String readonly() default "false";
 	
-	
+	public String width() default "";
 	
 	
 	

@@ -143,6 +143,7 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setDefaultValue(webuifield.defaultValue());
 				fmodel.setVisibleExpression(webuifield.visible());
 				fmodel.setReadonlyExpression(webuifield.readonly());
+				fmodel.setWidth(webuifield.width());
 				
 				fmodel.setFormField(true);
 				

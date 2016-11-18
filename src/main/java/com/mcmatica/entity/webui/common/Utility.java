@@ -107,6 +107,17 @@ public class Utility {
 		return ajaxBehavior;
 	}
 
+	public static AjaxBehavior createClientBehaviour(String onstart, String onsuccess, String update) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		AjaxBehavior ajaxBehavior = (AjaxBehavior) context.getApplication().createBehavior(AjaxBehavior.BEHAVIOR_ID);
+		ajaxBehavior.setOnstart(onstart);
+		ajaxBehavior.setOnsuccess(onsuccess);
+		ajaxBehavior.setProcess("@this");
+		ajaxBehavior.setUpdate(update);
+		return ajaxBehavior;
+	}
+
+	
 	/**
 	 * Shortucut to get faces espression context
 	 * 
@@ -184,6 +195,9 @@ public class Utility {
 	}
 
 	public static <T extends BaseEntityModel> void copyEntity(T original, T copied) throws Exception {
+		if (original == null) {
+			return;
+		}
 		for (Field field : original.getClass().getDeclaredFields()) {
 			if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
 				field.setAccessible(true);

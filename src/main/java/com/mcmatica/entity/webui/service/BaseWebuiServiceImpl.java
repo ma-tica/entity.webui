@@ -9,6 +9,7 @@ import java.util.List;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
 import com.mcmatica.entity.webui.annotation.MCCascadeSave;
@@ -189,6 +190,13 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	{
 		return this.repository.findAll();
 	}
+	
+	@Override
+	public List<T> find(Query query)
+	{
+		return this.repository.find(query);
+	}
+	
 
 	@Override
 	public boolean isEditing()

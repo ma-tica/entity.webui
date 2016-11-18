@@ -33,6 +33,7 @@ public class FieldModel {
 	private EventModel event;
 	private String gridCaption;
 	//private String gridWidth;
+	private String width;
 	
 	private boolean formField;
 	private boolean shortGridField;
@@ -330,5 +331,13 @@ public class FieldModel {
 
 	public void setShortGridField(boolean shortGridField) {
 		this.shortGridField = shortGridField;
+	}
+
+	public String getWidth() {
+		return width;
+	}
+
+	public void setWidth(String width) {
+		this.width = width;
 	}
 }

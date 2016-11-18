@@ -16,6 +16,7 @@ import javax.xml.crypto.Data;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.graphicimage.GraphicImage;
 import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
@@ -320,6 +321,17 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		plustooltip.setValue("Add new " + detailList.getPropertyName()) ;
 
 		/*
+		 * Loader gif
+		 */
+		GraphicImage img = new GraphicImage();
+		img.setName("img/ajax-loader.gif");
+		img.setId(detailList.getPropertyName() + "_jobber_gif");
+		img.setStyle("visibility: hidden");		
+		img.setStyleClass("detail_tabview_jobber_gif");
+	
+		
+		
+		/*
 		 * Panel
 		 */
 		
@@ -331,6 +343,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		}
 		panel.getChildren().add(plus);
 		panel.getChildren().add(plustooltip);
+		panel.getChildren().add(img);
 		panel.getChildren().add(dataTableProvider.buildDataTable());
 
 		/*

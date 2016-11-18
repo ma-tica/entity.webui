@@ -17,6 +17,7 @@ package com.mcmatica.entity.webui.converter;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.convert.FacesConverter;
 
 import com.mcmatica.entity.webui.common.omnifaces.SelectItemsCollector;
 import com.mcmatica.entity.webui.common.omnifaces.SelectItemsUtils;
@@ -89,7 +90,7 @@ import com.mcmatica.entity.webui.common.omnifaces.SelectItemsUtils;
  * @see SelectItemsUtils
  * @see SelectItemsCollector
  */
-//@FacesConverter("omnifaces.SelectItemsConverter")
+@FacesConverter("omnifaces.SelectItemsConverter")
 public class SelectItemsConverter implements Converter {
 
 	@Override

@@ -13,6 +13,8 @@ import javax.faces.event.AjaxBehaviorEvent;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
@@ -138,7 +140,20 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 */
 	public List<BaseEntityModel> complete(String query)
 	{
-		return this.service.findAll();
+	    String nome = "";
+		if(query.contains(" - ")) {
+			nome = query.substring(query.indexOf(" - ") + 3);
+		}else{
+			nome = query;
+		}
+		
+		Query qry = new Query();
+		
+		qry.addCriteria(Criteria.where("nome").regex(nome));
+		
+		
+		return this.service.find(qry);
+		
 	}
 
 	

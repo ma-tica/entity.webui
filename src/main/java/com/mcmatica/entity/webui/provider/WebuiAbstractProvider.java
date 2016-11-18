@@ -6,20 +6,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import javax.el.ValueExpression;
-import javax.faces.application.Application;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
-
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
-import javax.faces.event.AjaxBehaviorListener;
 
-
-import org.primefaces.behavior.ajax.AjaxBehavior;
-import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.calendar.Calendar;
+import org.primefaces.component.graphicimage.GraphicImage;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.message.Message;
@@ -29,6 +24,7 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
+import com.mcmatica.entity.webui.converter.AutocompleteConverter;
 import com.mcmatica.entity.webui.converter.SelectItemsConverter;
 import com.mcmatica.entity.webui.model.FieldModel;
 
@@ -102,9 +98,13 @@ abstract class WebuiAbstractProvider {
 		this.partialBuildeComponent(fmodel, input);		
 		
 
+		if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty())
+		{
+			input.setStyle("width: " + fmodel.getWidth() + ";");
+		}else{
 		
-		input.setStyle("width: 100%;");
-		
+			input.setStyle("width: 100%;");
+		}
 		
 		input.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		
@@ -220,7 +220,14 @@ abstract class WebuiAbstractProvider {
 		
 		
 
-		somenu.setStyle("width: 80%;");
+		if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty())
+		{
+			somenu.setStyle("width: " + fmodel.getWidth() + ";");
+		}else{
+		
+			somenu.setStyle("width: calc(100% - 35px); ");
+		}
+
 			
 		somenu.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		somenu.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
@@ -240,11 +247,13 @@ abstract class WebuiAbstractProvider {
 	
 	
 	protected AutoComplete buildAutocomplete(FieldModel fmodel) {
+		
+		
 		AutoComplete auto = new AutoComplete();
 		
 		this.partialBuildeComponent(fmodel, auto);
 		
-		auto.setConverter(new SelectItemsConverter());	
+		auto.setConverter(new AutocompleteConverter());	
 
 		
 		String selectItemsExp = fmodel.getFillSelectionListExpression();
@@ -253,16 +262,33 @@ abstract class WebuiAbstractProvider {
 		auto.setValueExpression("var", Utility.createExpression("itm", String.class));
 		auto.setValueExpression("itemLabel", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
 		auto.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
-		auto.setDropdown(true);
-		auto.setDropdownMode("current");
-		auto.setForceSelection(true);
-		auto.setMaxResults(50);
+//		auto.setDropdown(true);
+//		auto.setDropdownMode("current");
+//		auto.setForceSelection(true);
+		auto.setMaxResults(20);
+		auto.setQueryDelay(500);
+		
 		auto.setCache(true);
+		
 		
 		
 		auto.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		auto.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 
+		if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty())
+		{
+			auto.setStyle("width: " + fmodel.getWidth() + ";");
+		}else{
+		
+			auto.setStyle("width: 100%");
+		}
+
+		auto.setSize(50);
+		
+		auto.addClientBehavior("query", Utility.createClientBehaviour("$('.detail_tabview_jobber_gif').show(); ", "$('.detail_tabview_jobber_gif').hide();", null));
+		
+				
+		
 		
 		return auto;
 	}

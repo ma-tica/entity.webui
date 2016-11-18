@@ -6,19 +6,13 @@ import java.util.ResourceBundle;
 import javax.el.MethodExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
-import javax.faces.component.behavior.ClientBehaviorBase;
 import javax.faces.component.html.HtmlOutputText;
 
-import org.primefaces.behavior.ajax.AjaxBehavior;
-import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.primefaces.component.celleditor.CellEditor;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.editor.Editor;
-import org.primefaces.component.outputlabel.OutputLabel;
-import org.primefaces.component.roweditor.RowEditor;
-import org.primefaces.component.tooltip.Tooltip;
+import org.primefaces.component.graphicimage.GraphicImage;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
@@ -67,6 +61,8 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		table.setEditable(true);
 		table.setEditMode("cell");
 
+		table.setResizableColumns(true);
+		
 		/* table style */
 		//table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
 
@@ -103,7 +99,7 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				/* cell editor */
 				CellEditor cell = new CellEditor();				
 				HtmlOutputText outputcell = new HtmlOutputText();
-				//UIComponent outputcell = this.buildFieldController(fmodel);
+//				UIComponent outputcell = this.buildFieldController(fmodel);
 				
 				String valueexpr;
 				if (fmodel.getFillSelectionListExpression() != null && !fmodel.getFillSelectionListExpression().isEmpty()) {
@@ -111,20 +107,25 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 					valueexpr=  String.format("#{%s.%s.%s}", table.getVar(), fmodel.getPropertyName(), Constant.PROPERTY_SELECTION_LABEL);
 					System.out.println("--->>" + valueexpr);
 					outputcell.setValueExpression("value", Utility.createExpression(valueexpr, String.class));
+					
 				}else{
 					valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
 					outputcell.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
 				}
-
+				
+				valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+				input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
+				cell.getFacets().put("input", input);
 				
 				//outputcell.setValueExpression("readonly", Utility.createExpression("true", Boolean.class));
 				//outputcell.setId(outputcell.getId()+"_readonly");
 				
-				cell.getFacets().put("output", outputcell);	
+				cell.getFacets().put("output", outputcell);					
+				//cell.getFacets().put("input", input);
 				
-				valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
-				input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
-				cell.getFacets().put("input", input);						
+				if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty()) {
+					column.setWidth(fmodel.getWidth());
+				}
 				
 				/* add cell editor to the colum */
 				column.getChildren().add(cell);
