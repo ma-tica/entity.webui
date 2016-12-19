@@ -13,14 +13,15 @@ import javax.faces.event.AjaxBehaviorEvent;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.service.BaseWebuiService;
+import com.mcmatica.jqb.Jqb;
+import com.mcmatica.jqb.JqbDialect;
+import com.mcmatica.jqb.JqbWhereBuilder;
 
 
 public  abstract class  BaseWebuiBean implements Serializable {
@@ -147,12 +148,15 @@ public  abstract class  BaseWebuiBean implements Serializable {
 			nome = query;
 		}
 		
-		Query qry = new Query();
+//		Query qry = new Query();
+//		
+//		qry.addCriteria(Criteria.where("nome").regex(nome));
 		
-		qry.addCriteria(Criteria.where("nome").regex(nome));
+		Jqb jqb = new Jqb(JqbDialect.MONGODB);
+		JqbWhereBuilder wh = jqb.where(jqb.property("nome").contains(nome));
 		
 		
-		return this.service.find(qry);
+		return this.service.find(wh.text());
 		
 	}
 

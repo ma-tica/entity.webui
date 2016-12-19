@@ -20,6 +20,7 @@ public class FieldModel {
 	private String caption;
 	private EditorComponent editorComponent;
 	private String propertyName;
+	private String dbFieldName;
 	private String beanControllerName;
 	private Class<?> propertyType;
 	private String requiredExpression;
@@ -357,5 +358,13 @@ public class FieldModel {
 
 	public void setLinkedValueExpression(String linkedValueExpression) {
 		this.linkedValueExpression = linkedValueExpression;
+	}
+
+	public String getDbFieldName() {
+		return dbFieldName;
+	}
+
+	public void setDbFieldName(String dbFieldName) {
+		this.dbFieldName = dbFieldName;
 	}
 }

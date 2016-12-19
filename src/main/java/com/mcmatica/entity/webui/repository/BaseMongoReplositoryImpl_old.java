@@ -9,13 +9,13 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 
-public  class  BaseMongoReplositoryImpl<T extends BaseEntityModel > implements BaseMongoRepository<T> {
+public  class  BaseMongoReplositoryImpl_old<T extends BaseEntityModel > implements BaseMongoRepository<T> {
 
 	protected MongoOperations operations;
 	
 	private Class<T> clazz;
 	
-	public BaseMongoReplositoryImpl(Class<T> clazz, MongoOperations operations) {
+	public BaseMongoReplositoryImpl_old(Class<T> clazz, MongoOperations operations) {
 		this.clazz = clazz;
 		this.operations = operations;
 	}

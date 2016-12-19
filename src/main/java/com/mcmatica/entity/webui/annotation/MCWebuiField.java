@@ -10,6 +10,8 @@ import com.mcmatica.entity.webui.model.FieldModel;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface MCWebuiField {
+	
+	
 
 	public String caption() default "";
 	
@@ -29,6 +31,6 @@ public @interface MCWebuiField {
 	
 	public String width() default "";
 	
-	public String valueExpressione() default "";
+	//public String valueExpression() default "";
 	
 }

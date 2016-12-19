@@ -17,6 +17,7 @@ import javax.faces.event.BehaviorEvent;
 
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.data.repository.query.parser.Part;
 
 import com.mcmatica.entity.webui.model.BaseEntityModel;
@@ -151,20 +152,39 @@ public class Utility {
 	 * @throws NoSuchFieldException
 	 */
 	public static <T extends BaseEntityModel> T cloneEntity(T original) throws Exception {
-		if (original == null){
+
+		/*
+		 *  AspectJ management
+		 */
+		T original0 = null;
+		if (AopUtils.isJdkDynamicProxy(original))
+		{
+			/*
+			 * obtain the target object behind the Proxy
+			 */
+			original0 = (T) ((org.springframework.aop.framework.Advised)original).getTargetSource().getTarget();
+		}else
+		{
+			original0 = original;
+		}
+
+
+		
+		
+		if (original0 == null){
 			return null;
 		}
 		T cloned = null;
 		try {
-			cloned = (T) Class.forName(original.getClass().getName()).newInstance();
-			for (Field field : original.getClass().getDeclaredFields()) {
+			cloned = (T) Class.forName(original0.getClass().getName()).newInstance();
+			for (Field field : original0.getClass().getDeclaredFields()) {
 				if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
 					field.setAccessible(true);
 					Field clonedField = cloned.getClass().getDeclaredField(field.getName());
 					clonedField.setAccessible(true);
 
 					if (field.getType().equals(List.class)) {
-						List<T> originalListItems = (List<T>) field.get(original);
+						List<T> originalListItems = (List<T>) field.get(original0);
 						List<T> clonedListItems = null;
 						if (originalListItems != null) {
 							clonedListItems = new ArrayList<T>();
@@ -175,7 +195,7 @@ public class Utility {
 						}
 						clonedField.set(cloned, clonedListItems);	
 					} else {
-						clonedField.set(cloned, field.get(original));
+						clonedField.set(cloned, field.get(original0));
 					}
 				}
 			}
@@ -195,17 +215,33 @@ public class Utility {
 	}
 
 	public static <T extends BaseEntityModel> void copyEntity(T original, T copied) throws Exception {
-		if (original == null) {
+		/*
+		 *  AspectJ management
+		 */
+		T original0 = null;
+		if (AopUtils.isJdkDynamicProxy(original))
+		{
+			/*
+			 * obtain the target object behind the Proxy
+			 */
+			original0 = (T) ((org.springframework.aop.framework.Advised)original).getTargetSource().getTarget();
+		}else
+		{
+			original0 = original;
+		}
+
+		
+		if (original0 == null) {
 			return;
 		}
-		for (Field field : original.getClass().getDeclaredFields()) {
+		for (Field field : original0.getClass().getDeclaredFields()) {
 			if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
 				field.setAccessible(true);
 				Field copiedField = copied.getClass().getDeclaredField(field.getName());
 				copiedField.setAccessible(true);
 
 				if (field.getType().equals(List.class)) {
-					List<T> originalListItems = (List<T>) field.get(original);
+					List<T> originalListItems = (List<T>) field.get(original0);
 					List<T> copiedListItems = null;
 					if (originalListItems != null) {
 						copiedListItems = new ArrayList<T>();
@@ -216,7 +252,7 @@ public class Utility {
 					}
 					copiedField.set(copied, copiedListItems);	
 				} else {
-					copiedField.set(copied, field.get(original));
+					copiedField.set(copied, field.get(original0));
 				}
 			}
 		}
@@ -232,7 +268,33 @@ public class Utility {
 	 * @return
 	 * @throws Exception
 	 */
-	public static <T extends BaseEntityModel> boolean areEquals(T first, T second) throws Exception {
+	public static <T extends BaseEntityModel> boolean areEquals(T first0, T second0) throws Exception {
+		T first = null;
+		if (AopUtils.isJdkDynamicProxy(first0))
+		{
+			/*
+			 * obtain the target object behind the Proxy
+			 */
+			first = (T) ((org.springframework.aop.framework.Advised)first0).getTargetSource().getTarget();
+		}else
+		{
+			first = first0;
+		}
+
+		
+		T second = null;
+		if (AopUtils.isJdkDynamicProxy(second0))
+		{
+			/*
+			 * obtain the target object behind the Proxy
+			 */
+			second = (T) ((org.springframework.aop.framework.Advised)second0).getTargetSource().getTarget();
+		}else
+		{
+			second = second0;
+		}
+
+		
 		if (first == null && second == null) {
 			return true;
 		}

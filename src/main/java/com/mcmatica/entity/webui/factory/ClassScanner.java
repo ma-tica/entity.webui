@@ -123,16 +123,13 @@ class ClassScanner<T extends BaseEntityModel> {
 		for (Field field : this.clazz.getDeclaredFields())
 		{
 			
-			
-			
 			FieldModel fmodel = null;
 			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
 			if (webuifield != null)
 			{	
 				
 				fmodel = new FieldModel();
-				this.fillWebuiProperties(field, fmodel, webui);
-				
+				this.fillWebuiProperties(field, fmodel, webui);				
 				fmodel.setCaption(webuifield.caption());				
 				fmodel.setEditorComponent(this.retrieveEditorComponentField(webuifield, field));								
 				fmodel.setRequiredExpression(webuifield.required());
@@ -144,9 +141,7 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setWidth(webuifield.width());
 				
 				fmodel.setFormField(true);
-				
-				
-				
+											
 			}
 			
 			MCWebuiGridColumn webuigridcolumn = field.getAnnotation(MCWebuiGridColumn.class);
@@ -158,7 +153,12 @@ class ClassScanner<T extends BaseEntityModel> {
 				}
 				fmodel.setShortListPosition(webuigridcolumn.shortListPosition());
 				fmodel.setGridCaption(webuigridcolumn.caption());
-			//	fmodel.setGridWidth(webuigridcolumn.width());
+				if (!webuigridcolumn.dbFieldName().isEmpty()) 
+				{
+					fmodel.setDbFieldName(webuigridcolumn.dbFieldName());
+				}else{
+					fmodel.setDbFieldName(field.getName());
+				}
 				fmodel.setShortGridField(true);
 			}
 
@@ -193,9 +193,7 @@ class ClassScanner<T extends BaseEntityModel> {
 				fmodel.setLinkedValueExpression(linkedField.valueExpression());
 				fmodel.setReadonlyExpression("true");
 			}
-					
-			
-			
+										
 			if (fmodel != null )
 			{
 				if (fmodel.isFormField()) {
@@ -206,8 +204,6 @@ class ClassScanner<T extends BaseEntityModel> {
 					this.shortListFields.add(fmodel);
 				}
 			}
-
-			
 
 			
 			/*
@@ -239,6 +235,7 @@ class ClassScanner<T extends BaseEntityModel> {
 	
 	private void fillWebuiProperties(Field field, FieldModel fmodel, MCWebui webui)
 	{
+		
 		fmodel.setPropertyName(field.getName());
 		fmodel.setBeanControllerName(webui.beanControllerName());
 		fmodel.setRelatedBeanControllerName(this.retrieveRelatedBeanControllerName(field));

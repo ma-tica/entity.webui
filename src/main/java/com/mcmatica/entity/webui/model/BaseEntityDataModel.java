@@ -1,37 +1,29 @@
 package com.mcmatica.entity.webui.model;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.model.ListDataModel;
-
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SelectableDataModel;
-import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.CollectionUtils;
 
-import com.mcmatica.entity.webui.repository.BaseMongoRepository;
+import com.mcmatica.entity.webui.repository.BaseRepository;
+import com.mcmatica.jqb.Jqb;
+import com.mcmatica.jqb.JqbDialect;
+import com.mcmatica.jqb.JqbWhereBuilder;
 
 
 public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataModel<E> implements SelectableDataModel<E> {
 
 	
-	private BaseMongoRepository<E> repository;
+	private BaseRepository<E> repository;
 	private Long listSize;
 	
 	
 	
-	public  BaseEntityDataModel(BaseMongoRepository<E> repository) {
+	public  BaseEntityDataModel(BaseRepository<E> repository) {
 		super();
 		this.repository = repository;
 		this.listSize = this.repository.count();
@@ -119,36 +111,40 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 	public List<E> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
 		
 
-		int pagenum = 0;
-		if (first > 0)
-		{
-			pagenum = first-pageSize+1;
-		}
-
-		PageRequest pagerequest = new PageRequest(pagenum, pageSize);
-		
+//		int pagenum = 0;
+//		if (first > 0 && pageSize > 0)
+//		{
+//			//pagenum = first-pageSize+1;
+//			pagenum = first / pageSize;
+//		}
 
 		List<E> page;
-		
-//		Page<E> page;
+
 		if (filters != null && !filters.isEmpty())
 		{
-			Query qry = new Query();
+			Jqb jqb = new Jqb(JqbDialect.MONGODB);
+			JqbWhereBuilder where = jqb.getWhere();
 			Iterator<String> iterator = filters.keySet().iterator();
 			while(iterator.hasNext()) {
 				String key = iterator.next();
-				//qry.addCriteria(Criteria.where(key).regex("^"+filters.get(key)));
-				qry.addCriteria(Criteria.where(key).regex(filters.get(key)+""));
+				if (where == null) {
+					where = jqb.where(jqb.property(key).contains(filters.get(key)+""));
+				}else{
+					where = where.and(jqb.where(jqb.property(key).contains(filters.get(key)+"")));
+				}
 			}
-			qry.with(pagerequest);
 			
-			page = this.repository.find(qry);
 			
-			//this.repository.find
+			page = this.repository.find(where.text(), first, pageSize);
+			
+			
+			
+			//this.setRowCount(page.size());
 		}else{
 			
-			page = this.repository.findAll(pagerequest);
-			this.setRowCount(this.listSize.intValue());
+			page = this.repository.findAll(first, pageSize);
+			//this.setRowCount(this.listSize.intValue());
+			//this.setRowCount(page.size());
 		}
 		
 		

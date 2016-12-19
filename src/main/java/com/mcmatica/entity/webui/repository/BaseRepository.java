@@ -2,9 +2,6 @@ package com.mcmatica.entity.webui.repository;
 
 import java.util.List;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.query.Query;
-
 
 
 
@@ -12,7 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 //public interface  BaseMongoRepository<T,ID extends Serializable> extends MongoRepository<T, Serializable> {
 
 	
-public interface  BaseMongoRepository<T> {
+public interface  BaseRepository<T> {
 
 	
 	
@@ -26,9 +23,18 @@ public interface  BaseMongoRepository<T> {
 	
 	long count();
 
-	List<T> findAll(Pageable pageable);
+	long count(String filter);
+	
+	//List<T> findAll(Pageable pageable);
+	List<T> findAll(int pageIndex, int pageSize);
 
-	List<T> find(Query query);
+	//List<T> find(Query query);
+	List<T> find(String filter);
+	
+	List<T> find(String filter, int pageIndex, int pageSize);
+	
+	
+	
 	
 	
 }

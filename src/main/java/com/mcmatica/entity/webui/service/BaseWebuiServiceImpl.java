@@ -1,6 +1,5 @@
 package com.mcmatica.entity.webui.service;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -8,8 +7,8 @@ import java.util.List;
 
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
 import com.mcmatica.entity.webui.annotation.MCCascadeSave;
@@ -19,16 +18,17 @@ import com.mcmatica.entity.webui.factory.WebuiFactoryImpl;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.FieldModel;
-import com.mcmatica.entity.webui.repository.BaseMongoRepository;
+import com.mcmatica.entity.webui.repository.BaseRepository;
 
-public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends Serializable> implements BaseWebuiService, WebuiFactory {	
+//public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends Serializable> implements BaseWebuiService, WebuiFactory {	
+public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends BaseEntityModel> implements BaseWebuiService, WebuiFactory {	
 
-	protected WebuiFactoryImpl<T> webuiFactory;
+	protected WebuiFactoryImpl<F> webuiFactory;
 	protected T selected;
 	protected T originalSelected;
 	protected BaseEntityDataModel<T> list;
 	
-	protected BaseMongoRepository<T> repository;
+	protected BaseRepository<T> repository;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -108,10 +108,29 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	
 	@Override
 	public <G extends BaseEntityModel> void setSelected(G selected) {
-		this.selected =  (T) selected;	
+
+		G selected0 = null;
+		if (AopUtils.isJdkDynamicProxy(selected))
+		{
+			/*
+			 * obtain the target object behind the Proxy
+			 */
+			try {
+				selected0 = (G) ((org.springframework.aop.framework.Advised)selected).getTargetSource().getTarget();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+		}else
+		{
+			selected0 = selected;
+		}
+
 		
 		
 		
+		this.selected =  (T) selected0;	
 		/**
 		 * Save the original value of selected Item
 		 */
@@ -192,9 +211,9 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 	}
 	
 	@Override
-	public List<T> find(Query query)
+	public List<T> find(String filter)
 	{
-		return this.repository.find(query);
+		return this.repository.find(filter);
 	}
 	
 
@@ -275,5 +294,23 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends 
 		}
 
 	}
+
+
+
+	@Override
+	public long count() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
+
+	@Override
+	public long count(String filter) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	
 
 }

@@ -10,6 +10,8 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 public @interface MCWebuiGridColumn {
 
+	public String dbFieldName() default "";
+	
 	public int shortListPosition() ;
 
 	public String caption() default "";

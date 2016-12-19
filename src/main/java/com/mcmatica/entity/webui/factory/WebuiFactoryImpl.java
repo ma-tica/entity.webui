@@ -1,30 +1,22 @@
 package com.mcmatica.entity.webui.factory;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.el.MethodExpression;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
-import javax.faces.event.MethodExpressionActionListener;
 import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.xml.crypto.Data;
 
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.graphicimage.GraphicImage;
-import org.primefaces.component.outputlabel.OutputLabel;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.tooltip.Tooltip;
 
 import com.mcmatica.entity.webui.common.Utility;
-import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.FieldModel;
@@ -182,10 +174,11 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 			/* cell value */
 			HtmlOutputText cell = new HtmlOutputText();
 			String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
-			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));									
+			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
 			column.getChildren().add(cell);
 			
 			/* filter by */
+			cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getDbFieldName());
 			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
 			
 			/* filter match mode */
