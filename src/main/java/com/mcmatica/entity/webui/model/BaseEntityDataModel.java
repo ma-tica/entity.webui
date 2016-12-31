@@ -134,15 +134,17 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 				}
 			}
 			
-			
-			page = this.repository.find(where.text(), first, pageSize);
+			int pageIndex = first / pageSize;
+			page = this.repository.find(where.text(), pageIndex, pageSize);
 			
 			
 			
 			//this.setRowCount(page.size());
 		}else{
 			
-			page = this.repository.findAll(first, pageSize);
+			int pageIndex = first / pageSize;
+			
+			page = this.repository.findAll(pageIndex , pageSize);
 			//this.setRowCount(this.listSize.intValue());
 			//this.setRowCount(page.size());
 		}

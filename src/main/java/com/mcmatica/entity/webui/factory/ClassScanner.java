@@ -22,7 +22,8 @@ import com.mcmatica.entity.webui.model.EventModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.model.FieldModel.EditorComponent;
 
-class ClassScanner<T extends BaseEntityModel> {
+//class ClassScanner<T extends BaseEntityModel> {
+class ClassScanner<T extends Object> {
 
 	private List<FieldModel> fields;
 	

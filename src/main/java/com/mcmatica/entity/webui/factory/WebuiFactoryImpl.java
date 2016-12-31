@@ -23,7 +23,7 @@ import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.provider.WebuiDatatableProvider;
 import com.mcmatica.entity.webui.provider.WebuiPanelProvider;
 
-public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory {
+public class WebuiFactoryImpl<T extends Object> implements WebuiFactory {
 
 	
 	private List<FieldModel> fields;
@@ -31,7 +31,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	private List<FieldModel> shortListFields;
 	
 	
-	private Class<T> clazz;
+	//private Class<T> clazz;
 	
 	private ResourceBundle labels; 
 	
@@ -61,12 +61,12 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 	public WebuiFactoryImpl(Class<T> clazz)
 	{
 		
-		this.clazz = clazz;
+		//this.clazz = clazz;
 
 		/*
 		 * scan the Entity class
 		 */
-		this.scanner = new ClassScanner<T>(this.clazz);
+		this.scanner = new ClassScanner<T>(clazz);
 			
 		this.shortListFields = scanner.getShortListFields();
 		this.fields = scanner.getFields();
@@ -130,6 +130,7 @@ public class WebuiFactoryImpl<T extends BaseEntityModel> implements WebuiFactory
 		/* var */
 		table.setVar("item");
 		table.setSelectionMode("single");
+		
 		
 		/* filtered value */
 		expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "listFiltered");

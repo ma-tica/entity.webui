@@ -20,8 +20,8 @@ import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.repository.BaseRepository;
 
-//public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, S extends Serializable> implements BaseWebuiService, WebuiFactory {	
-public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends BaseEntityModel> implements BaseWebuiService, WebuiFactory {	
+//public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends BaseEntityModel> implements BaseWebuiService, WebuiFactory {	
+public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends Object> implements BaseWebuiService, WebuiFactory {	
 
 	protected WebuiFactoryImpl<F> webuiFactory;
 	protected T selected;
