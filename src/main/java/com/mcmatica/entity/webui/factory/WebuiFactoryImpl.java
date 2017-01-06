@@ -1,5 +1,6 @@
 package com.mcmatica.entity.webui.factory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -16,6 +17,7 @@ import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.tooltip.Tooltip;
 
+import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
@@ -23,7 +25,7 @@ import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.provider.WebuiDatatableProvider;
 import com.mcmatica.entity.webui.provider.WebuiPanelProvider;
 
-public class WebuiFactoryImpl<T extends Object> implements WebuiFactory {
+public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 
 	
 	private List<FieldModel> fields;
@@ -69,6 +71,8 @@ public class WebuiFactoryImpl<T extends Object> implements WebuiFactory {
 		this.scanner = new ClassScanner<T>(clazz);
 			
 		this.shortListFields = scanner.getShortListFields();
+		
+		
 		this.fields = scanner.getFields();
 
 	}
@@ -249,7 +253,8 @@ public class WebuiFactoryImpl<T extends Object> implements WebuiFactory {
 	private Tab buildChildrenTab(DetailListModel childType)
 	{
 		Tab tab = new Tab();
-		ClassScanner<BaseEntityModel> childScanner = new ClassScanner(childType.getPropertyType());
+		//ClassScanner<BaseUi> childScanner = new ClassScanner(childType.getPropertyType());
+		ClassScanner<BaseUi> childScanner = new ClassScanner(childType.getUiClassType());
 		
 		
 		//tab.setTitle(childScanner.getClazzAnnotation().title());
@@ -291,7 +296,7 @@ public class WebuiFactoryImpl<T extends Object> implements WebuiFactory {
 	}
 	
 	
-	private Panel buildChildrenPanel(DetailListModel detailList, ClassScanner<BaseEntityModel> childScanner, String title)
+	private Panel buildChildrenPanel(DetailListModel detailList, ClassScanner<BaseUi> childScanner, String title)
 	{
 		String listValueGetterSetter = String.format("#{%s}" , detailList.getGetterSetterValueName()); 
 		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
@@ -349,7 +354,7 @@ public class WebuiFactoryImpl<T extends Object> implements WebuiFactory {
 		{
 					
 			
-			ClassScanner<BaseEntityModel> subChildScanner = new ClassScanner<BaseEntityModel>((Class<BaseEntityModel>) subDetailModel.getPropertyType());
+			ClassScanner<BaseUi> subChildScanner = new ClassScanner<BaseUi>((Class<BaseUi>) subDetailModel.getPropertyType());
 			panel.getChildren().add(this.buildChildrenPanel(subDetailModel, subChildScanner, subDetailModel.getPropertyName()));
 					
 			

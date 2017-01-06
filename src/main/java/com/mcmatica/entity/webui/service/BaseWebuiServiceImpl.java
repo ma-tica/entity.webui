@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.util.ReflectionUtils;
 
 import com.mcmatica.entity.webui.annotation.MCCascadeSave;
+import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.factory.WebuiFactory;
 import com.mcmatica.entity.webui.factory.WebuiFactoryImpl;
@@ -21,7 +22,7 @@ import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.repository.BaseRepository;
 
 //public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends BaseEntityModel> implements BaseWebuiService, WebuiFactory {	
-public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends Object> implements BaseWebuiService, WebuiFactory {	
+public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends BaseUi> implements BaseWebuiService<T>, WebuiFactory {	
 
 	protected WebuiFactoryImpl<F> webuiFactory;
 	protected T selected;
@@ -30,7 +31,6 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	
 	protected BaseRepository<T> repository;
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public T create()
 	{
@@ -61,7 +61,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	@Override
 	public BaseEntityDataModel<T> buildList() {
 		//this.list = new BaseEntityDataModel(this.repository.findAll());
-		this.list = new BaseEntityDataModel(this.repository);
+		this.list = new BaseEntityDataModel<T>(this.repository);
 		return list;
 	}
 
@@ -107,16 +107,16 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	}
 	
 	@Override
-	public <G extends BaseEntityModel> void setSelected(G selected) {
+	public void setSelected(BaseEntityModel selected) {
 
-		G selected0 = null;
+		BaseEntityModel selected0 = null;
 		if (AopUtils.isJdkDynamicProxy(selected))
 		{
 			/*
 			 * obtain the target object behind the Proxy
 			 */
 			try {
-				selected0 = (G) ((org.springframework.aop.framework.Advised)selected).getTargetSource().getTarget();
+				selected0 = (T) ((org.springframework.aop.framework.Advised)selected).getTargetSource().getTarget();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -251,7 +251,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 
 	Boolean execSaveBeforeDelete = false;
 	
-	private <G extends BaseEntityModel> void performeCascadeDelete(G source )
+	private void performeCascadeDelete(T source )
 	{
 		
 		ReflectionUtils.doWithFields(source.getClass(), new ReflectionUtils.FieldCallback() {
@@ -276,10 +276,10 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	}
 	
 	
-	private <G extends BaseEntityModel> void prepareCascadeDeleting(Field field, BaseEntityModel source)
+	private  void prepareCascadeDeleting(Field field, BaseEntityModel source)
 			throws IllegalArgumentException, IllegalAccessException {
 		if (field.getType().equals(List.class)) {
-			List<G> items = (List) field.get(source);
+			List<T> items = (List) field.get(source);
 
 			// //Type elementType = ((ParameterizedType)
 			// field.getGenericType()).getActualTypeArguments()[0];
@@ -287,7 +287,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 			// while(iterator.hasNext())
 			// {
 
-			for (G listItem : items)
+			for (T listItem : items)
 
 				source.getFieldListItemsRemoved(field.getName()).add(listItem);
 
@@ -310,6 +310,9 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+
+
 	
 	
 

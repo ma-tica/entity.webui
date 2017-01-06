@@ -7,6 +7,7 @@ public class DetailListModel {
 	private String propertyName;
 	private String beanControllerName;
 	private Class<?> propertyType;
+	private Class<?> UiClassType;
 	private EventModel event;
 	
 	public String getSelection() {
@@ -81,6 +82,14 @@ public class DetailListModel {
 
 	public void setParentPropertyName(String parentPropertyName) {
 		this.parentPropertyName = parentPropertyName;
+	}
+
+	public Class<?> getUiClassType() {
+		return UiClassType;
+	}
+
+	public void setUiClassType(Class<?> uiClassType) {
+		UiClassType = uiClassType;
 	}
 
 

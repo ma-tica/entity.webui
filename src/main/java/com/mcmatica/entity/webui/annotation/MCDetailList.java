@@ -10,7 +10,24 @@ import java.lang.annotation.Target;
 @Target(FIELD)
 public @interface MCDetailList {
 
+	/**
+	 * Selection expression used to filter the list 
+	 * @return
+	 */
 	public String selection();
 	
+	/**
+	 * Parent selected field reference.  Default is 'selected'
+	 * Usefull with multi-level detail lists
+	 * 
+	 * @return
+	 */
 	public String parentPropertyName() default "selected";
+	
+	/**
+	 * Class annotated with MCWebui used to build the detail list user interface
+	 * @return
+	 */
+	public Class<?> UiClass();
+	
 }

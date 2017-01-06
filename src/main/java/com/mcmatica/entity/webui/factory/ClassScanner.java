@@ -16,6 +16,7 @@ import com.mcmatica.entity.webui.annotation.MCWebui;
 import com.mcmatica.entity.webui.annotation.MCWebuiField;
 import com.mcmatica.entity.webui.annotation.MCWebuiFieldEvent;
 import com.mcmatica.entity.webui.annotation.MCWebuiGridColumn;
+import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.EventModel;
@@ -23,7 +24,7 @@ import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.model.FieldModel.EditorComponent;
 
 //class ClassScanner<T extends BaseEntityModel> {
-class ClassScanner<T extends Object> {
+class ClassScanner<F extends BaseUi> {
 
 	private List<FieldModel> fields;
 	
@@ -31,7 +32,7 @@ class ClassScanner<T extends Object> {
 
 	private List<DetailListModel> children;
 	
-	private Class<T> clazz;
+	private Class<BaseEntityModel> entityClazz;
 
 	
 	private MCWebui clazzAnnotation;
@@ -42,12 +43,14 @@ class ClassScanner<T extends Object> {
 	 * @param clazz
 	 * 			Class to scan
 	 */
-	public ClassScanner(Class<T> clazz)
+	public ClassScanner(Class<F> clazz)
 	{
-		this.clazz = clazz;
+		
+		
+		
 		this.clazzAnnotation =clazz.getAnnotation(MCWebui.class);
 	
-		this.scan();
+		this.scan(clazz);
 	}
 
 
@@ -92,19 +95,23 @@ class ClassScanner<T extends Object> {
 	 * Return the annotated class Type
 	 * @return
 	 */
-	public Class<T> getAnnotatedCalssType()
+	public Class<BaseEntityModel> getAnnotatedCalssType()
 	{
-		return this.clazz;
+		return this.entityClazz;
 	}
 	
 	
-	private void scan()
+	private void scan(Class<F> clazz)
 	{
+		
+		MCWebui webui = clazz.getAnnotation(MCWebui.class);
+		
+		this.entityClazz = (Class<BaseEntityModel>) webui.entityClass() ;
 		
 		/*
 		 * Fills the internal list of fields
 		 */
-		this.fillFieldList();
+		this.fillFieldList(clazz, webui);
 
 		/*
 		 * Sorts fields
@@ -113,15 +120,15 @@ class ClassScanner<T extends Object> {
 
 	}
 	
-	private void fillFieldList()
+	private void fillFieldList(Class<F> clazz, MCWebui webui)
 	{
 		this.fields = new ArrayList<FieldModel>();
 		this.shortListFields = new ArrayList<FieldModel>();
 		this.children = new ArrayList<DetailListModel>();
 		
-		MCWebui webui = clazz.getAnnotation(MCWebui.class);
 		
-		for (Field field : this.clazz.getDeclaredFields())
+		
+		for (Field field : clazz.getDeclaredFields())
 		{
 			
 			FieldModel fmodel = null;
@@ -218,9 +225,10 @@ class ClassScanner<T extends Object> {
 				DetailListModel lmodel = new DetailListModel();
 				lmodel.setSelectionName(detailList.selection());
 				lmodel.setPropertyName(field.getName());
-				lmodel.setPropertyType((Class)elementType);
+				lmodel.setPropertyType((Class<?>)elementType);
 				lmodel.setBeanControllerName(webui.beanControllerName());
 				lmodel.setParentPropertyName(detailList.parentPropertyName());
+				lmodel.setUiClassType(detailList.UiClass());
 				
 				
 				MCWebuiFieldEvent eventlist = field.getAnnotation(MCWebuiFieldEvent.class);
@@ -239,7 +247,7 @@ class ClassScanner<T extends Object> {
 		
 		fmodel.setPropertyName(field.getName());
 		fmodel.setBeanControllerName(webui.beanControllerName());
-		fmodel.setRelatedBeanControllerName(this.retrieveRelatedBeanControllerName(field));
+		//fmodel.setRelatedBeanControllerName(this.retrieveRelatedBeanControllerName(field));
 		fmodel.setPropertyType(field.getType());
 
 	}

@@ -5,15 +5,16 @@ import java.util.List;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 
+import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 
 
 
 
-public interface BaseWebuiService {
+public interface BaseWebuiService<T extends BaseEntityModel> {
 
-	<T extends BaseEntityModel> BaseEntityDataModel<T> buildList();
+	BaseEntityDataModel<T> buildList();
 	
 	Panel buildPanelGrid();
 	
@@ -21,30 +22,32 @@ public interface BaseWebuiService {
 	
 	//List<FieldModel> buildShortListFields();
 	
-	<T extends BaseEntityModel> T getSelected();
+	T getSelected();
 
 	void save();
 
-	<T extends BaseEntityModel> void setSelected(T selected);
+	
 
-	<T extends BaseEntityModel> T getById(String id);
+	T getById(String id);
 
 	void delete();
 	
-	<T extends BaseEntityModel> T create();
+	T create();
 	
 	void setDefaultValues();
 	
-	<T extends BaseEntityModel> List<T> findAll();
+	List<T> findAll();
 
 	boolean isEditing();
 
 	void cancel();
 
-	<T extends BaseEntityModel> List<T> find(String filter);
+	List<T> find(String filter);
 	
 	long count();
 	
 	long count(String filter);
+
+	void setSelected(T selected);
 	
 }

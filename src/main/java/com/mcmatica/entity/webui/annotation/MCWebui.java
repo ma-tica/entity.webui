@@ -6,9 +6,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import com.mcmatica.entity.webui.model.BaseEntityModel;
+
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface MCWebui {
+public  @interface   MCWebui {
 	/**
 	 * number of columns of HtmlPanelGrid
 	 * @return
@@ -31,6 +33,12 @@ public @interface MCWebui {
 	 * @return
 	 */
 	public String title() default "";
+
+	/**
+	 * Class of entity managed by the user interface
+	 * @return
+	 */
+	public Class<?> entityClass();
 	
 //	/**
 //	 * set which jsf component update when the selected item enter in status 'editing'

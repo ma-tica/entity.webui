@@ -47,7 +47,7 @@ public class FieldModel {
 	 * Controller bean if field is a BaseModelEntity object
 	 * It's need for editor component like SelecetOneMenu 
 	 */
-	private String relatedBeanControllerName;
+	//private String relatedBeanControllerName;
 	
 	
 	/**
@@ -183,19 +183,19 @@ public class FieldModel {
 	}
 
 
-	/**
-	 * @return the relatedBeanControllerName
-	 */
-	public String getRelatedBeanControllerName() {
-		return relatedBeanControllerName;
-	}
-
-	/**
-	 * @param relatedBeanControllerName the relatedBeanControllerName to set
-	 */
-	public void setRelatedBeanControllerName(String relatedBeanControllerName) {
-		this.relatedBeanControllerName = relatedBeanControllerName;
-	}
+//	/**
+//	 * @return the relatedBeanControllerName
+//	 */
+//	public String getRelatedBeanControllerName() {
+//		return relatedBeanControllerName;
+//	}
+//
+//	/**
+//	 * @param relatedBeanControllerName the relatedBeanControllerName to set
+//	 */
+//	public void setRelatedBeanControllerName(String relatedBeanControllerName) {
+//		this.relatedBeanControllerName = relatedBeanControllerName;
+//	}
 
 	/**
 	 * @return the defaultValue
@@ -252,11 +252,11 @@ public class FieldModel {
 			return this.fillSelectionListExpression;
 		}
 		
-		if (this.getEditorComponent().equals(EditorComponent.SELECTION_ONE_MENU)) {
-			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "findAll()");
-		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {
-			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "complete");
-		}
+//		if (this.getEditorComponent().equals(EditorComponent.SELECTION_ONE_MENU)) {
+//			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "findAll()");
+//		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {
+//			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "complete");
+//		}
 		
 		return null;
 	}
