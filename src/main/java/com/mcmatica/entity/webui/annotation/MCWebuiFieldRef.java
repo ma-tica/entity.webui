@@ -9,5 +9,16 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target(FIELD)
 public @interface MCWebuiFieldRef {
-	Ui
+	
+	/**
+	 * BaseUi class of referenced entity
+	 * @return
+	 */
+	public Class<?> refUiClass();
+	
+	/**
+	 * Override the default refUiClass#findAll() method 
+	 */
+	public String getListExpression() default "";
+
 }

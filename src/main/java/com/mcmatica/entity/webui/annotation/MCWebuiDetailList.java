@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(FIELD)
-public @interface MCDetailList {
+public @interface MCWebuiDetailList {
 
 	/**
 	 * Selection expression used to filter the list 
@@ -28,6 +28,6 @@ public @interface MCDetailList {
 	 * Class annotated with MCWebui used to build the detail list user interface
 	 * @return
 	 */
-	public Class<?> UiClass();
+	public Class<?> uiClass();
 	
 }

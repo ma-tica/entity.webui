@@ -25,14 +25,14 @@ public interface  BaseRepository<T> {
 
 	long count(String filter);
 	
-	//List<T> findAll(Pageable pageable);
+
 	List<T> findAll(int pageIndex, int pageSize);
 
-	//List<T> find(Query query);
 	List<T> find(String filter);
 	
 	List<T> find(String filter, int pageIndex, int pageSize);
 	
+	T findOne(String filter);
 	
 	
 	

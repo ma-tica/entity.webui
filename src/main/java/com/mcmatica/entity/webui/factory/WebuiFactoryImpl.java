@@ -354,7 +354,8 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		{
 					
 			
-			ClassScanner<BaseUi> subChildScanner = new ClassScanner<BaseUi>((Class<BaseUi>) subDetailModel.getPropertyType());
+			//ClassScanner<BaseUi> subChildScanner = new ClassScanner<BaseUi>((Class<BaseUi>) subDetailModel.getPropertyType());
+			ClassScanner<BaseUi> subChildScanner = new ClassScanner<BaseUi>((Class<BaseUi>) subDetailModel.getUiClassType());
 			panel.getChildren().add(this.buildChildrenPanel(subDetailModel, subChildScanner, subDetailModel.getPropertyName()));
 					
 			

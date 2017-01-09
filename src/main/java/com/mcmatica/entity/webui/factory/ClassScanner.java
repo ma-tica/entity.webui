@@ -9,12 +9,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.mcmatica.entity.webui.annotation.MCDetailList;
 import com.mcmatica.entity.webui.annotation.MCLinkedField;
-import com.mcmatica.entity.webui.annotation.MCSelectable;
 import com.mcmatica.entity.webui.annotation.MCWebui;
+import com.mcmatica.entity.webui.annotation.MCWebuiDetailList;
 import com.mcmatica.entity.webui.annotation.MCWebuiField;
 import com.mcmatica.entity.webui.annotation.MCWebuiFieldEvent;
+import com.mcmatica.entity.webui.annotation.MCWebuiFieldRef;
 import com.mcmatica.entity.webui.annotation.MCWebuiGridColumn;
 import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
@@ -170,15 +170,25 @@ class ClassScanner<F extends BaseUi> {
 				fmodel.setShortGridField(true);
 			}
 
-			MCSelectable selectable = field.getAnnotation(MCSelectable.class);
-			if (selectable != null)
+			
+			
+			MCWebuiFieldRef fieldRef = field.getAnnotation(MCWebuiFieldRef.class);
+			if (fieldRef != null)
 			{
 				if (fmodel == null ) {
 					fmodel = new FieldModel();
 					this.fillWebuiProperties(field, fmodel, webui);
 				}
-				fmodel.setFillSelectionListExpression(selectable.value());
+				
+				if (fieldRef.getListExpression() != null && !fieldRef.getListExpression().isEmpty())
+				{
+					fmodel.setFillSelectionListExpression(fieldRef.getListExpression());
+				}else{
+					fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", this.retrieveRelatedBeanControllerName(fieldRef.refUiClass()), "findAll()" ));
+				}
 			}
+			
+			
 
 			MCWebuiFieldEvent event = field.getAnnotation(MCWebuiFieldEvent.class);
 			if (event != null)
@@ -217,18 +227,18 @@ class ClassScanner<F extends BaseUi> {
 			/*
 			 * Children data
 			 */
-			if (field.getType().equals(List.class) && field.getAnnotation(MCDetailList.class) != null)
+			if (field.getType().equals(List.class) && field.getAnnotation(MCWebuiDetailList.class) != null)
 			{
 				Type elementType = ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
 				
-				MCDetailList detailList = field.getAnnotation(MCDetailList.class);
+				MCWebuiDetailList detailList = field.getAnnotation(MCWebuiDetailList.class);
 				DetailListModel lmodel = new DetailListModel();
 				lmodel.setSelectionName(detailList.selection());
 				lmodel.setPropertyName(field.getName());
 				lmodel.setPropertyType((Class<?>)elementType);
 				lmodel.setBeanControllerName(webui.beanControllerName());
 				lmodel.setParentPropertyName(detailList.parentPropertyName());
-				lmodel.setUiClassType(detailList.UiClass());
+				lmodel.setUiClassType(detailList.uiClass());
 				
 				
 				MCWebuiFieldEvent eventlist = field.getAnnotation(MCWebuiFieldEvent.class);
@@ -247,7 +257,7 @@ class ClassScanner<F extends BaseUi> {
 		
 		fmodel.setPropertyName(field.getName());
 		fmodel.setBeanControllerName(webui.beanControllerName());
-		//fmodel.setRelatedBeanControllerName(this.retrieveRelatedBeanControllerName(field));
+		
 		fmodel.setPropertyType(field.getType());
 
 	}
@@ -283,17 +293,13 @@ class ClassScanner<F extends BaseUi> {
 	}
 	
 	
-	private String retrieveRelatedBeanControllerName(Field field)
+	private String retrieveRelatedBeanControllerName(Class<?> type)
 	{
-		if (ClassScanner.implementBaseEntityModel(field.getType()))
+		MCWebui relwebui =  type.getAnnotation(MCWebui.class);
+		if (relwebui != null)
 		{
-			MCWebui relwebui =  field.getType().getAnnotation(MCWebui.class);
-			if (relwebui != null)
-			{
-				return relwebui.beanControllerName();
-			}
+			return relwebui.beanControllerName();
 		}
-		
 		return null;
 	}
 	

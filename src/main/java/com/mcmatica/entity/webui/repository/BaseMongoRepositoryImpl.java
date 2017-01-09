@@ -76,6 +76,16 @@ public class BaseMongoRepositoryImpl<T extends BaseEntityModel> implements BaseR
 	}
 
 	@Override
+	public T findOne(String filter) {
+		
+		BasicQuery query = new BasicQuery(filter);			
+		
+		return this.operations.findOne(query, this.clazz);
+	}
+
+	
+	
+	@Override
 	public List<T> find(String filter, int pageIndex, int pageSize) {
 		BasicQuery query = new BasicQuery(filter);			
 		Pageable pageable = new PageRequest(pageIndex, pageSize);
