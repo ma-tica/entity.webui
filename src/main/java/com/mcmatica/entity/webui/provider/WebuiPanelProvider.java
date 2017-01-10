@@ -25,6 +25,7 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 	private int columnNum;
 	private String title;
 	private String parentField;
+	private String columnClasses;
 	
 
 	/**
@@ -37,11 +38,12 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 	 * 				reference to parent field. Needed for child panels
 	 * @param title
 	 */
-	public WebuiPanelProvider(List<FieldModel> fields, int columnNum, String title, String parentField, ResourceBundle labelProvider) {
+	public WebuiPanelProvider(List<FieldModel> fields, int columnNum, String columnClasses, String title, String parentField, ResourceBundle labelProvider) {
 		super();
 		this.fields = fields;
 		this.columnNum = columnNum;
-		this.title = title;
+		this.columnClasses = columnClasses;
+		this.title = title;	
 		this.parentField = parentField;
 		this.labelProvider = labelProvider;
 	}
@@ -57,12 +59,18 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		private int childCount = 0;
 		private Row row;
 		private int numColumns;
+		private String[] columnClasses;
 		private PanelGrid panel;
 		
 		public PanelBuilder(PanelGrid panel, int numColumns, String header)
 		{
 			this.panel = panel;
 			this.numColumns = numColumns;
+			if (panel.getColumnClasses() != null && !panel.getColumnClasses().isEmpty()) {
+				this.columnClasses = panel.getColumnClasses().split(",");
+			}else{
+				this.columnClasses = null;
+			}
 			
 			if (header != null && !header.isEmpty() )
 			{				
@@ -86,6 +94,13 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 				
 			Column col = new Column();
 			col.setColspan(colspan);	
+			if (this.columnClasses != null)
+			{
+				if (this.columnClasses.length > this.childCount ) {
+					col.setStyleClass(this.columnClasses[this.childCount]);
+				}
+			}
+			
 			
 			col.getChildren().add(component);
 			this.row.getChildren().add(col);
@@ -118,6 +133,15 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		this.sortFieldByFormPosition();
 		
 		PanelGrid panel = new PanelGrid();
+		
+		panel.setStyleClass("ui-noborder");
+		if (this.columnClasses != null && !this.columnClasses.isEmpty()) 
+		{
+			//panel.setColumnClasses(columnClasses);
+			panel.setValueExpression("columnClasses", Utility.createExpression(columnClasses, String.class));
+		}
+		
+		
 		
 		/*
 		 * Instantiate the panel builder class and creates the main header panel

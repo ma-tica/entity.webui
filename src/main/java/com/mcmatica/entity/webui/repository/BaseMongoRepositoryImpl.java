@@ -9,7 +9,9 @@ import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
+import com.mongodb.BasicDBObject;
 
 public class BaseMongoRepositoryImpl<T extends BaseEntityModel> implements BaseRepository<T> {
 
@@ -98,5 +100,23 @@ public class BaseMongoRepositoryImpl<T extends BaseEntityModel> implements BaseR
 		// TODO Auto-generated method stub
 		return 0;
 	}
+	
+	@Override
+	public String getNextId()
+	{
+		BasicQuery qry = new BasicQuery("{}");
+		qry.setSortObject(new BasicDBObject("_id", -1));
+		
+		T result = this.operations.findOne(qry, this.clazz);
+		
+		Long id = 0l;
+		if (result != null) {
+			id = Long.parseLong(result.getId());			
+		}
+		id = id +1;
+		
+		return  String.format("%0" + Constant.ID_LENGTH + "d", id);
+	}
+
 
 }

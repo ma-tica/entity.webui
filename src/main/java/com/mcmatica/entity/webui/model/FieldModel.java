@@ -34,6 +34,7 @@ public class FieldModel {
 	private EventModel event;
 	private String gridCaption;
 	private String width;
+	private String gridWidth;
 	
 	private String linkedParentField;
 	private String linkedValueExpression;
@@ -312,13 +313,13 @@ public class FieldModel {
 		this.gridCaption = gridCaption;
 	}
 
-//	public String getGridWidth() {
-//		return gridWidth;
-//	}
-//
-//	public void setGridWidth(String gridWidth) {
-//		this.gridWidth = gridWidth;
-//	}
+	public String getGridWidth() {
+		return gridWidth;
+	}
+
+	public void setGridWidth(String gridWidth) {
+		this.gridWidth = gridWidth;
+	}
 
 	public boolean isFormField() {
 		return formField;

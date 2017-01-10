@@ -8,6 +8,7 @@ import javax.el.MethodExpression;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
+import javax.faces.webapp.FacetTag;
 
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
@@ -101,8 +102,9 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		/*
 		 * Main header Panel
 		 */
-		WebuiPanelProvider panelProvider = new WebuiPanelProvider(this.fields, scanner.getClazzAnnotation().panelColumns(), 
-																null, null, this.getLabels());
+		WebuiPanelProvider panelProvider = new WebuiPanelProvider(this.fields, scanner.getClazzAnnotation().panelColumns(),
+																  scanner.getClazzAnnotation().columnClasses(),	
+																  null, null, this.getLabels());
 		
 		panel.getChildren().add(panelProvider.buildPanelGrid());
 		
@@ -147,7 +149,11 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		table.setValueExpression("selection", Utility.createExpression(expr, scanner.getAnnotatedCalssType()));
 		
 		/* table style */
-		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
+//		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
+		
+		/* skipChildren */
+		table.setValueExpression("skipChildren", Utility.createExpression("true", Boolean.class));
+		
 		
 		/* lazy */
 		table.setValueExpression("lazy", Utility.createExpression("true", Boolean.class));
@@ -159,6 +165,9 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		{
 			Column column = new Column();
 			
+//			HtmlOutputText caption = new HtmlOutputText();
+//			caption.setValueExpression("value", Utility.createExpression(fmodel.getGridCaption(), String.class));			
+//			column.getFacets().put("header", caption);
 			
 			/*
 			 * Header
@@ -169,7 +178,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 			column.setValueExpression("headerText", Utility.createExpression(caption, String.class));
 			
 			/* width */
-//			column.setValueExpression("width", Utility.createExpression(fmodel.getGridWidth(), String.class));
+			column.setValueExpression("width", Utility.createExpression(fmodel.getGridWidth(), String.class));
 			
 			
 			/*
@@ -179,15 +188,27 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 			/* cell value */
 			HtmlOutputText cell = new HtmlOutputText();
 			String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+						
+			if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+			{
+				cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+			}
+			
 			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
 			column.getChildren().add(cell);
 			
 			/* filter by */
-			cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getDbFieldName());
-			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
 			
-			/* filter match mode */
-			column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
+			if (fmodel.getLinkedParentField() == null || fmodel.getLinkedParentField().isEmpty())
+			{
+				//cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+				cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getDbFieldName());
+				column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
+				/* filter match mode */
+				column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
+			}
+			
+			
 			
 			table.getChildren().add(column);
 			

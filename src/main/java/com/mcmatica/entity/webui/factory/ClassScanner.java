@@ -159,6 +159,7 @@ class ClassScanner<F extends BaseUi> {
 					fmodel = new FieldModel();
 					this.fillWebuiProperties(field, fmodel, webui);
 				}
+				fmodel.setGridWidth(webuigridcolumn.width());
 				fmodel.setShortListPosition(webuigridcolumn.shortListPosition());
 				fmodel.setGridCaption(webuigridcolumn.caption());
 				if (!webuigridcolumn.dbFieldName().isEmpty()) 
@@ -168,6 +169,7 @@ class ClassScanner<F extends BaseUi> {
 					fmodel.setDbFieldName(field.getName());
 				}
 				fmodel.setShortGridField(true);
+				
 			}
 
 			

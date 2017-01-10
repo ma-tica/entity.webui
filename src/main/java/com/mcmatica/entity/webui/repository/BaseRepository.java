@@ -33,6 +33,8 @@ public interface  BaseRepository<T> {
 	List<T> find(String filter, int pageIndex, int pageSize);
 	
 	T findOne(String filter);
+
+	String getNextId();
 	
 	
 	

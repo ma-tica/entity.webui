@@ -234,7 +234,8 @@ abstract class WebuiAbstractProvider {
 			somenu.setStyle("width: calc(100% - 35px); ");
 		}
 
-			
+		
+		somenu.setValueExpression("autoWidth", Utility.createExpression("false", boolean.class));
 		somenu.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		somenu.setValueExpression("readonly", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 				
@@ -315,7 +316,7 @@ abstract class WebuiAbstractProvider {
 		//input.setRequiredMessage(Utility.createValue(stringExpression, type)(fmodel.getCaption(), String.class) + " " + labelProvider.getString("common.ismandatory"));
 		input.setValueExpression("requiredMessage", Utility.createExpression(fmodel.getCaption()+ " " + labelProvider.getString("common.ismandatory"), String.class) );
 		
-		
+		input.setValueExpression("widgetVar", Utility.createExpression(fmodel.getId(), String.class) );
 		input.setId(fmodel.getId());
 		input.setValueExpression("required", Utility.createExpression(fmodel.getRequiredExpression(), boolean.class));
 		input.setValueExpression("rendered", Utility.createExpression(fmodel.getVisibleExpression(), boolean.class));
@@ -331,9 +332,9 @@ abstract class WebuiAbstractProvider {
 		/*
 		 * Add the default onChangeEnvent managed by the BaseWebuiBean class
 		 */
-		//if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
+//		if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
 			input.addClientBehavior("change", Utility.createAjaxBehaviour(fmodel.getChangeEventExpression(), null));
-		//}
+//		}
 
 	}
 	

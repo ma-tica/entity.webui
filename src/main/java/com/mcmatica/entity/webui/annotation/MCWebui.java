@@ -45,4 +45,10 @@ public  @interface   MCWebui {
 //	 */
 //	public String updateOnEditing() default "";
 	
+	/**
+	 * Primefaces PanelGrid columnClasses attribute
+	 * @return
+	 */
+	public String columnClasses() default "";
+	
 }

@@ -162,11 +162,12 @@ public  abstract class  BaseWebuiBean implements Serializable {
 
 	
 	public boolean isEditing() {
-		if (this.getSelected() != null)
-		{
-			return this.service.isEditing();
-		}
-		return true;
+//		if (this.getSelected() != null)
+//		{
+//			return this.service.isEditing();
+//		}
+//		return true;
+		return this.service.isEditing();
 		
 	}
 

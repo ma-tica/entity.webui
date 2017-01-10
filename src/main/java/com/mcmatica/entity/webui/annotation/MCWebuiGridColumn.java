@@ -16,6 +16,6 @@ public @interface MCWebuiGridColumn {
 
 	public String caption() default "";
 		
-	//public String width() default "100%";
+	public String width() default "100%";
 	
 }
