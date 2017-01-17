@@ -1,0 +1,47 @@
+package com.mcmatica.entity.webui.spring.converter;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.BasicQuery;
+
+import com.mcmatica.entity.webui.annotation.MCDbRef;
+
+public class McConversionService implements ConversionService  {
+
+	@Autowired
+	private MongoOperations mongoOperations;
+	
+	@Override
+	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
+		if (targetType.getAnnotation(MCDbRef.class)!= null) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (targetType.getAnnotation(MCDbRef.class) != null) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public <T> T convert(Object source, Class<T> targetType) {
+		BasicQuery qry = new BasicQuery(String.format("{_id: '%s'}", source));
+		
+		return (T) this.mongoOperations.find(qry, targetType);
+		
+	}
+
+	@Override
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		BasicQuery qry = new BasicQuery(String.format("{_id: '%s'}", source));
+		
+		return this.mongoOperations.find(qry, targetType.getClass());
+	}
+
+}

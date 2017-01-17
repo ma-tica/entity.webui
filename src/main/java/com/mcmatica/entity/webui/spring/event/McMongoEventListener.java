@@ -1,11 +1,14 @@
-package com.mcmatica.entity.webui.spring;
+package com.mcmatica.entity.webui.spring.event;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
@@ -13,13 +16,17 @@ import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
+import org.springframework.data.mongodb.core.mapping.event.AfterLoadEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.data.mongodb.core.query.BasicQuery;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
 import com.mcmatica.entity.webui.annotation.MCCascadeSave;
 import com.mcmatica.entity.webui.annotation.MCCreatedOn;
+import com.mcmatica.entity.webui.annotation.MCDbRef;
 import com.mcmatica.entity.webui.annotation.MCUpdatedOn;
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
@@ -117,6 +124,32 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 	}
 	
 	
+	@Override
+	public void onAfterLoad(AfterLoadEvent<BaseEntityModel> event) {
+		// TODO Auto-generated method stub
+		super.onAfterLoad(event);
+		ReflectionUtils.doWithFields(event.getSource().getClass(), new ReflectionUtils.FieldCallback() {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				ReflectionUtils.makeAccessible(field);
+				
+				/*
+				 * Id auto-increment value
+				 */
+				if (field.getAnnotation(MCDbRef.class) != null){
+					
+					String idRef = (String) field.get(event.getSource());
+					
+					BasicQuery qry = new BasicQuery(String.format("_id: '%s'", idRef));
+					
+					
+					field.set(event.getSource(), mongoOperations.findOne(qry, field.getType()));	
+				}
+			}
+		});
+		
+	}
+
+
 	private void cascadeSaving(Field field, BaseEntityModel source) throws IllegalArgumentException, IllegalAccessException {
 		
 			final Object fieldValue =  field.get(source);
