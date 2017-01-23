@@ -222,6 +222,9 @@ abstract class WebuiAbstractProvider {
 			item.setNoSelectionOption(true);
 			somenu.getChildren().add(item);
 			somenu.getChildren().add(items);
+			//somenu.setEditable(true);
+			somenu.setFilter(true);
+			
 		}
 		
 		

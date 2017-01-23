@@ -11,8 +11,17 @@ import javax.faces.component.html.HtmlOutputText;
 import org.primefaces.component.celleditor.CellEditor;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
+import org.primefaces.component.contextmenu.ContextMenu;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.graphicimage.GraphicImage;
+import org.primefaces.component.menubutton.MenuButton;
+import org.primefaces.component.panel.Panel;
+import org.primefaces.component.roweditor.RowEditor;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.DynamicMenuModel;
+import org.primefaces.model.menu.MenuItem;
+import org.primefaces.model.menu.MenuModel;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
@@ -58,8 +67,9 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		table.setValueExpression("selection", Utility.createExpression(expr,  this.detailListModel.getPropertyType()));		
 
 		/* editable */
-		table.setEditable(true);
-		table.setEditMode("cell");
+		table.setEditable(false);
+		//table.setEditMode("cell");
+		//table.setEditingRow(true);
 
 		table.setResizableColumns(true);
 		
@@ -79,9 +89,12 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		/*
 		 * Column per selezione riga
 		 */
-		Column selectionColumn = new Column();
-		selectionColumn.setStyle("width:10px; text-align:center");
-		table.getChildren().add(selectionColumn);
+//		Column selectionColumn = new Column();
+//		selectionColumn.setStyle("width:32px;");
+//		table.getChildren().add(selectionColumn);
+		
+		
+		
 		
 		
 		for (FieldModel fmodel : this.fields) {
@@ -100,6 +113,8 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				CellEditor cell = new CellEditor();				
 				HtmlOutputText outputcell = new HtmlOutputText();
 //				UIComponent outputcell = this.buildFieldController(fmodel);
+		
+				outputcell.setStyle("display: block;");
 				
 				String valueexpr;
 				if (fmodel.getFillSelectionListExpression() != null && !fmodel.getFillSelectionListExpression().isEmpty()) {
@@ -160,17 +175,17 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		/*
 		 *  Bottone -
 		 */
-		CommandButton remove = new CommandButton();
+//		CommandButton remove = new CommandButton();
+//		
+//		remove.setIcon("fa fa-fw fa-remove");
+//		String deleteMethod = String.format("#{%s}", detailListModel.getDeleteValueMethodName(var));
+//		MethodExpression actionListener = Utility.createMethodExp(deleteMethod,
+//				new Class[] { detailListModel.getPropertyType() });
+//		remove.setActionExpression(actionListener);
+//		remove.setUpdate(table.getId());
 		
-		remove.setIcon("fa fa-fw fa-remove");
-		String deleteMethod = String.format("#{%s}", detailListModel.getDeleteValueMethodName(var));
-		MethodExpression actionListener = Utility.createMethodExp(deleteMethod,
-				new Class[] { detailListModel.getPropertyType() });
-		remove.setActionExpression(actionListener);
-		remove.setUpdate(table.getId());
-		
-		MethodExpression innerActionListener = Utility.createMethodExp("onRemoveChild",
-				new Class[] { detailListModel.getPropertyType() });
+//		MethodExpression innerActionListener = Utility.createMethodExp("onRemoveChild",
+//				new Class[] { detailListModel.getPropertyType() });
 		
 		
 // Non serve		remove.addClientBehavior("click", Utility.createAjaxBehaviour(detailListModel.getChangeEventExpression(), null));
@@ -184,12 +199,12 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 //		minustooltip.setFor(remove.getId());  //ID bottone non definibile
 //		minustooltip.setValue("Delete " + childType.getName()) ;
 
-		Column column = new Column();
-		column.setStyle("width:32px");
-		column.getChildren().add(remove);
-		
-		
-		table.getChildren().add(column);
+//		Column column = new Column();
+//		column.setStyle("width:32px");
+//		column.getChildren().add(remove);
+//		
+//		
+//		table.getChildren().add(column);
 
 		return table;
 	}

@@ -324,7 +324,9 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 																	this.getLabels(), listValueGetterSetter, detailList);
 
 
-		//Bottone +
+		/*
+		 * Bottone +
+		 */
 		CommandButton plus = new CommandButton();
 		plus.setIcon("fa fa-plus");
 		plus.setId(detailList.getPropertyName() + "_plus_button");
@@ -334,12 +336,52 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		plus.setUpdate(detailList.getPropertyName()+"_datatable");
 
 		/*
-		 * Tooltip bottone
+		 * Tooltip bottone +
 		 */
 		Tooltip plustooltip = new Tooltip();
 		plustooltip.setFor(plus.getId());
 		plustooltip.setValue("Add new " + detailList.getPropertyName()) ;
 
+		
+		/*
+		 * Bottone -
+		 */
+		CommandButton remove = new CommandButton();
+		
+		remove.setIcon("fa fa-remove");
+		remove.setId(detailList.getPropertyName() + "_remove_button");
+		String deleteMethod = String.format("#{%s}", detailList.getDeleteValueMethodName());
+		MethodExpression removeactionListener = Utility.createMethodExp(deleteMethod,
+				new Class[] { detailList.getPropertyType() });
+		remove.setActionExpression(removeactionListener);
+		remove.setUpdate(detailList.getPropertyName()+"_datatable");
+		/*
+		 * Tooltip bottone -
+		 */
+		Tooltip removetooltip = new Tooltip();
+		removetooltip.setFor(remove.getId());
+		removetooltip.setValue("Delete " + detailList.getPropertyName()) ;
+		
+		/*
+		 * Bottone Editing
+		 */
+		CommandButton edit = new CommandButton();
+		
+		edit.setIcon("fa fa-edit");
+		edit.setId(detailList.getPropertyName() + "_edit_button");
+		String editMethod = String.format("#{%s}", detailList.getDeleteValueMethodName());
+		MethodExpression editactionListener = Utility.createMethodExp(editMethod,
+				new Class[] { detailList.getPropertyType() });
+		edit.setActionExpression(editactionListener);
+		edit.setUpdate(detailList.getPropertyName()+"_datatable");
+		/*
+		 * Tooltip bottone edit
+		 */
+		Tooltip edittooltip = new Tooltip();
+		edittooltip.setFor(edit.getId());
+		edittooltip.setValue("Edit " + detailList.getPropertyName()) ;
+		
+		
 		/*
 		 * Loader gif
 		 */
@@ -365,6 +407,14 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		}
 		panel.getChildren().add(plus);
 		panel.getChildren().add(plustooltip);
+		
+		panel.getChildren().add(remove);
+		panel.getChildren().add(removetooltip);
+		
+		panel.getChildren().add(edit);
+		panel.getChildren().add(edittooltip);
+
+		
 		//panel.getChildren().add(img);
 		panel.getChildren().add(dataTableProvider.buildDataTable());
 

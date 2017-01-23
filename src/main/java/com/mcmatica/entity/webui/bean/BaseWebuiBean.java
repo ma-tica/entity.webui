@@ -233,6 +233,16 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		BaseEntityModel d = this.list.getRowData("000000000017");
 		this.service.setSelected(d);
 	}
+
+	
+	public void removeFieldListItem(String getter, String childListName, String selectionName) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	{
+		Method mthGetSelected = this.getClass().getMethod("get" + Utility.capitalize(selectionName) );
+		BaseEntityModel itemselected;
+		itemselected = (BaseEntityModel) mthGetSelected.invoke(this);
+		this.removeFieldListItem(getter, childListName, itemselected);
+		
+	}
 	
 	public void removeFieldListItem(String getter, String childListName, BaseEntityModel item) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
@@ -266,6 +276,9 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		 */
 		this.updateUI();
 	}
+
+	
+	
 	
 	public void onChangeField(AjaxBehaviorEvent event)
 	{

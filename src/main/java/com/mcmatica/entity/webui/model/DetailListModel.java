@@ -71,6 +71,13 @@ public class DetailListModel {
 		return String.format("%s.removeFieldListItem('%s', '%s', %s)", this.beanControllerName, this.parentPropertyName, this.propertyName, varName );
 	}
 
+	public String getDeleteValueMethodName()
+	{
+		return String.format("%s.removeFieldListItem('%s', '%s', '%s')", this.beanControllerName, this.parentPropertyName, 
+																	   this.propertyName, this.selectionName  );
+	}
+
+	
 //	public String getChangeEventExpression()
 //	{
 //		return String.format("#{%s.onChangeField}", this.beanControllerName);
