@@ -42,6 +42,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	protected Panel formPanel;
 	
+	protected Panel dialogsPanel;
+	
 	protected DataTable selectionGrid;
 	
 	public abstract void init();
@@ -85,6 +87,20 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	}
 	
 	
+	public Panel getDialogsPanel() {
+		if (dialogsPanel == null)
+		{
+			this.dialogsPanel = this.service.buildEditFormDialogs();
+		}
+		return dialogsPanel;
+	}
+
+
+	public void setDialogsPanel(Panel dialogsPanel) {
+		this.dialogsPanel = dialogsPanel;
+	}
+
+
 	public Panel getPanel()
 	{
 		if (formPanel == null)

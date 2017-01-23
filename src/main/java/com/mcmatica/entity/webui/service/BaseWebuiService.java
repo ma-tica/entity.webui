@@ -20,6 +20,8 @@ public interface BaseWebuiService<T extends BaseEntityModel> {
 	
 	DataTable buildSelectionGrid();
 	
+	Panel buildEditFormDialogs();
+	
 	//List<FieldModel> buildShortListFields();
 	
 	T getSelected();

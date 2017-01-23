@@ -13,6 +13,7 @@ import javax.faces.webapp.FacetTag;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
@@ -24,6 +25,7 @@ import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.provider.WebuiDatatableProvider;
+import com.mcmatica.entity.webui.provider.WebuiFormProvider;
 import com.mcmatica.entity.webui.provider.WebuiPanelProvider;
 
 public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
@@ -116,6 +118,8 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		{
 			
 			panel.getChildren().add(this.buildChildrenPanels(scanner.getChildren()));
+			
+
 			
 		}
 		
@@ -221,30 +225,6 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		
 	}
 	
-//	@Override
-//	public List<FieldModel> buildShortListFields()
-//	{
-//		if (this.shortListFields != null )
-//		{
-//		
-//			Collections.sort(this.shortListFields, new Comparator<FieldModel>() {
-//	
-//				@Override
-//				public int compare(FieldModel o1, FieldModel o2) {
-//					if (o1.getShortListPosition() == o2.getShortListPosition()) {
-//						return 0;
-//					} else if (o1.getShortListPosition() > o2.getShortListPosition()) {
-//						return 1;
-//					} else {
-//						return -1;
-//					}
-//	
-//				}
-//			});
-//		}
-//		return this.shortListFields;
-//	}
-
 	@Override
 	public List<FieldModel> getFields()
 	{
@@ -252,10 +232,51 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 	}
 	
 
+	@Override
+	public Panel buildEditFormDialogs()
+	{
+		
+		Panel panel = new Panel();
+		
+				
+		/*
+		 * Children panels
+		 */
+		if (this.scanner.getChildren() != null && !scanner.getChildren().isEmpty())
+		{
+			this.buildChildrenForms(scanner.getChildren(), panel);
+		}
+
+		return panel;
+	}
+	
 /*
  * --------------------------
  * P R I V A T E	
  */
+	
+	private void buildChildrenForms(List<DetailListModel> children, Panel panelContainer)
+	{
+
+		for (DetailListModel childType : children)
+		{
+			String listValueGetterSetter = String.format("#{%s}" , childType.getGetterSetterValueName()); 
+			ClassScanner<BaseUi> childScanner = new ClassScanner(childType.getUiClassType());
+
+			WebuiFormProvider formProvider = new WebuiFormProvider(childScanner.getFields(),
+																  childScanner.getClazzAnnotation(),
+																  this.getLabels(), 
+																  listValueGetterSetter, 
+																  childType);
+
+			panelContainer.getChildren().add(formProvider.buildForm());
+			
+		}
+		
+	}
+
+
+
 	
 	private TabView buildChildrenPanels(List<DetailListModel> children)
 	{
@@ -274,44 +295,13 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 	private Tab buildChildrenTab(DetailListModel childType)
 	{
 		Tab tab = new Tab();
-		//ClassScanner<BaseUi> childScanner = new ClassScanner(childType.getPropertyType());
 		ClassScanner<BaseUi> childScanner = new ClassScanner(childType.getUiClassType());
 		
 		
-		//tab.setTitle(childScanner.getClazzAnnotation().title());
-		tab.setValueExpression("title", Utility.createExpression(childScanner.getClazzAnnotation().title(), String.class));
-		
-		
-//		String listValueGetterSetter = String.format("#{%s}" , childType.getGetterSetterValueName()); 
-//		WebuiDatatableProvider<BaseEntityModel> dataTableProvider = new WebuiDatatableProvider<BaseEntityModel>(childScanner.getFields(), 
-//																	this.getLabels(), listValueGetterSetter, childType);
-//
-//
-//		//Bottone +
-//		CommandButton plus = new CommandButton();
-//		//plus.setValue("ADD");
-//		plus.setIcon("fa fa-plus");
-//		plus.setId(childType.getName() + "_plus_button");
-//		String addmethod = String.format("#{%s}" , childType.getAddValueMethodName());
-//		MethodExpression actionListener = Utility.createMethodExp(addmethod);
-//		plus.setActionExpression(actionListener);
-//		plus.setUpdate(childType.getName()+"_datatable");
-//		
-//		Tooltip plustooltip = new Tooltip();
-//		plustooltip.setFor(plus.getId());
-//		plustooltip.setValue("Add new " + childType.getName()) ;
-//		
-//		tab.getChildren().add(plus);
-//		tab.getChildren().add(plustooltip);
-//		
-//		
-//		tab.getChildren().add( dataTableProvider.buildDataTable());
+		tab.setValueExpression("title", Utility.createExpression(childScanner.getClazzAnnotation().title(), String.class));		
 		
 		tab.getChildren().add(this.buildChildrenPanel(childType, childScanner, null));
-		
-		
-		
-		
+				
 		return tab;
 				
 	}
@@ -369,11 +359,14 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		
 		edit.setIcon("fa fa-edit");
 		edit.setId(detailList.getPropertyName() + "_edit_button");
-		String editMethod = String.format("#{%s}", detailList.getDeleteValueMethodName());
-		MethodExpression editactionListener = Utility.createMethodExp(editMethod,
-				new Class[] { detailList.getPropertyType() });
-		edit.setActionExpression(editactionListener);
-		edit.setUpdate(detailList.getPropertyName()+"_datatable");
+//		String editMethod = String.format("#{%s}", detailList.getDeleteValueMethodName());
+//		MethodExpression editactionListener = Utility.createMethodExp(editMethod,
+//				new Class[] { detailList.getPropertyType() });
+//		edit.setActionExpression(editactionListener);
+		edit.setUpdate(detailList.getPropertyName()+"_form");
+		edit.setType("button");
+		edit.setProcess("@this");
+		edit.setOnclick("PF('" + detailList.getPropertyName()+"_form" + "').show()");
 		/*
 		 * Tooltip bottone edit
 		 */
@@ -435,6 +428,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		}
 		
 
+		
 		
 		return panel;
 		

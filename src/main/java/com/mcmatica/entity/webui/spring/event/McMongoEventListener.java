@@ -128,24 +128,59 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 	public void onAfterLoad(AfterLoadEvent<BaseEntityModel> event) {
 		// TODO Auto-generated method stub
 		super.onAfterLoad(event);
-		ReflectionUtils.doWithFields(event.getSource().getClass(), new ReflectionUtils.FieldCallback() {
+//		
+//		ReflectionUtils.doWithFields(event.getSource().getClass(), new ReflectionUtils.FieldCallback() {
+//			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+//				System.out.println(event.getSource().getClass().getName() + " " +  field.getName());
+//				ReflectionUtils.makeAccessible(field);
+//				
+//				/*
+//				 * Id auto-increment value
+//				 */
+//				if (field.getAnnotation(MCDbRef.class) != null){
+//					
+//					String idRef = (String) field.get(event.getSource());
+//					
+//					BasicQuery qry = new BasicQuery(String.format("_id: '%s'", idRef));
+//					
+//					
+//					field.set(event.getSource(), mongoOperations.findOne(qry, field.getType()));	
+//				}
+//			}
+//		});
+
+		
+		ReflectionUtils.doWithFields(event.getType(), new ReflectionUtils.FieldCallback() {
 			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				
 				ReflectionUtils.makeAccessible(field);
 				
-				/*
-				 * Id auto-increment value
-				 */
-				if (field.getAnnotation(MCDbRef.class) != null){
+				
+				
+				
+				MCDbRef mcdbref = field.getAnnotation(MCDbRef.class); 
+				if ( mcdbref != null){
 					
-					String idRef = (String) field.get(event.getSource());
+//					System.out.println(event.getType().getName() + " " +  field.getName());
+//					System.out.println(event.getSource().get(field.getName()) );
 					
-					BasicQuery qry = new BasicQuery(String.format("_id: '%s'", idRef));
+					if (mcdbref.lazy())
+					{
+						event.getSource().put(field.getName(), null);
+					}
+//					Object fieldvalue = field.get(event.getSource());
+//					fieldvalue = null;
+//					
+					//String idRef = (String) field.get(event.getSource());
+					
+					//BasicQuery qry = new BasicQuery(String.format("_id: '%s'", idRef));
 					
 					
-					field.set(event.getSource(), mongoOperations.findOne(qry, field.getType()));	
+					//field.set(event.getSource(), mongoOperations.findOne(qry, field.getType()));	
 				}
 			}
 		});
+
 		
 	}
 

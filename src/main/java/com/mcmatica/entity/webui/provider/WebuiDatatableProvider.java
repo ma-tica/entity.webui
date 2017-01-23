@@ -110,9 +110,8 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				column.setHeader(header);
 				
 				/* cell editor */
-				CellEditor cell = new CellEditor();				
+//				CellEditor cell = new CellEditor();				
 				HtmlOutputText outputcell = new HtmlOutputText();
-//				UIComponent outputcell = this.buildFieldController(fmodel);
 		
 				outputcell.setStyle("display: block;");
 				
@@ -133,26 +132,30 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 					
 				}
 				
-				valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
-				if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
-				{
-					valueexpr = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
-				}
-				input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
-				cell.getFacets().put("input", input);
+//				valueexpr = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+//				if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+//				{
+//					valueexpr = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+//				}
+//				input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
+//				cell.getFacets().put("input", input);
 				
 				//outputcell.setValueExpression("readonly", Utility.createExpression("true", Boolean.class));
 				//outputcell.setId(outputcell.getId()+"_readonly");
 				
-				cell.getFacets().put("output", outputcell);					
-				//cell.getFacets().put("input", input);
+//				cell.getFacets().put("output", outputcell);					
+//				cell.getFacets().put("input", input);
 				
 				if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty()) {
 					column.setWidth(fmodel.getWidth());
 				}
 				
 				/* add cell editor to the colum */
-				column.getChildren().add(cell);
+//				column.getChildren().add(cell);
+	
+				
+				column.getChildren().add(outputcell);
+				
 				
 				/* add column to table */
 				table.getChildren().add(column);

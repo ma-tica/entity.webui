@@ -170,6 +170,10 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		return this.webuiFactory.buildSelectionGrid();
 	}
 
+	@Override
+	public Panel buildEditFormDialogs() {
+		return this.webuiFactory.buildEditFormDialogs();
+	}
 	
 //	@Override
 //	public List<FieldModel> buildShortListFields() {
