@@ -1,6 +1,7 @@
 package com.mcmatica.entity.webui.service;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -316,8 +317,6 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	}
 
 
-
-	
 	
 
 }

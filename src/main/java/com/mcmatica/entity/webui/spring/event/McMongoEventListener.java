@@ -161,7 +161,7 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 				MCDbRef mcdbref = field.getAnnotation(MCDbRef.class); 
 				if ( mcdbref != null){
 					
-//					System.out.println(event.getType().getName() + " " +  field.getName());
+					System.out.println(event.getType().getName() + " " +  field.getName());
 //					System.out.println(event.getSource().get(field.getName()) );
 					
 					if (mcdbref.lazy())

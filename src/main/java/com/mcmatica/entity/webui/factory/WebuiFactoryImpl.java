@@ -271,6 +271,8 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 
 			panelContainer.getChildren().add(formProvider.buildForm());
 			
+
+			
 		}
 		
 	}
@@ -366,6 +368,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		edit.setUpdate(detailList.getPropertyName()+"_form");
 		edit.setType("button");
 		edit.setProcess("@this");
+		
 		edit.setOnclick("PF('" + detailList.getPropertyName()+"_form" + "').show()");
 		/*
 		 * Tooltip bottone edit

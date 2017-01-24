@@ -51,5 +51,6 @@ public interface BaseWebuiService<T extends BaseEntityModel> {
 	long count(String filter);
 
 	void setSelected(T selected);
+
 	
 }

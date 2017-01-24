@@ -38,7 +38,7 @@ public class McMongoIdToEntityConverter implements ConditionalGenericConverter {
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		
-//		System.out.println(targetType.getType().getSimpleName() + " : " + (String) source);
+		System.out.println(targetType.getType().getSimpleName() + " : " + (String) source);
 
 //		BaseEntityModel dummy = null;
 //		try {
