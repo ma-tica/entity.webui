@@ -84,15 +84,12 @@ public class LoadLazyProvider {
 		while(result.hasNext())
 		{
 			BasicDBList tmp = (BasicDBList) result.next().get("lookupoutput");
-			DBObject obj = (DBObject) tmp.get(0);
-				
-			G eobj = this.getMongoOperations().getConverter().read(entityType, obj);
-			
-			
-			
-			resultList.add(eobj);
-		}
-		
+			if (tmp != null && !tmp.isEmpty()) {
+				DBObject obj = (DBObject) tmp.get(0);					
+				G eobj = this.getMongoOperations().getConverter().read(entityType, obj);
+				resultList.add(eobj);
+			}
+		}		
 		
 		return resultList;
 		

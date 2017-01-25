@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.faces.component.html.HtmlForm;
 
+import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.panelgrid.PanelGrid;
 
@@ -38,19 +39,51 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 
 	
 	
-	public Dialog buildForm()
+	@Override
+	protected String elValue(FieldModel fmodel) {
+		// TODO Auto-generated method stub
+//		String el = "#{%s.%s.%s.%s}";
+//		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getLinkedParentField(), fmodel.getPropertyName());
+		if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+		{
+			return String.format("#{%s.%s.%s}", detailListModel.getSelection(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+		}else{
+			return String.format("#{%s.%s}", detailListModel.getSelection(),  fmodel.getPropertyName());			
+		}
+
+	}
+
+
+
+
+	public HtmlForm buildForm()
 	{
 
 		
 		
 		Dialog dialog = new Dialog();
-		dialog.setId(detailListModel.getPropertyName() + "_form");
+		dialog.setId(detailListModel.getPropertyName() + "_dlg");
 		dialog.setWidgetVar(dialog.getId());
 		dialog.setModal(true);
 		PanelGrid panel = this.buildPanelGrid();
 		dialog.getChildren().add(panel);
-				
-		return dialog;
+		//dialog.setClosable(false);
+		
+		// Commands button
+		CommandButton buttonok = new CommandButton();
+		buttonok.setType("submit");
+		buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview:" + detailListModel.getPropertyName() + "_datatable");
+		buttonok.setIcon("fa fa-check");
+		
+		dialog.getChildren().add(buttonok);
+		
+		
+		HtmlForm form = new HtmlForm();
+		form.getChildren().add(dialog);
+		
+		form.setId(detailListModel.getPropertyName() + "_form");
+		
+		return form;
 	}
 	
 	

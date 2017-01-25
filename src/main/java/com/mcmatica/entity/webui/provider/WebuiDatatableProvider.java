@@ -83,7 +83,11 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 									Utility.createAjaxBehaviour(this.detailListModel.getEvent().getEventListenerExpression(), 
 									this.detailListModel.getEvent().getEventUpdateExpression()));
 		}
-		
+
+		/* rowSelect event */
+		table.addClientBehavior("rowSelect", 
+				Utility.createAjaxBehaviour(null, 
+						"form_main:detail_tabview:" + this.detailListModel.getPropertyName() + "_remove_button, form_main:detail_tabview:" + this.detailListModel.getPropertyName() + "_edit_button" ));
 		
 		
 		/*

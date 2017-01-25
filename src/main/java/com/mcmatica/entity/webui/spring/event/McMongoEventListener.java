@@ -1,27 +1,20 @@
 package com.mcmatica.entity.webui.spring.event;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mapping.model.MappingException;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
 import org.springframework.data.mongodb.core.mapping.event.AfterLoadEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
-import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.data.mongodb.core.query.BasicQuery;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.ReflectionUtils;
 
 import com.mcmatica.entity.webui.annotation.MCCascadeSave;
@@ -80,7 +73,8 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 				 */
 				if (field.getAnnotation(Id.class) != null)				
 				{
-					if (field.get(event.getSource()) == null || field.get(event.getSource()).toString().isEmpty()) {
+					if (field.get(event.getSource()) == null || field.get(event.getSource()).toString().isEmpty() 
+							|| Integer.parseInt(field.get(event.getSource()).toString()) < 0 ) {
 						String nextid = nextId(event.getSource());
 						field.set(event.getSource(), nextid);
 					}
@@ -108,7 +102,7 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 				/*
 				 * Execute Cascade Saving
 				 */				
-				if (field.isAnnotationPresent(DBRef.class) && field.isAnnotationPresent(MCCascadeSave.class)) {
+				if (field.isAnnotationPresent(MCDbRef.class) && field.isAnnotationPresent(MCCascadeSave.class)) {
 					cascadeSaving(field, event.getSource());
 					MCCascadeSave cascadeSave = field.getAnnotation(MCCascadeSave.class);
 					if (cascadeSave.cascadeDelete())
@@ -161,7 +155,7 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 				MCDbRef mcdbref = field.getAnnotation(MCDbRef.class); 
 				if ( mcdbref != null){
 					
-					System.out.println(event.getType().getName() + " " +  field.getName());
+//					System.out.println(event.getType().getName() + " " +  field.getName());
 //					System.out.println(event.getSource().get(field.getName()) );
 					
 					if (mcdbref.lazy())
@@ -218,7 +212,9 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 					Iterator iterator = ((List) fieldValue).iterator();
 					while(iterator.hasNext())
 					{
-						Object listItem = iterator.next();
+						BaseEntityModel listItem = (BaseEntityModel) iterator.next();
+						
+						//TODO : salvare il riferimento al padre in automatico ?
 						mongoOperations.save(listItem);
 					}
 	

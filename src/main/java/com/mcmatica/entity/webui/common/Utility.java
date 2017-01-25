@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.el.ELContext;
 import javax.el.MethodExpression;
@@ -361,6 +362,17 @@ public class Utility {
 			throw new Exception("Cannot get differences from objects of diferent classes ");
 		}
 	}
+	
+	
+	 
+	public static String randomId(int length) {
+	      Random rnd = new Random();	
+	      int number = rnd.nextInt();
+	      
+	      return String.format("%0" + length + "d", Math.abs(number) * -1).substring(0, length);
+		
+	}
+
 
 	// Lang
 	// -----------------------------------------------------------------------------------------------------------

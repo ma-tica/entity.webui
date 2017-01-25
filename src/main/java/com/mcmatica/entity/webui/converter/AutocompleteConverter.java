@@ -79,14 +79,15 @@ public class AutocompleteConverter implements Converter {
 		
 		AutoComplete autocompleteui = (AutoComplete) component;
 		List<BaseEntityModel> suggestions = autocompleteui.getSuggestions();
-		for(BaseEntityModel entity : suggestions)
-		{
-			if (value.equals(entity.toString())) {
-				return entity;
+		if (suggestions != null) {
+			for(BaseEntityModel entity : suggestions)
+			{
+				if (value.equals(entity.toString())) {
+					return entity;
+				}
 			}
+		
 		}
-		
-		
 		
 
 		return null;

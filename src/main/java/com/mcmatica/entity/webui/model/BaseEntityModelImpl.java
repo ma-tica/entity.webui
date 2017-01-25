@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.annotation.Transient;
 
 import com.mcmatica.entity.webui.common.Constant;
+import com.mcmatica.entity.webui.common.Utility;
 
 public abstract class BaseEntityModelImpl implements BaseEntityModel, Serializable {
 
@@ -16,6 +17,11 @@ public abstract class BaseEntityModelImpl implements BaseEntityModel, Serializab
 	 */
 	private static final long serialVersionUID = -894880056866237573L;
 
+	
+	public BaseEntityModelImpl(){
+		this.setId(Utility.randomId(10));
+	}
+	
 	@Transient
 	private boolean newInstance;
 	

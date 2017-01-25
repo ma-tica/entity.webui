@@ -295,7 +295,7 @@ abstract class WebuiAbstractProvider {
 
 		auto.setSize(50);
 		
-		auto.addClientBehavior("query", Utility.createClientBehaviour("$('.detail_tabview_jobber_gif').show(); ", "$('.detail_tabview_jobber_gif').hide();", null));
+		//auto.addClientBehavior("query", Utility.createClientBehaviour("$('.detail_tabview_jobber_gif').show(); ", "$('.detail_tabview_jobber_gif').hide();", null));
 		
 				
 		

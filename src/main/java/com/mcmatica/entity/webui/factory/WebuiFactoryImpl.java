@@ -1,6 +1,5 @@
 package com.mcmatica.entity.webui.factory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -8,12 +7,10 @@ import javax.el.MethodExpression;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
-import javax.faces.webapp.FacetTag;
 
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
@@ -261,7 +258,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		for (DetailListModel childType : children)
 		{
 			String listValueGetterSetter = String.format("#{%s}" , childType.getGetterSetterValueName()); 
-			ClassScanner<BaseUi> childScanner = new ClassScanner(childType.getUiClassType());
+			ClassScanner<BaseUi> childScanner = new ClassScanner<BaseUi>((Class<BaseUi>) childType.getUiClassType());
 
 			WebuiFormProvider formProvider = new WebuiFormProvider(childScanner.getFields(),
 																  childScanner.getClazzAnnotation(),
@@ -271,6 +268,8 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 
 			panelContainer.getChildren().add(formProvider.buildForm());
 			
+			this.buildChildrenForms(childScanner.getChildren(), panelContainer);		
+		
 
 			
 		}
@@ -320,12 +319,16 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		 * Bottone +
 		 */
 		CommandButton plus = new CommandButton();
+		plus.setProcess("@this");
 		plus.setIcon("fa fa-plus");
 		plus.setId(detailList.getPropertyName() + "_plus_button");
 		String addmethod = String.format("#{%s}" , detailList.getAddValueMethodName());
 		MethodExpression actionListener = Utility.createMethodExp(addmethod);
 		plus.setActionExpression(actionListener);
-		plus.setUpdate(detailList.getPropertyName()+"_datatable");
+		//plus.setUpdate(detailList.getPropertyName()+"_datatable");
+		plus.setUpdate(":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg");
+		plus.setOncomplete("PF('" + detailList.getPropertyName()+"_dlg" + "').show()");
+
 
 		/*
 		 * Tooltip bottone +
@@ -338,8 +341,10 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		/*
 		 * Bottone -
 		 */
-		CommandButton remove = new CommandButton();
+		String disableExpression = String.format("#{%s eq null}" , detailList.getSelection());
 		
+		CommandButton remove = new CommandButton();
+		remove.setProcess("@this");
 		remove.setIcon("fa fa-remove");
 		remove.setId(detailList.getPropertyName() + "_remove_button");
 		String deleteMethod = String.format("#{%s}", detailList.getDeleteValueMethodName());
@@ -347,6 +352,9 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 				new Class[] { detailList.getPropertyType() });
 		remove.setActionExpression(removeactionListener);
 		remove.setUpdate(detailList.getPropertyName()+"_datatable");
+		
+		remove.setValueExpression("disabled", Utility.createExpression(disableExpression, Boolean.class));
+
 		/*
 		 * Tooltip bottone -
 		 */
@@ -358,18 +366,12 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		 * Bottone Editing
 		 */
 		CommandButton edit = new CommandButton();
-		
+		edit.setProcess("@this");
 		edit.setIcon("fa fa-edit");
 		edit.setId(detailList.getPropertyName() + "_edit_button");
-//		String editMethod = String.format("#{%s}", detailList.getDeleteValueMethodName());
-//		MethodExpression editactionListener = Utility.createMethodExp(editMethod,
-//				new Class[] { detailList.getPropertyType() });
-//		edit.setActionExpression(editactionListener);
-		edit.setUpdate(detailList.getPropertyName()+"_form");
-		edit.setType("button");
-		edit.setProcess("@this");
-		
-		edit.setOnclick("PF('" + detailList.getPropertyName()+"_form" + "').show()");
+		edit.setUpdate(":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg");		
+		edit.setOncomplete("PF('" + detailList.getPropertyName()+"_dlg" + "').show()");		
+		edit.setValueExpression("disabled", Utility.createExpression(disableExpression, Boolean.class));
 		/*
 		 * Tooltip bottone edit
 		 */
