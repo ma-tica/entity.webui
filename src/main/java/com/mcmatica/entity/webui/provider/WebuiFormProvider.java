@@ -74,6 +74,7 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 		buttonok.setType("submit");
 		buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview:" + detailListModel.getPropertyName() + "_datatable");
 		buttonok.setIcon("fa fa-check");
+		buttonok.setOncomplete("PF('" + dialog.getId() +"').hide()");
 		
 		dialog.getChildren().add(buttonok);
 		

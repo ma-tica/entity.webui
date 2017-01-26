@@ -3,7 +3,6 @@ package com.mcmatica.entity.webui.common;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,15 +15,20 @@ import javax.el.ValueExpression;
 import javax.faces.context.FacesContext;
 import javax.faces.event.BehaviorEvent;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.behavior.ajax.AjaxBehavior;
 import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.springframework.aop.support.AopUtils;
-import org.springframework.data.repository.query.parser.Part;
 
+import com.mcmatica.entity.webui.annotation.MCDbRef;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
+import com.mcmatica.entity.webui.service.LoadLazyProvider;
 
 public class Utility {
 
+	private static Logger logger = LogManager.getLogger(Utility.class.getName());
+	
 	/**
 	 * Shortcut to create JSF expression with parameters
 	 * 
@@ -296,13 +300,15 @@ public class Utility {
 		}
 
 		
-		if (first == null && second == null) {
+		if (first == null && second == null) {			
 			return true;
 		}
 		if (first == null && second != null) {
+			logger.info(String.format("1-[areEquals -> false]  %s <> %s", first+"", second+"" )); 
 			return false;
 		}
 		if (first != null && second == null) {
+			logger.info(String.format("2-[areEquals -> false]  %s <> %s", first+"", second+"" )); 
 			return false;
 		}
 		if (first.getClass().getName().equals(second.getClass().getName())) {
@@ -321,11 +327,13 @@ public class Utility {
 						if (firstListItems == null && secondListItems == null) {
 							return true;
 						} else if (firstListItems == null && secondListItems != null) {
+							logger.info(String.format("3-[areEquals -> false] field:%s  %s <> %s", field.getName(), firstListItems+"", secondListItems+"" )); 
 							return false;
 						} else if (firstListItems != null & secondListItems == null) {
+							logger.info(String.format("4-[areEquals -> false] field:%s  %s <> %s", field.getName(), firstListItems+"", secondListItems+"" )); 
 							return false;
-						} else if (firstListItems.size() != secondListItems.size())						
-						{
+						} else if (firstListItems.size() != secondListItems.size())	{
+							logger.info(String.format("5-[areEquals -> false] field:%s  size %d <> %d", field.getName(), firstListItems.size(), secondListItems.size() )); 
 							return false;
 						} else {
 							
@@ -334,6 +342,7 @@ public class Utility {
 								T firtsListItem = firstListItems.get(i);
 								T secondListItem = secondListItems.get(i);
 								if (!(areEquals(firtsListItem, secondListItem))) {
+									logger.info(String.format("6-[areEquals -> false] field:%s  %s <> %s", field.getName(), firtsListItem+"", secondListItem+"" )); 
 									return false;
 								}
 							}
@@ -343,11 +352,14 @@ public class Utility {
 						Object firstFieldValue = field.get(first);
 						Object otherFieldValue = otherField.get(second);
 						if (firstFieldValue == null && otherFieldValue != null) {
+							logger.info(String.format("7-[areEquals -> false] field:%s  %s <> %s", field.getName(), firstFieldValue+"", otherFieldValue+"" )); 
 							return false;
 						} else if (firstFieldValue != null && otherFieldValue == null) {
+							logger.info(String.format("8-[areEquals -> false] field:%s  %s <> %s", field.getName(), firstFieldValue+"", otherFieldValue+"" )); 
 							return false;
 						} else if (firstFieldValue != null && otherFieldValue != null
 								&& !firstFieldValue.equals(otherFieldValue)) {
+							logger.info(String.format("9-[areEquals -> false] field:%s  %s <> %s", field.getName(), firstFieldValue+"", otherFieldValue+"" )); 
 							return false;
 						}
 					}
@@ -374,6 +386,64 @@ public class Utility {
 	}
 
 
+	public static <T extends BaseEntityModel> void loadLazyEntityProperties(T entity) throws Exception {
+		/*
+		 *  AspectJ management
+		 */
+		T original0 = null;
+		if (AopUtils.isJdkDynamicProxy(entity))
+		{
+			/*
+			 * obtain the target object behind the Proxy
+			 */
+			original0 = (T) ((org.springframework.aop.framework.Advised)entity).getTargetSource().getTarget();
+		}else
+		{
+			original0 = entity;
+		}
+
+		
+		if (original0 == null) {
+			return;
+		}
+		for (Field field : original0.getClass().getDeclaredFields()) {
+			if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+				field.setAccessible(true);
+				MCDbRef mcdbref = field.getAnnotation(MCDbRef.class);
+				if (mcdbref != null && mcdbref.lazy())
+				{
+					if (field.get(original0) == null)
+					{
+						
+						
+						if (field.getType().equals(List.class)) {
+							
+							ParameterizedType itemListType = (ParameterizedType) field.getGenericType();
+					        Class<T> itemListClass = (Class<T>) itemListType.getActualTypeArguments()[0];
+							
+					        List<T> originalListItems = LoadLazyProvider.istance.listLoadLazy(itemListClass, original0, field.getName());
+
+					        field.set(original0, originalListItems);
+					        
+							if (originalListItems != null) {
+								
+								for (int i = 0; i < originalListItems.size(); i++) {
+									T originalListItem = originalListItems.get(i);
+									loadLazyEntityProperties(originalListItem);									
+								}
+							}
+						}else{
+							LoadLazyProvider.istance.listLoadLazy(original0.getClass(), original0, field.getName());
+						}
+					}			
+				}
+			}
+		}
+		
+	}
+	
+	
+	
 	// Lang
 	// -----------------------------------------------------------------------------------------------------------
 
@@ -468,4 +538,6 @@ public class Utility {
 
 		return false;
 	}
+	
+	
 }

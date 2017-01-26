@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.springframework.aop.support.AopUtils;
@@ -31,6 +33,8 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	protected BaseEntityDataModel<T> list;
 	
 	protected BaseRepository<T> repository;
+
+	private Logger logger = LogManager.getLogger(this.getClass().getName());
 	
 	@Override
 	public T create()
@@ -129,9 +133,19 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		}
 
 		
+		try {
+			Utility.loadLazyEntityProperties(selected0);
+		} catch (Exception e) {
+			
+			logger.error(e);
+		}
+		
+		this.selected =  (T) selected0;
 		
 		
-		this.selected =  (T) selected0;	
+		//Load lazy elements
+		
+		
 		/**
 		 * Save the original value of selected Item
 		 */

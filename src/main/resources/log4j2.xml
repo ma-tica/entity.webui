@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<Appenders>
+<!-- 		<RollingFile name="fileLogger" fileName="${sys:logFilename}" -->
+<!-- 			filePattern="${sys:logFilename}.%i.log"> -->
+<!-- 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p [%C:%L] - %m%n" /> -->
+<!-- 			<Policies> -->
+<!-- 				<SizeBasedTriggeringPolicy size="10 MB" /> -->
+<!-- 			</Policies> -->
+<!-- 			<DefaultRolloverStrategy max="10" /> -->
+<!-- 		</RollingFile> -->
+
+<!-- 		<SMTP name="mail" -->
+<!-- 			to="ccs_alert@comelit.it"   -->
+<!-- 			from="alert@cloud.comelit-group.com"  -->
+<!-- 			smtpHost="localhost" 		 -->
+<!-- 			smtpPort="2525" -->
+<!-- 			bufferSize="1" -->
+<!-- 			subject="CCS ALERT" -->
+<!-- 			layout="org.apache.log4j.HTMLLayout" -->
+<!-- 			smtpDebug="true"			 -->
+<!-- 			 > -->
+<!-- 		</SMTP> -->
+
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %p [%C:%L] - %m%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="info" additivity="false">
+			<AppenderRef ref="console" />
+<!-- 			<AppenderRef ref="fileLogger" /> -->
+<!-- 			<AppenderRef ref="mail" level="off"/> -->
+		</Root>
+	</Loggers>
+</Configuration>
