@@ -9,11 +9,17 @@ import java.util.ResourceBundle;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
+import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
+import javax.faces.model.DataModel;
 
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.calendar.Calendar;
+import org.primefaces.component.column.Column;
+import org.primefaces.component.commandbutton.CommandButton;
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.graphicimage.GraphicImage;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.inputtextarea.InputTextarea;
@@ -224,6 +230,7 @@ abstract class WebuiAbstractProvider {
 			somenu.getChildren().add(items);
 			//somenu.setEditable(true);
 			somenu.setFilter(true);
+			somenu.setEditable(false);
 			
 		}
 		
@@ -267,18 +274,23 @@ abstract class WebuiAbstractProvider {
 
 		
 		String selectItemsExp = fmodel.getFillSelectionListExpression();
-		auto.setCompleteMethod(Utility.createMethodExp(selectItemsExp, new Class[]{String.class}));
+		auto.setCompleteMethod(Utility.createGetterMethodExp(selectItemsExp, new Class[]{String.class}, List.class));
 		
 		auto.setValueExpression("var", Utility.createExpression("itm", String.class));
 		auto.setValueExpression("itemLabel", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
+//		auto.setValueExpression("itemValue", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
 		auto.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
-//		auto.setDropdown(true);
-//		auto.setDropdownMode("current");
-//		auto.setForceSelection(true);
-		auto.setMaxResults(20);
-		auto.setQueryDelay(500);
+		auto.setDropdown(true);
+		auto.setDropdownMode("current");
+//		auto.setForceSelection(false);
+//		auto.setMinQueryLength(3);
+//		auto.setMaxResults(20);
+//		auto.setQueryDelay(500);
+		auto.setScrollHeight(400);
 		
-		auto.setCache(true);
+//		auto.setAutoHighlight(true);
+		
+		//auto.setCache(true);
 		
 		
 		
@@ -302,6 +314,63 @@ abstract class WebuiAbstractProvider {
 		
 		return auto;
 	}
+	
+	protected HtmlPanelGroup buildSearchpanel(FieldModel fmodel) {
+		
+		InputText input = new InputText();
+		this.partialBuildeComponent(fmodel, input);		
+		if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty())
+		{
+			input.setStyle("width: " + fmodel.getWidth() + ";");
+		}else{
+		
+			input.setStyle("width: 100%;");
+		}	
+		input.setValueExpression("readonly", Utility.createExpression("true", boolean.class));
+		String selectItemsExp = fmodel.getFillSelectionListExpression(); // String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()");
+		
+
+		// Dialog
+		Dialog dialog = new Dialog();
+		dialog.setId(fmodel.getId() + "_search_dialog");
+		dialog.setWidgetVar(fmodel.getId() + "_search_dialog");
+		dialog.setValueExpression("header", Utility.createExpression(fmodel.getCaption(), String.class));
+		
+		OutputLabel lbl = new OutputLabel();
+		lbl.setValue("...");
+		
+		dialog.getChildren().add(lbl);
+		dialog.setModal(false);
+		dialog.setCloseOnEscape(true);
+//		DataTable searchTable = new DataTable();
+
+				
+		// Button search
+		CommandButton button = new CommandButton();
+		button.setProcess("@this");
+		button.setIcon("fa fa-search");
+		button.setOnclick("PF('" + dialog.getWidgetVar() + "').show()");
+		button.setType("button");
+		
+		
+		
+		
+		HtmlPanelGroup panel = new HtmlPanelGroup();
+		panel.setStyle("float: left");
+			
+		
+		
+		
+		
+		
+		panel.getChildren().add(input);
+		panel.getChildren().add(button);
+		panel.getChildren().add(dialog);
+		
+		return panel;
+		
+	}
+	
 	
 	private void partialBuildeComponent(FieldModel fmodel, UIInput input)
 	{
@@ -340,5 +409,102 @@ abstract class WebuiAbstractProvider {
 //		}
 
 	}
+	
+//	private DataTable buildSearchTable(FieldModel fmodel)
+//	{
+//		DataTable table = new DataTable();
+//		
+//		
+//		
+//		/* value */
+//		String expr = String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "list");
+//		table.setValueExpression("value", Utility.createExpression( expr, DataModel.class));
+//		
+//		/* var */
+//		table.setVar("item");
+//		table.setSelectionMode("single");
+//		
+//		
+//		/* filtered value */
+//		expr = String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "listFiltered");
+//		table.setValueExpression("filteredValue", Utility.createExpression( expr, List.class));
+//		
+//		
+//		/* selection */
+//		table.setValueExpression("selection", Utility.createExpression(this.elValue(fmodel), fmodel.getPropertyType()));
+//		
+//		/* table style */
+////		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
+//		
+//		/* skipChildren */
+//		table.setValueExpression("skipChildren", Utility.createExpression("true", Boolean.class));
+//		
+//		
+//		/* lazy */
+//		table.setValueExpression("lazy", Utility.createExpression("true", Boolean.class));
+//		
+//		/*
+//		 * columns
+//		 */
+//		for (FieldModel fmodelc : this.shortListFields)
+//		{
+//			Column column = new Column();
+//			
+////			HtmlOutputText caption = new HtmlOutputText();
+////			caption.setValueExpression("value", Utility.createExpression(fmodel.getGridCaption(), String.class));			
+////			column.getFacets().put("header", caption);
+//			
+//			/*
+//			 * Header
+//			 */
+//			
+//			/* caption */
+//			String caption = fmodel.getGridCaption();
+//			column.setValueExpression("headerText", Utility.createExpression(caption, String.class));
+//			
+//			/* width */
+//			column.setValueExpression("width", Utility.createExpression(fmodel.getGridWidth(), String.class));
+//			
+//			
+//			/*
+//			 * Cell
+//			 */			
+//			
+//			/* cell value */
+//			HtmlOutputText cell = new HtmlOutputText();
+//			String cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getPropertyName());
+//						
+//			if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+//			{
+//				cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+//			}
+//			
+//			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+//			column.getChildren().add(cell);
+//			
+//			/* filter by */
+//			
+//			if (fmodel.getLinkedParentField() == null || fmodel.getLinkedParentField().isEmpty())
+//			{
+//				//cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+//				cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getDbFieldName());
+//				column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
+//				/* filter match mode */
+//				column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
+//			}
+//			
+//			
+//			
+//			table.getChildren().add(column);
+//			
+//		}
+//		
+//		
+//		
+//		
+//		return table;
+//		
+//	}
+	
 	
 }

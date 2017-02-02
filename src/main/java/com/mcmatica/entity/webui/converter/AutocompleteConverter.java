@@ -82,7 +82,7 @@ public class AutocompleteConverter implements Converter {
 		if (suggestions != null) {
 			for(BaseEntityModel entity : suggestions)
 			{
-				if (value.equals(entity.toString())) {
+				if (value.equals(entity.getSelectionLabel())) {
 					return entity;
 				}
 			}
@@ -99,7 +99,8 @@ public class AutocompleteConverter implements Converter {
 			return "";
 		}
 
-		return value.toString();
+		return ((BaseEntityModel) value).getSelectionLabel();
+		//return (String) value;
 	}
 
 	

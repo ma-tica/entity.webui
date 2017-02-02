@@ -3,6 +3,7 @@ package com.mcmatica.entity.webui.common;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -67,6 +68,13 @@ public class Utility {
 				stringExpression, Void.class, params);
 	}
 
+	public static MethodExpression createGetterMethodExp(String stringExpression, Class[] params, Class<?> returnedType) {
+		FacesContext context = FacesContext.getCurrentInstance();
+		return context.getApplication().getExpressionFactory().createMethodExpression(Utility.getELContext(),
+				stringExpression, returnedType, params);
+	}
+
+	
 	/**
 	 * Create a value expression if stringExpression has the format #{...}
 	 * 

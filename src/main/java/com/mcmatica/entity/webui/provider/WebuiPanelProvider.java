@@ -202,6 +202,9 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		case AUTOCOMPLETE:
 			input = this.buildAutocomplete(fmodel);
 			break;
+		case SEARCH:
+			input = this.buildSearchpanel(fmodel);
+			break;
 		default:
 			break;
 		}

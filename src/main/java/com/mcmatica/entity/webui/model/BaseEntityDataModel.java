@@ -130,7 +130,7 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 				if (where == null) {
 					where = jqb.where(jqb.property(key).contains(filters.get(key)+""));
 				}else{
-					where = where.and(jqb.where(jqb.property(key).contains(filters.get(key)+"")));
+					where = jqb.getWhere().and(jqb.property(key).contains(filters.get(key)+""));
 				}
 			}
 			

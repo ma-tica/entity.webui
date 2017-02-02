@@ -12,7 +12,8 @@ public class FieldModel {
 		INPUT_TEXTAREA,
 		SELECTION_ONE_MENU,
 		BOOLEAN_CHECKBOX,
-		AUTOCOMPLETE
+		AUTOCOMPLETE,
+		SEARCH
 		;
 	}
 	
@@ -38,6 +39,7 @@ public class FieldModel {
 	
 	private String linkedParentField;
 	private String linkedValueExpression;
+	private String referencedFieldBeanControllerName;
 	
 	private boolean formField;
 	private boolean shortGridField;
@@ -368,4 +370,13 @@ public class FieldModel {
 	public void setDbFieldName(String dbFieldName) {
 		this.dbFieldName = dbFieldName;
 	}
+
+	public String getReferencedFieldBeanControllerName() {
+		return referencedFieldBeanControllerName;
+	}
+
+	public void setReferencedFieldBeanControllerName(String referencedFieldBeanControllerName) {
+		this.referencedFieldBeanControllerName = referencedFieldBeanControllerName;
+	}
+
 }

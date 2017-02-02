@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import javax.el.MethodExpression;
 import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 
@@ -90,7 +91,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 	}
 
 	@Override
-	public Panel buildPanelGrid()
+	public HtmlPanelGroup buildPanelGrid()
 	{
 
 		
@@ -111,18 +112,30 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		/*
 		 * Children panels
 		 */
+		Panel childrenpanel = null;
 		if (this.scanner.getChildren() != null && !scanner.getChildren().isEmpty())
 		{
+			childrenpanel = new Panel();
 			
-			panel.getChildren().add(this.buildChildrenPanels(scanner.getChildren()));
+			childrenpanel.getChildren().add(this.buildChildrenPanels(scanner.getChildren()));
 			
 
 			
 		}
 		
+		HtmlPanelGroup mainpanel = new HtmlPanelGroup();
+		mainpanel.getChildren().add(panel);
 		
-		
-		return panel;
+		if (childrenpanel != null)
+		{
+			panel.setToggleable(true);
+			
+			childrenpanel.setToggleable(true);
+			mainpanel.getChildren().add(childrenpanel);
+			
+		}
+				
+		return mainpanel;
 	}
 	
 	@Override
@@ -399,6 +412,8 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		
 		Panel panel = new Panel();
 		panel.setId(detailList.getPropertyName() + "_panel");
+
+		
 		if (title != null)
 		{
 			panel.setValueExpression("header", Utility.createExpression(title, String.class));

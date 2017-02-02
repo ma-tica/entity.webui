@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 
@@ -40,7 +41,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	protected List<BaseEntityModel> listFiltered;
 	
-	protected Panel formPanel;
+	protected HtmlPanelGroup formPanel;
 	
 	protected Panel dialogsPanel;
 	
@@ -101,7 +102,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	}
 
 
-	public Panel getPanel()
+	public HtmlPanelGroup getPanel()
 	{
 		if (formPanel == null)
 		{
@@ -110,7 +111,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		return formPanel;
 	}
 
-	public void setPanel(Panel panel)
+	public void setPanel(HtmlPanelGroup panel)
 	{
 		this.formPanel = panel;
 	}	
@@ -309,7 +310,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 */
 	private void updateUI()
 	{
-		RequestContext.getCurrentInstance().update("form_toolbar");
+		RequestContext.getCurrentInstance().update(":form_toolbar");
 		//RequestContext.getCurrentInstance().update("form_grid");
 	}
 	

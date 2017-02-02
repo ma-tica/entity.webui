@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
+import javax.faces.component.html.HtmlPanelGroup;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
@@ -176,7 +178,8 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	}
 
 	@Override
-	public Panel buildPanelGrid() {
+	public HtmlPanelGroup buildPanelGrid() {
+		
 		return this.webuiFactory.buildPanelGrid();		
 	}
 

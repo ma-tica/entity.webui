@@ -10,6 +10,7 @@ import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.panelgrid.PanelGrid;
 
 import com.mcmatica.entity.webui.annotation.MCWebui;
+import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 
@@ -74,6 +75,7 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 		buttonok.setType("submit");
 		buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview:" + detailListModel.getPropertyName() + "_datatable");
 		buttonok.setIcon("fa fa-check");
+		buttonok.setValueExpression("value", Utility.createExpression("#{mclbl['common.ok']}",String.class));
 		buttonok.setOncomplete("PF('" + dialog.getId() +"').hide()");
 		
 		dialog.getChildren().add(buttonok);

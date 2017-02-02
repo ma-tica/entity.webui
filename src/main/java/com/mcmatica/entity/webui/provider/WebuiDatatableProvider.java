@@ -90,6 +90,9 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 						"form_main:detail_tabview:" + this.detailListModel.getPropertyName() + "_remove_button, form_main:detail_tabview:" + this.detailListModel.getPropertyName() + "_edit_button" ));
 		
 		
+		
+		
+		
 		/*
 		 * Column per selezione riga
 		 */
@@ -234,6 +237,9 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 			break;
 		case AUTOCOMPLETE:
 			input = this.buildAutocomplete(fmodel);
+			break;
+		case SEARCH:
+			input = this.buildInputText(fmodel);
 			break;
 		default:
 			break;

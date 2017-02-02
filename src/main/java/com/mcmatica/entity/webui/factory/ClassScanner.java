@@ -117,6 +117,11 @@ class ClassScanner<F extends BaseUi> {
 		 * Sorts fields
 		 */
 		this.sortFieldByFormPosition();
+		
+		/*
+		 * Sorts short list fields
+		 */
+		this.sortShortListFieldByGridPosition();		
 
 	}
 	
@@ -182,11 +187,13 @@ class ClassScanner<F extends BaseUi> {
 					this.fillWebuiProperties(field, fmodel, webui);
 				}
 				
+				fmodel.setReferencedFieldBeanControllerName(this.retrieveRelatedBeanControllerName(fieldRef.refUiClass()));
+				
 				if (fieldRef.getListExpression() != null && !fieldRef.getListExpression().isEmpty())
 				{
 					fmodel.setFillSelectionListExpression(fieldRef.getListExpression());
 				}else{
-					fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", this.retrieveRelatedBeanControllerName(fieldRef.refUiClass()), "findAll()" ));
+					fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "findAll()" ));
 				}
 			}
 			
@@ -325,6 +332,25 @@ class ClassScanner<F extends BaseUi> {
 			}
 		});
 	}
+
+	private void sortShortListFieldByGridPosition()
+	{
+		Collections.sort(this.shortListFields, new Comparator<FieldModel>() {
+
+			@Override
+			public int compare(FieldModel o1, FieldModel o2) {
+				if (o1.getShortListPosition() == o2.getShortListPosition()) {
+					return 0;
+				} else if (o1.getShortListPosition() > o2.getShortListPosition()) {
+					return 1;
+				} else {
+					return -1;
+				}
+
+			}
+		});
+	}
+
 	
 	private static boolean implementBaseEntityModel(Type type)
 	{
