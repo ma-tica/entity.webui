@@ -13,6 +13,7 @@ import java.util.Random;
 import javax.el.ELContext;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.BehaviorEvent;
 
@@ -23,8 +24,13 @@ import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.springframework.aop.support.AopUtils;
 
 import com.mcmatica.entity.webui.annotation.MCDbRef;
+import com.mcmatica.entity.webui.annotation.MCWebuiField;
+import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.service.LoadLazyProvider;
+import com.mcmatica.jqb.Jqb;
+import com.mcmatica.jqb.JqbDialect;
+import com.mcmatica.jqb.JqbWhereBuilder;
 
 public class Utility {
 
@@ -451,6 +457,83 @@ public class Utility {
 	}
 	
 	
+	
+	public static JqbWhereBuilder buildAutocompleteFilter(String query, List<String> selectionFields)
+	{
+				
+		Jqb jqb = new Jqb(JqbDialect.MONGODB);
+		JqbWhereBuilder wh = null;
+		for (String field : selectionFields)
+		{
+			if (wh == null) {
+				wh = jqb.where(jqb.property(field).contains(query.trim()));
+			}else{
+				wh =jqb.getWhere().or(jqb.property(field).contains(query.trim()));
+			}
+		}
+
+		return wh;
+	}
+
+	public static <T extends BaseUi> JqbWhereBuilder buildAutocompleteFilter(String query, Class<T> clazz)
+	{
+				
+		
+		
+		Jqb jqb = new Jqb(JqbDialect.MONGODB);
+		JqbWhereBuilder wh = null;
+		for (String field : retrieveSelectionFields(clazz))
+		{
+			if (wh == null) {
+				wh = jqb.where(jqb.property(field).contains(query.trim()));
+			}else{
+				wh =jqb.getWhere().or(jqb.property(field).contains(query.trim()));
+			}
+		}
+
+		return wh;
+	}
+	
+	public static List<String> retrieveSelectionFields(Class<?> type)
+	{
+		class FieldS {
+			public final int index;
+			public final String name;
+
+			public FieldS(int index, String name) {
+				super();
+				this.index = index;
+				this.name = name;
+			}			
+		}
+		
+		List<FieldS> selectionfFields = new ArrayList<FieldS>();
+		List<String> selectionFields = new ArrayList<String>();
+		
+		for (Field field : type.getDeclaredFields())
+		{
+			
+			
+			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
+			if (webuifield != null) 
+			{
+				if (webuifield.selectionField() > 0)
+				{
+					FieldS f = new FieldS(webuifield.selectionField(), field.getName());
+					selectionfFields.add(f);
+				}
+			}
+		}
+		
+		selectionfFields.sort((f1, f2) -> f1.index > f2.index ? 1 : 0);
+		
+		for (FieldS f : selectionfFields) {
+			selectionFields.add(f.name);
+		}
+
+		return selectionFields;
+	}
+
 	
 	// Lang
 	// -----------------------------------------------------------------------------------------------------------

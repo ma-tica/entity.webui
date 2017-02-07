@@ -18,6 +18,9 @@ public @interface MCWebuiFieldRef {
 	
 	/**
 	 * Override the default refUiClass#findAll() method 
+	 * used for SelectOneMenu controller
+	 * or the refUiClass#complete(String query) method from
+	 * Autocomplete controller
 	 */
 	public String getListExpression() default "";
 

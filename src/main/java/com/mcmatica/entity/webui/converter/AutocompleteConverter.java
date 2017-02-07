@@ -40,7 +40,11 @@ import javax.faces.model.SelectItem;
 
 import org.primefaces.component.autocomplete.AutoComplete;
 
+import com.mcmatica.entity.webui.bean.BaseWebuiBean;
+import com.mcmatica.entity.webui.common.Constant;
+import com.mcmatica.entity.webui.common.SpringContextProvider;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
+import com.mongodb.DBCollection;
 
 /**
  * <p>
@@ -76,21 +80,30 @@ public class AutocompleteConverter implements Converter {
 	@Override
 	public Object getAsObject(FacesContext context, UIComponent component, String value) {
 		
-		
-		AutoComplete autocompleteui = (AutoComplete) component;
-		List<BaseEntityModel> suggestions = autocompleteui.getSuggestions();
-		if (suggestions != null) {
-			for(BaseEntityModel entity : suggestions)
-			{
-				if (value.equals(entity.getSelectionLabel())) {
-					return entity;
-				}
-			}
-		
-		}
+	    String beanName = (String) component.getAttributes().get(Constant.AUTOCOMPLETE_REFBENACONTROLLERNAME);
+
+//		AutoComplete autocompleteui = (AutoComplete) component;
+//		List<BaseEntityModel> suggestions = autocompleteui.getSuggestions();
+//		if (suggestions != null) {
+//			for(BaseEntityModel entity : suggestions)
+//			{
+//				if (value.equals(entity.getId())) {
+//					return entity;
+//				}
+//			}
+//		
+//		}else{
+			//DBCollection collection = entityType.getAnnotation(@C)
+			//BaseEntityModel entity = (BaseEntityModel) SpringContextProvider.getApplicationContext().getBean(entityType);
+			//BaseWebuiBean neededBean = (BaseWebuiBean) context.getApplication().createValueBinding("#{neededBean}").getValue(context);
+			//BaseWebuiBean neededBean = (BaseWebuiBean)context.getApplication().getELResolver().getValue(context, null, beanName);			
+			BaseWebuiBean neededBean = (BaseWebuiBean)context.getApplication().getVariableResolver().resolveVariable(context, beanName);
+			BaseEntityModel entity = neededBean.getById(value);
+			return entity;
+//		}
 		
 
-		return null;
+		//return null;
 	}
 
 	@Override
@@ -99,7 +112,7 @@ public class AutocompleteConverter implements Converter {
 			return "";
 		}
 
-		return ((BaseEntityModel) value).getSelectionLabel();
+		return ((BaseEntityModel) value).getId();
 		//return (String) value;
 	}
 

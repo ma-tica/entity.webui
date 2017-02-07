@@ -125,7 +125,8 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 				String valueexpr;
 				if (fmodel.getFillSelectionListExpression() != null && !fmodel.getFillSelectionListExpression().isEmpty()) {
 					
-					valueexpr=  String.format("#{%s.%s.%s}", table.getVar(), fmodel.getPropertyName(), Constant.PROPERTY_SELECTION_LABEL);
+					//valueexpr=  String.format("#{%s.%s.%s}", table.getVar(), fmodel.getPropertyName(), Constant.PROPERTY_SELECTION_LABEL);
+					valueexpr=  this.selectionLabelString(table.getVar() + "." + fmodel.getPropertyName(), fmodel);
 					outputcell.setValueExpression("value", Utility.createExpression(valueexpr, String.class));
 					
 				}else{

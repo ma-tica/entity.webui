@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -15,13 +16,12 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
 
+import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.service.BaseWebuiService;
-import com.mcmatica.jqb.Jqb;
-import com.mcmatica.jqb.JqbDialect;
 import com.mcmatica.jqb.JqbWhereBuilder;
 
 
@@ -32,6 +32,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 */
 	private static final long serialVersionUID = -7423178114110032725L;
 
+	
 	
 	protected BaseWebuiService service;
 	
@@ -150,6 +151,11 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		return this.service.findAll();
 	}
 
+	public BaseEntityModel getById(String id)
+	{
+		return this.service.getById(id);
+	}
+
 	
 	/**
 	 * Used for autocomplete components
@@ -158,22 +164,20 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 */
 	public List<BaseEntityModel> complete(String query)
 	{
-	    String nome = "";
-		if(query.contains(" - ")) {
-			nome = query.substring(query.indexOf(" - ") + 3);
-		}else{
-			nome = query;
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+	    List<String> selectionFields = (List<String>) UIComponent.getCurrentComponent(context).getAttributes().get(Constant.PROPERTY_SELECTION_FIELDS);
+		
+		
+		JqbWhereBuilder wh = Utility.buildAutocompleteFilter(query, selectionFields);
+		
+		if (query.trim().isEmpty())
+		{
+			return this.service.findAll();
+		}else
+		{
+			return this.service.find(wh.text());
 		}
-		
-//		Query qry = new Query();
-//		
-//		qry.addCriteria(Criteria.where("nome").regex(nome));
-		
-		Jqb jqb = new Jqb(JqbDialect.MONGODB);
-		JqbWhereBuilder wh = jqb.where(jqb.property("nome").contains(nome));
-		
-		
-		return this.service.find(wh.text());
 		
 	}
 
@@ -310,7 +314,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 */
 	private void updateUI()
 	{
-		RequestContext.getCurrentInstance().update(":form_toolbar");
+		RequestContext.getCurrentInstance().update("form_toolbar");
 		//RequestContext.getCurrentInstance().update("form_grid");
 	}
 	

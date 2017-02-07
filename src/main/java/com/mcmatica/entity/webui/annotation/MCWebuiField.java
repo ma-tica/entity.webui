@@ -33,4 +33,12 @@ public @interface MCWebuiField {
 	
 	//public String valueExpression() default "";
 	
+	/**
+	 * Mark the field as parte of the caption shown in the SelectionOneMenu controller or 
+	 * Autocomplete controller
+	 * Each field value are separated by ' - '
+	 * @return
+	 */
+	public int selectionField() default 0;
+	
 }

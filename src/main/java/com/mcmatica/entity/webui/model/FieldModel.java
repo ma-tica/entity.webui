@@ -1,5 +1,8 @@
 package com.mcmatica.entity.webui.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FieldModel {
 
 	
@@ -44,6 +47,9 @@ public class FieldModel {
 	private boolean formField;
 	private boolean shortGridField;
 	
+	private int selectionField;
+	
+	private List<String> referencedSelectionFields;
 
 	
 	/**
@@ -255,15 +261,16 @@ public class FieldModel {
 			return this.fillSelectionListExpression;
 		}
 		
-//		if (this.getEditorComponent().equals(EditorComponent.SELECTION_ONE_MENU)) {
-//			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "findAll()");
-//		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {
-//			return String.format("#{%s.%s}", this.getRelatedBeanControllerName(), "complete");
-//		}
+		if (this.getEditorComponent().equals(EditorComponent.SELECTION_ONE_MENU)) {
+			return String.format("#{%s.%s}", this.getReferencedFieldBeanControllerName(), "findAll()");
+		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {
+			return String.format("#{%s.%s}", this.getReferencedFieldBeanControllerName(), "complete");
+		}
 		
 		return null;
 	}
 
+	
 	public void setFillSelectionListExpression(String fillSelectionListExpression) {
 		this.fillSelectionListExpression = fillSelectionListExpression;
 	}
@@ -379,4 +386,25 @@ public class FieldModel {
 		this.referencedFieldBeanControllerName = referencedFieldBeanControllerName;
 	}
 
+	public int getSelectionField() {
+		return selectionField;
+	}
+
+	public void setSelectionField(int selectionField) {
+		this.selectionField = selectionField;
+	}
+
+	public List<String> getReferencedSelectionFields() {
+		return referencedSelectionFields;
+	}
+
+	public void addReferencedSelectionFields(String name)
+	{
+		if (this.referencedSelectionFields == null)
+		{
+			this.referencedSelectionFields = new ArrayList<String>();
+		}
+		this.referencedSelectionFields.add(name);
+	}
+	
 }

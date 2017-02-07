@@ -60,10 +60,10 @@ public abstract class BaseEntityModelImpl implements BaseEntityModel, Serializab
 
 	}
 
-	@Override
-	public String getSelectionLabel() {
-		return Long.toString(this.getIdValue());
-	}
+//	@Override
+//	public String getSelectionLabel() {
+//		return Long.toString(this.getIdValue());
+//	}
 	
 	/**
 	 * Return the List of removed children

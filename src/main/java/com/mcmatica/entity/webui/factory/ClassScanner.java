@@ -17,6 +17,7 @@ import com.mcmatica.entity.webui.annotation.MCWebuiFieldEvent;
 import com.mcmatica.entity.webui.annotation.MCWebuiFieldRef;
 import com.mcmatica.entity.webui.annotation.MCWebuiGridColumn;
 import com.mcmatica.entity.webui.bean.BaseUi;
+import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.EventModel;
@@ -152,6 +153,7 @@ class ClassScanner<F extends BaseUi> {
 				fmodel.setVisibleExpression(webuifield.visible());
 				fmodel.setReadonlyExpression(webuifield.readonly());
 				fmodel.setWidth(webuifield.width());
+				fmodel.setSelectionField(webuifield.selectionField());
 				
 				fmodel.setFormField(true);
 											
@@ -189,12 +191,16 @@ class ClassScanner<F extends BaseUi> {
 				
 				fmodel.setReferencedFieldBeanControllerName(this.retrieveRelatedBeanControllerName(fieldRef.refUiClass()));
 				
+				this.retrieveRelatedSelectionFields(fieldRef.refUiClass(), fmodel);
+				
 				if (fieldRef.getListExpression() != null && !fieldRef.getListExpression().isEmpty())
 				{
 					fmodel.setFillSelectionListExpression(fieldRef.getListExpression());
-				}else{
-					fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "findAll()" ));
 				}
+//				else
+//				{
+//					fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "findAll()" ));
+//				}
 			}
 			
 			
@@ -311,6 +317,51 @@ class ClassScanner<F extends BaseUi> {
 		}
 		return null;
 	}
+	
+
+	private  void retrieveRelatedSelectionFields(Class<?> type, FieldModel fmodel)
+	{
+//		class FieldS {
+//			public final int index;
+//			public final String name;
+//
+//			public FieldS(int index, String name) {
+//				super();
+//				this.index = index;
+//				this.name = name;
+//			}			
+//		}
+//		
+//		List<FieldS> selectionfFields = new ArrayList<FieldS>();
+//		
+//		for (Field field : type.getDeclaredFields())
+//		{
+//			
+//			
+//			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
+//			if (webuifield != null) 
+//			{
+//				if (webuifield.selectionField() > 0)
+//				{
+//					FieldS f = new FieldS(webuifield.selectionField(), field.getName());
+//					selectionfFields.add(f);
+//				}
+//			}
+//		}
+//		
+//		selectionfFields.sort((f1, f2) -> f1.index > f2.index ? 1 : 0);
+//		
+//		for (FieldS f : selectionfFields) {
+//			fmodel.addReferencedSelectionFields(f.name);
+//		}
+		
+		
+		for(String field: Utility.retrieveSelectionFields(type)) {
+			fmodel.addReferencedSelectionFields(field);
+		}
+		
+	}
+
 	
 	/**
 	 * Sorts the field list by form position attribute

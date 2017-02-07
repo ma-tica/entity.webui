@@ -24,7 +24,7 @@ public interface BaseEntityModel {
 	 * Used for SelectOneMenu e autoComplete ui components
 	 * @return
 	 */
-	String getSelectionLabel();
+	//String getSelectionLabel();
 
 	List<BaseEntityModel> getFieldListItemsRemoved(String childListName);
 	

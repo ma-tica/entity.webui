@@ -9,18 +9,13 @@ import java.util.ResourceBundle;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
-import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
-import javax.faces.model.DataModel;
 
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.calendar.Calendar;
-import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
-import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.dialog.Dialog;
-import org.primefaces.component.graphicimage.GraphicImage;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.message.Message;
@@ -33,6 +28,7 @@ import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.converter.AutocompleteConverter;
 import com.mcmatica.entity.webui.converter.SelectItemsConverter;
 import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.FieldModel.EditorComponent;
 
 abstract class WebuiAbstractProvider {
 	
@@ -76,14 +72,14 @@ abstract class WebuiAbstractProvider {
 		return el;
 	}
 
-	protected String elDbRefValue(FieldModel fmodel)
-	{		
-		/*
-		 * e.g. crud.selected.fieldname
-		 */
-		String el = "#{%s.%s.%s." + Constant.PROPERTY_SELECTION_LABEL + "}";
-		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName());
-	}
+//	protected String elDbRefValue(FieldModel fmodel)
+//	{		
+//		/*
+//		 * e.g. crud.selected.fieldname
+//		 */
+//		String el = "#{%s.%s.%s." + Constant.PROPERTY_SELECTION_LABEL + "}";
+//		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getPropertyName());
+//	}
 
 	
 	protected Message buildMessage(FieldModel fmodel)
@@ -219,7 +215,8 @@ abstract class WebuiAbstractProvider {
 			selectItemsExp = fmodel.getFillSelectionListExpression(); // String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()");
 			items.setValueExpression("value", Utility.createExpression(selectItemsExp, List.class));
 			items.setValueExpression("var", Utility.createExpression("itm", String.class));
-			items.setValueExpression("itemLabel", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
+			
+			items.setValueExpression("itemLabel", Utility.createExpression(this.selectionLabelString("itm", fmodel), String.class));
 			items.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
 			
 			UISelectItem item = new UISelectItem();
@@ -277,16 +274,18 @@ abstract class WebuiAbstractProvider {
 		auto.setCompleteMethod(Utility.createGetterMethodExp(selectItemsExp, new Class[]{String.class}, List.class));
 		
 		auto.setValueExpression("var", Utility.createExpression("itm", String.class));
-		auto.setValueExpression("itemLabel", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
+		auto.setValueExpression("itemLabel", Utility.createExpression(this.selectionLabelString("itm", fmodel), String.class));
 //		auto.setValueExpression("itemValue", Utility.createExpression("#{itm." + Constant.PROPERTY_SELECTION_LABEL + "}", String.class));
 		auto.setValueExpression("itemValue", Utility.createExpression("#{itm}", fmodel.getPropertyType()));	
 		auto.setDropdown(true);
 		auto.setDropdownMode("current");
 //		auto.setForceSelection(false);
-//		auto.setMinQueryLength(3);
-//		auto.setMaxResults(20);
-//		auto.setQueryDelay(500);
+		auto.setMinQueryLength(3);
+		auto.setMaxResults(20);
+		auto.setQueryDelay(500);
 		auto.setScrollHeight(400);
+		auto.getAttributes().put(Constant.PROPERTY_SELECTION_FIELDS, fmodel.getReferencedSelectionFields());
+		auto.getAttributes().put(Constant.AUTOCOMPLETE_REFBENACONTROLLERNAME, fmodel.getReferencedFieldBeanControllerName());
 		
 //		auto.setAutoHighlight(true);
 		
@@ -404,10 +403,36 @@ abstract class WebuiAbstractProvider {
 		/*
 		 * Add the default onChangeEnvent managed by the BaseWebuiBean class
 		 */
+		String eventChange = "change";
+		
+		if (fmodel.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE))
+		{
+			eventChange = "itemSelect";
+		}
+		
 //		if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
-			input.addClientBehavior("change", Utility.createAjaxBehaviour(fmodel.getChangeEventExpression(), null));
+			input.addClientBehavior(eventChange, Utility.createAjaxBehaviour(fmodel.getChangeEventExpression(), null));
 //		}
 
+	}
+	
+	
+	protected String selectionLabelString(String var, FieldModel fmodel)
+	{
+		String label = null;
+		for(String fieldname : fmodel.getReferencedSelectionFields()) 
+		{
+			if (label != null)
+			{
+				label = label.concat(" ");
+			}else{
+				label = new String("");
+			}
+				
+			label = label.concat(String.format("#{%s.%s}", var , fieldname));
+		}
+		
+		return label;
 	}
 	
 //	private DataTable buildSearchTable(FieldModel fmodel)
