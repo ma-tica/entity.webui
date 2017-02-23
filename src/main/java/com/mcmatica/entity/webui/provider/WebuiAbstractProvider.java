@@ -424,7 +424,7 @@ abstract class WebuiAbstractProvider {
 		{
 			if (label != null)
 			{
-				label = label.concat(" ");
+				label = label.concat(" - ");
 			}else{
 				label = new String("");
 			}

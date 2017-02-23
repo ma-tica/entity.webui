@@ -6,6 +6,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -24,6 +25,7 @@ import org.primefaces.behavior.ajax.AjaxBehaviorListenerImpl;
 import org.springframework.aop.support.AopUtils;
 
 import com.mcmatica.entity.webui.annotation.MCDbRef;
+import com.mcmatica.entity.webui.annotation.MCLinkedField;
 import com.mcmatica.entity.webui.annotation.MCWebuiField;
 import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
@@ -519,13 +521,22 @@ public class Utility {
 			{
 				if (webuifield.selectionField() > 0)
 				{
-					FieldS f = new FieldS(webuifield.selectionField(), field.getName());
+					FieldS f;
+					MCLinkedField linkedField = field.getAnnotation(MCLinkedField.class);
+					if (linkedField == null)
+					{
+						f = new FieldS(webuifield.selectionField(), field.getName());
+					}else{						
+						f = new FieldS(webuifield.selectionField(), String.format("%s.%s", linkedField.parentField(), linkedField.valueExpression()));
+					}
 					selectionfFields.add(f);
 				}
 			}
 		}
 		
-		selectionfFields.sort((f1, f2) -> f1.index > f2.index ? 1 : 0);
+		selectionfFields.sort((f1, f2) -> f1.index > f2.index ? 1 : -1);
+		
+//		Collections.sort(selectionfFields, (f1, f2) -> f1.index > f2.index ? 1 : -1);
 		
 		for (FieldS f : selectionfFields) {
 			selectionFields.add(f.name);
