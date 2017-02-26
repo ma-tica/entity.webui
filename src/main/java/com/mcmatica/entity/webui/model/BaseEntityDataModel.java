@@ -1,5 +1,6 @@
 package com.mcmatica.entity.webui.model;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -108,16 +109,8 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 	
 	
 	@Override
-	public List<E> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters) {
+	public List<E> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters)  {
 		
-
-//		int pagenum = 0;
-//		if (first > 0 && pageSize > 0)
-//		{
-//			//pagenum = first-pageSize+1;
-//			pagenum = first / pageSize;
-//		}
-
 		List<E> page;
 
 		if (filters != null && !filters.isEmpty())
@@ -125,28 +118,62 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 			Jqb jqb = new Jqb(JqbDialect.MONGODB);
 			JqbWhereBuilder where = jqb.getWhere();
 			Iterator<String> iterator = filters.keySet().iterator();
+			
+			List<JoinModel> joins = null;
 			while(iterator.hasNext()) {
 				String key = iterator.next();
-				if (where == null) {
-					where = jqb.where(jqb.property(key).contains(filters.get(key)+""));
+				
+				/*
+				 * if key contains dot means we need a lookup
+				 */
+				if (!key.contains(".")) {
+					if (where == null) {
+						where = jqb.where(jqb.property(key).contains(filters.get(key)+""));
+					}else{
+						where = jqb.getWhere().and(jqb.property(key).contains(filters.get(key)+""));
+					}
 				}else{
-					where = jqb.getWhere().and(jqb.property(key).contains(filters.get(key)+""));
+					if (joins == null)
+					{
+						joins = new ArrayList<JoinModel>();
+					}
+					String[] composedFilterKey = key.split("\\.");
+
+					JoinModel join = new JoinModel(composedFilterKey[1].replace("_", "."), "_id", composedFilterKey[0], composedFilterKey[0]);
+					joins.add(join);
+					
+					if (where == null) {
+						where = jqb.where(jqb.property(composedFilterKey[0].concat(".").concat(composedFilterKey[2])).contains(filters.get(key)+""));
+					}else{
+						where = jqb.getWhere().and(jqb.property(composedFilterKey[0].concat(".").concat(composedFilterKey[2])).contains(filters.get(key)+""));
+					}
+					
 				}
 			}
 			
 			int pageIndex = first / pageSize;
-			page = this.repository.find(where.text(), pageIndex, pageSize);
+			if (joins == null) 
+			{
+				page = this.repository.find(where.text(), pageIndex, pageSize);
+				this.listSize = this.repository.count(where.text());
+			}else{
+				try {
+					page = this.repository.find(where.text(), pageIndex, pageSize, joins);
+					this.listSize = this.repository.count(where.text(), joins);
+				} catch (ClassNotFoundException e) {
+					page = null;
+					e.printStackTrace();
+				}
+			}
 			
 			
 			
-			//this.setRowCount(page.size());
 		}else{
 			
 			int pageIndex = first / pageSize;
 			
 			page = this.repository.findAll(pageIndex , pageSize);
-			//this.setRowCount(this.listSize.intValue());
-			//this.setRowCount(page.size());
+			this.listSize = this.repository.count();
 		}
 		
 		

@@ -546,6 +546,23 @@ public class Utility {
 	}
 
 	
+	
+	public static String concatProperties(List<String> referencedSelectionFields)
+	{
+		String findallExpression = "";
+		String selectionFieldName;		
+		for (int i = 0; i < referencedSelectionFields.size(); i++)
+		{
+			selectionFieldName = referencedSelectionFields.get(i);
+			if (i > 0){
+				findallExpression += ", ";
+			}
+			findallExpression += "\"" + selectionFieldName + "\""; 
+		}
+		
+		return findallExpression;
+	}
+	
 	// Lang
 	// -----------------------------------------------------------------------------------------------------------
 

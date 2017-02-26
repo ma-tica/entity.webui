@@ -133,7 +133,7 @@ class ClassScanner<F extends BaseUi> {
 		this.children = new ArrayList<DetailListModel>();
 		
 		
-		
+		List<FieldModel> linkedFields = null;
 		for (Field field : clazz.getDeclaredFields())
 		{
 			
@@ -197,10 +197,6 @@ class ClassScanner<F extends BaseUi> {
 				{
 					fmodel.setFillSelectionListExpression(fieldRef.getListExpression());
 				}
-//				else
-//				{
-//					fmodel.setFillSelectionListExpression(String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "findAll()" ));
-//				}
 			}
 			
 			
@@ -218,13 +214,20 @@ class ClassScanner<F extends BaseUi> {
 			MCLinkedField linkedField = field.getAnnotation(MCLinkedField.class);
 			if (linkedField != null)
 			{
+				if (linkedFields == null)
+				{
+					linkedFields = new ArrayList<FieldModel>();
+				}
+					
 				if (fmodel == null ) {
 					fmodel = new FieldModel();
 					this.fillWebuiProperties(field, fmodel, webui);
 				}
 				fmodel.setLinkedParentField(linkedField.parentField());
-				fmodel.setLinkedValueExpression(linkedField.valueExpression());
+				fmodel.setLinkedValueExpression(linkedField.valueExpression());			
 				fmodel.setReadonlyExpression("true");
+				
+				linkedFields.add(fmodel);
 			}
 										
 			if (fmodel != null )
@@ -265,6 +268,24 @@ class ClassScanner<F extends BaseUi> {
 			}
 					
 		}
+		
+		/*
+		 * Add parent object to linked fields
+		 */
+		if (linkedFields != null && !linkedFields.isEmpty())
+		{
+			for(FieldModel linkedField : linkedFields)
+			{
+				String parentField = linkedField.getLinkedParentField();
+				for (int i = 0; i < this.fields.size(); i++)
+				{
+					if (this.fields.get(i).getPropertyName().equals(parentField)) {
+						linkedField.setLinkedParentType(this.fields.get(i).getPropertyType());
+					}
+				}
+			}
+		}
+		
 	}
 	
 	private void fillWebuiProperties(Field field, FieldModel fmodel, MCWebui webui)

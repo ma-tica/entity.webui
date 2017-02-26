@@ -12,6 +12,7 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 
+import org.apache.logging.log4j.core.util.ArrayUtils;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
@@ -58,13 +59,14 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 
 
+	@SuppressWarnings("unchecked")
 	public BaseEntityDataModel<BaseEntityModel> getList() {
-		if (this.list == null)
-		{
+//		if (this.list == null)
+//		{
 			this.list = this.service.buildList();
 			//this.listFiltered = this.service.buildList();
 			this.listFiltered =  this.list.getData();
-		}
+//		}
 		
 		
 		return this.list;
@@ -151,6 +153,19 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		return this.service.findAll();
 	}
 
+	public List<BaseEntityModel> findAllSorted(String ... property)
+	{
+		
+		List<String> properties = new ArrayList<String>();
+		for(int i = 0; i < property.length; i++)
+		{
+			properties.add(property[i]);
+		}
+		
+		return this.service.findAllSorted(properties);
+	}
+
+	
 	public BaseEntityModel getById(String id)
 	{
 		return this.service.getById(id);
@@ -162,21 +177,19 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 * @param query
 	 * @return
 	 */
-	public List<BaseEntityModel> complete(String query)
+	public List<BaseEntityModel> complete(String query )
 	{
 		
 		FacesContext context = FacesContext.getCurrentInstance();
 	    List<String> selectionFields = (List<String>) UIComponent.getCurrentComponent(context).getAttributes().get(Constant.PROPERTY_SELECTION_FIELDS);
-		
-		
 		JqbWhereBuilder wh = Utility.buildAutocompleteFilter(query, selectionFields);
 		
 		if (query.trim().isEmpty())
 		{
-			return this.service.findAll();
+			return this.service.findAllSorted(selectionFields);
 		}else
 		{
-			return this.service.find(wh.text());
+			return this.service.findSorted(wh.text(), selectionFields);
 		}
 		
 	}

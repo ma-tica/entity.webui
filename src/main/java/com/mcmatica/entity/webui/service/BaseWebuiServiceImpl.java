@@ -67,8 +67,10 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	
 	@Override
 	public BaseEntityDataModel<T> buildList() {
-		//this.list = new BaseEntityDataModel(this.repository.findAll());
-		this.list = new BaseEntityDataModel<T>(this.repository);
+		if (this.list == null)
+		{
+			this.list = new BaseEntityDataModel<T>(this.repository);
+		}
 		return list;
 	}
 
@@ -231,6 +233,13 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	{
 		return this.repository.findAll();
 	}
+
+	@Override
+	public List<T> findAllSorted(List<String> properties)
+	{
+		return this.repository.findAllSorted(properties);
+	}
+
 	
 	@Override
 	public List<T> find(String filter)
@@ -238,7 +247,13 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		return this.repository.find(filter);
 	}
 	
+	@Override
+	public List<T> findSorted(String filter, List<String> properties)
+	{
+		return this.repository.findSorted(filter, properties);
+	}
 
+	
 	@Override
 	public boolean isEditing()
 	{

@@ -217,11 +217,16 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 			{
 				//cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
 				cellvalue = String.format("#{%s.%s}", table.getVar(), fmodel.getDbFieldName());
-				column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
-				/* filter match mode */
-				column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
+			}else{
+				cellvalue = String.format("#{%s.%s.%s.%s}", table.getVar(), 
+														 fmodel.getLinkedParentField(),
+														 fmodel.getLinkedParentType().getName().replace(".", "_"),
+														 fmodel.getLinkedValueExpression());
 			}
 			
+			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
+			/* filter match mode */
+			//column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
 			
 			
 			table.getChildren().add(column);

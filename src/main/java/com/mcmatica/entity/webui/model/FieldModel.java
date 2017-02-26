@@ -3,6 +3,8 @@ package com.mcmatica.entity.webui.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.mcmatica.entity.webui.common.Utility;
+
 public class FieldModel {
 
 	
@@ -42,6 +44,9 @@ public class FieldModel {
 	
 	private String linkedParentField;
 	private String linkedValueExpression;
+	private Class<?> linkedParentType;
+	
+	
 	private String referencedFieldBeanControllerName;
 	
 	private boolean formField;
@@ -262,15 +267,25 @@ public class FieldModel {
 		}
 		
 		if (this.getEditorComponent().equals(EditorComponent.SELECTION_ONE_MENU)) {
-			return String.format("#{%s.%s}", this.getReferencedFieldBeanControllerName(), "findAll()");
-		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {
+			 
+			String findallExpression = "findAll()";
+			if (this.getReferencedSelectionFields() != null && !this.getReferencedSelectionFields().isEmpty())
+			{
+				findallExpression = "findAllSorted(";
+				findallExpression += Utility.concatProperties(this.getReferencedSelectionFields());
+				findallExpression +=")";
+			}
+			String expression = String.format("#{%s.%s}", this.getReferencedFieldBeanControllerName(), findallExpression);
+			
+			return expression;
+		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {			
 			return String.format("#{%s.%s}", this.getReferencedFieldBeanControllerName(), "complete");
 		}
 		
 		return null;
 	}
 
-	
+		
 	public void setFillSelectionListExpression(String fillSelectionListExpression) {
 		this.fillSelectionListExpression = fillSelectionListExpression;
 	}
@@ -406,5 +421,14 @@ public class FieldModel {
 		}
 		this.referencedSelectionFields.add(name);
 	}
+
+	public Class<?> getLinkedParentType() {
+		return linkedParentType;
+	}
+
+	public void setLinkedParentType(Class<?> linkedParentType) {
+		this.linkedParentType = linkedParentType;
+	}
+
 	
 }

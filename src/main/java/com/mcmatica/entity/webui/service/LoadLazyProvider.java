@@ -70,13 +70,15 @@ public class LoadLazyProvider {
 		Document child = entityType.getAnnotation(Document.class);
 		DBCollection collection = this.getMongoOperations().getCollection(from.collection());
 		List<DBObject> pipeline = new ArrayList<DBObject>();
+		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
+		
 		pipeline.add(new BasicDBObject("$unwind", "$" + propertyName));
 		
 		pipeline.add(new BasicDBObject("$lookup", new BasicDBObject("from", child.collection())
 				.append("localField", propertyName)
 				.append("foreignField", "_id")
 				.append("as", "lookupoutput")));
-		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
+//		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
 		
 		List<G> resultList = new ArrayList<G>();
 		
