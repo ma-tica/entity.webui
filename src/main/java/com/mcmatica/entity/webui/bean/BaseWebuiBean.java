@@ -141,7 +141,10 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 * @param selected the selected to set
 	 */
 	public void setSelected(BaseEntityModel selected) {
-		this.service.setSelected(selected);
+		if (!this.service.isEditing())
+		{
+			this.service.setSelected(selected);
+		}
 	}	
 	
 	/**
