@@ -3,10 +3,8 @@ package com.mcmatica.entity.webui.common;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -14,7 +12,6 @@ import java.util.Random;
 import javax.el.ELContext;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.BehaviorEvent;
 
@@ -449,7 +446,8 @@ public class Utility {
 								}
 							}
 						}else{
-							LoadLazyProvider.istance.listLoadLazy(original0.getClass(), original0, field.getName());
+							T refObjectValue = LoadLazyProvider.istance.loadLazy((Class<T>) field.getType(), original0, field.getName());
+							field.set(original0, refObjectValue);
 						}
 					}			
 				}

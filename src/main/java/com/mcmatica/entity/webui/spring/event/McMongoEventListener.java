@@ -155,22 +155,15 @@ public class McMongoEventListener extends AbstractMongoEventListener<BaseEntityM
 				MCDbRef mcdbref = field.getAnnotation(MCDbRef.class); 
 				if ( mcdbref != null){
 					
-//					System.out.println(event.getType().getName() + " " +  field.getName());
-//					System.out.println(event.getSource().get(field.getName()) );
 					
 					if (mcdbref.lazy())
 					{
+						/*
+						 * Set null here so the MCMongoIdToEntityConverter not load the linked object
+						 * Useful for child list object
+						 */
 						event.getSource().put(field.getName(), null);
 					}
-//					Object fieldvalue = field.get(event.getSource());
-//					fieldvalue = null;
-//					
-					//String idRef = (String) field.get(event.getSource());
-					
-					//BasicQuery qry = new BasicQuery(String.format("_id: '%s'", idRef));
-					
-					
-					//field.set(event.getSource(), mongoOperations.findOne(qry, field.getType()));	
 				}
 			}
 		});

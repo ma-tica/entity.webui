@@ -71,20 +71,7 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
         }
 		
 	}
-	
-	
-//	public void moveNext(E current)
-//	{
-//		List<E> data = this.getData();
-//		final String uniqueKey = current.getId();
-//		if (!CollectionUtils.isEmpty(data)) {
-//            //E t = data.get(0);
-//            
-//             data.stream().filter((keyed) -> String.valueOf(((E) keyed).getId()).equals(uniqueKey)).findFirst().orElse(null);
-//        }
-//		
-//	}
-	
+		
 	
 	@Override
 	public int getRowIndex() {

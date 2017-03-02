@@ -267,8 +267,14 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public void next() 
 	{
-		BaseEntityModel d = this.list.getRowData("000000000017");
-		this.service.setSelected(d);
+		//BaseEntityModel d = this.list.getRowData("000000000017");
+		//this.service.setSelected(d);
+		if (this.service.getSelected() == null)
+		{
+			this.setSelected(this.list.getData().get(0));
+		}
+		
+		
 	}
 
 	

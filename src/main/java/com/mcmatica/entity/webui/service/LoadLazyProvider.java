@@ -62,41 +62,42 @@ public class LoadLazyProvider {
 		return null;
 	}
 	
-	public <T extends BaseEntityModel, G extends BaseEntityModel> List<G> listLoadLazy(Class<G> entityType, BaseEntityModel entity, 																					  
-																					  String propertyName, BasicDBObject match )
-	{
-		
-		Document from = entity.getClass().getAnnotation(Document.class);
-		Document child = entityType.getAnnotation(Document.class);
-		DBCollection collection = this.getMongoOperations().getCollection(from.collection());
-		List<DBObject> pipeline = new ArrayList<DBObject>();
-		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
-		
-		pipeline.add(new BasicDBObject("$unwind", "$" + propertyName));
-		
-		pipeline.add(new BasicDBObject("$lookup", new BasicDBObject("from", child.collection())
-				.append("localField", propertyName)
-				.append("foreignField", "_id")
-				.append("as", "lookupoutput")));
+//	public <T extends BaseEntityModel, G extends BaseEntityModel> List<G> listLoadLazy(Class<G> entityType, BaseEntityModel entity, 																					  
+//																					  String propertyName, BasicDBObject match )
+//	{
+//		
+//		Document from = entity.getClass().getAnnotation(Document.class);
+//		Document child = entityType.getAnnotation(Document.class);
+//		DBCollection collection = this.getMongoOperations().getCollection(from.collection());
+//		List<DBObject> pipeline = new ArrayList<DBObject>();
 //		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
-		
-		List<G> resultList = new ArrayList<G>();
-		
-		Iterator<DBObject> result =  collection.aggregate(pipeline).results().iterator();
-		while(result.hasNext())
-		{
-			BasicDBList tmp = (BasicDBList) result.next().get("lookupoutput");
-			if (tmp != null && !tmp.isEmpty()) {
-				DBObject obj = (DBObject) tmp.get(0);					
-				G eobj = this.getMongoOperations().getConverter().read(entityType, obj);
-				resultList.add(eobj);
-			}
-		}		
-		
-		return resultList;
-	}
+//		
+//		pipeline.add(new BasicDBObject("$unwind", "$" + propertyName));
+//		
+//		pipeline.add(new BasicDBObject("$lookup", new BasicDBObject("from", child.collection())
+//				.append("localField", propertyName)
+//				.append("foreignField", "_id")
+//				.append("as", "lookupoutput")));
+////		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
+//		
+//		List<G> resultList = new ArrayList<G>();
+//		
+//		Iterator<DBObject> result =  collection.aggregate(pipeline).results().iterator();
+//		while(result.hasNext())
+//		{
+//			BasicDBList tmp = (BasicDBList) result.next().get("lookupoutput");
+//			if (tmp != null && !tmp.isEmpty()) {
+//				DBObject obj = (DBObject) tmp.get(0);					
+//				G eobj = this.getMongoOperations().getConverter().read(entityType, obj);
+//				resultList.add(eobj);
+//			}
+//		}		
+//		
+//		return resultList;
+//	}
 	
-	public <T extends BaseEntityModel, G extends BaseEntityModel> List<G> listLoadLazy(Class<G> entityType, BaseEntityModel entity, String propertyName )
+	public <T extends BaseEntityModel, G extends BaseEntityModel> List<G> listLoadLazy(Class<G> entityType, BaseEntityModel entity, 
+																					  String propertyName )
 	{
 		
 		
