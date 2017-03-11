@@ -105,7 +105,18 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		//this.setSelected(this.repository.getById(this.selected.getId()));
 		
 		try {
-			Utility.copyEntity(this.repository.getById(this.selected.getId()), this.selected );
+			/*
+			 * this.selected.getIdValue() <= 0 means we are creating a new object
+			 * ad we decide to abort the creation
+			 */
+			if (this.selected.getIdValue() < 0)
+			{
+				this.selected = null;
+				this.originalSelected = null;
+			}else
+			{
+				Utility.copyEntity(this.repository.getById(this.selected.getId()), this.selected );
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -258,6 +269,10 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	{
 		boolean result = false;
 		try {
+			if (this.originalSelected == null)
+			{
+				return false;
+			}
 			if (Utility.areEquals(this.originalSelected, this.getSelected()))
 			{
 				result = false;

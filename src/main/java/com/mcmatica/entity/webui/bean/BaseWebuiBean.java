@@ -5,8 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import javax.faces.application.FacesMessage;
+import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
@@ -28,6 +30,7 @@ import com.mcmatica.jqb.JqbWhereBuilder;
 
 public  abstract class  BaseWebuiBean implements Serializable {
 	
+
 	/**
 	 * 
 	 */
@@ -51,12 +54,26 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public abstract void init();
 	
+	private ResourceBundle labels;
+	
+	
+
+	public ResourceBundle getLabels() {
+		if (this.labels == null)
+		{
+			FacesContext context = FacesContext.getCurrentInstance();	
+			this.labels = context.getApplication().getResourceBundle(context, "mclbl");
+		}
+		return labels;
+	}
+
 	
 /*
  * ---------------------------------
  * B I N D I N G S
  */
 	
+
 
 
 	@SuppressWarnings("unchecked")
@@ -144,6 +161,11 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		if (!this.service.isEditing())
 		{
 			this.service.setSelected(selected);
+		}else{
+			
+			FacesContext.getCurrentInstance().addMessage(null,
+					new FacesMessage(FacesMessage.SEVERITY_INFO, "Attention", this.getLabels().getString("growl.msg.editing_is_active")));
+
 		}
 	}	
 	
