@@ -362,9 +362,20 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		//RequestContext.getCurrentInstance().update("form_grid");
 	}
 	
+	
+	public void showInfoMessage(String message)
+	{
+		FacesContext.getCurrentInstance().addMessage(null,
+				new FacesMessage(FacesMessage.SEVERITY_INFO, "Attention", message));
+
+	}
+	
+	
 	public abstract String goToHome();
 
 
+	
+	
 	
 	
 /*
