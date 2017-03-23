@@ -347,6 +347,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public void onChangeField(AjaxBehaviorEvent event)
 	{
+		this.service.startEditing();
 		this.updateUI();
 	}
 	

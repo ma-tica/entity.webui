@@ -1,7 +1,6 @@
 package com.mcmatica.entity.webui.service;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -38,12 +37,17 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 
 	private Logger logger = LogManager.getLogger(this.getClass().getName());
 	
+	private boolean isEditing;
+	
 	@Override
 	public T create()
 	{
 		T entity = this.getInstanceOfT();
 		this.setSelected(entity);
 		this.selected.setNewInstanceState(true);
+		
+		this.startEditing();
+		
 		return this.selected;
 	}
 
@@ -96,13 +100,16 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 			
 		}
 		entity.setNewInstanceState(false);
-		this.resetIsEditing();		
+		this.stopEditing();		
 	}
 
 	@Override
 	public void cancel() 
 	{
-		//this.setSelected(this.repository.getById(this.selected.getId()));
+		
+		this.stopEditing();
+		
+//		//this.setSelected(this.repository.getById(this.selected.getId()));
 		
 		try {
 			/*
@@ -164,7 +171,7 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		 * Save the original value of selected Item
 		 */
 //		if (this.originalSelected == null) {
-			this.resetIsEditing();
+			this.stopEditing();
 //		}
 	}
 
@@ -187,6 +194,8 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		this.repository.delete(this.selected);
 		list.remove(this.selected);
 		this.setSelected (null);		
+		
+		this.stopEditing();
 	}
 
 	@Override
@@ -267,37 +276,46 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 	@Override
 	public boolean isEditing()
 	{
-		boolean result = false;
-		try {
-			if (this.originalSelected == null)
-			{
-				return false;
-			}
-			if (Utility.areEquals(this.originalSelected, this.getSelected()))
-			{
-				result = false;
-			}else{
-				result = true;
-			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return result;
+//		boolean result = false;
+//		try {
+//			if (this.originalSelected == null)
+//			{
+//				return false;
+//			}
+//			if (Utility.areEquals(this.originalSelected, this.getSelected()))
+//			{
+//				result = false;
+//			}else{
+//				result = true;
+//			}
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return result;
+		
+		return this.isEditing;
 	}
 	
-	private void resetIsEditing()
+	@Override
+	public void startEditing()
 	{
-		try {
-			if (this.selected != null) {
-				this.originalSelected = Utility.cloneEntity(this.selected);
-			}else{
-				this.originalSelected = null;
-			}
-		} catch (Exception e) {				
-			e.printStackTrace();
-		}
-		
+//		try {
+//			if (this.selected != null) {
+//				this.originalSelected = Utility.cloneEntity(this.selected);
+//			}else{
+//				this.originalSelected = null;
+//			}
+//		} catch (Exception e) {				
+//			e.printStackTrace();
+//		}
+
+		this.isEditing = true;
+	}
+
+	private void stopEditing()
+	{
+		this.isEditing = false;
 	}
 
 	Boolean execSaveBeforeDelete = false;

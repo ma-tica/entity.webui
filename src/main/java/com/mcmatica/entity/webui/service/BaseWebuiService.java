@@ -57,5 +57,7 @@ public interface BaseWebuiService<T extends BaseEntityModel> {
 
 	List<T> findAllSorted(List<String> properties);
 
+	void startEditing();
+
 	
 }
