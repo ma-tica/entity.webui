@@ -10,6 +10,7 @@ import javax.faces.component.html.HtmlPanelGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.panel.Panel;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -224,6 +225,12 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		return this.webuiFactory.getFields();
 	}
 	
+	@Override
+	public MenuButton buildMenuFunctions() {
+		return this.webuiFactory.buildMenuFunctions();
+	}
+
+
 	
 	@Override
 	public void setDefaultValues()
@@ -379,6 +386,8 @@ public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends 
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+
 
 
 	

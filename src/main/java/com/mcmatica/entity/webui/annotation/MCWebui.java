@@ -6,11 +6,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import com.mcmatica.entity.webui.model.BaseEntityModel;
-
 @Retention(RUNTIME)
 @Target(TYPE)
-public  @interface   MCWebui {
+public  @interface MCWebui {
 	/**
 	 * number of columns of HtmlPanelGrid
 	 * @return
@@ -50,5 +48,13 @@ public  @interface   MCWebui {
 	 * @return
 	 */
 	public String columnClasses() default "";
+	
+	
+	/**
+	 * Custom commands
+	 * @return
+	 */
+	public MCWebuiCommand[] commands() default {};
+	
 	
 }

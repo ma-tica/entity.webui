@@ -16,6 +16,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 
 import org.apache.logging.log4j.core.util.ArrayUtils;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
 
@@ -55,6 +56,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public abstract void init();
 	
 	private ResourceBundle labels;
+	
+	protected MenuButton menuFunctions;
 	
 	
 
@@ -154,6 +157,21 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		return service.getSelected();
 	}
 
+	
+	public MenuButton getMenuFunctions()
+	{
+		if (this.menuFunctions == null)
+		{
+			this.menuFunctions = this.service.buildMenuFunctions();
+		}
+		return this.menuFunctions;
+	}
+	
+	public void setMenuFunctions(MenuButton menuFunctions)
+	{
+		this.menuFunctions = menuFunctions;
+	}
+	
 	/**
 	 * @param selected the selected to set
 	 */

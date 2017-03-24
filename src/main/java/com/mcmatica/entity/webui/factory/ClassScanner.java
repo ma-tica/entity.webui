@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.mcmatica.entity.webui.annotation.MCLinkedField;
 import com.mcmatica.entity.webui.annotation.MCWebui;
+import com.mcmatica.entity.webui.annotation.MCWebuiCommand;
 import com.mcmatica.entity.webui.annotation.MCWebuiDetailList;
 import com.mcmatica.entity.webui.annotation.MCWebuiField;
 import com.mcmatica.entity.webui.annotation.MCWebuiFieldEvent;
@@ -19,6 +20,7 @@ import com.mcmatica.entity.webui.annotation.MCWebuiGridColumn;
 import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
+import com.mcmatica.entity.webui.model.CommandModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.EventModel;
 import com.mcmatica.entity.webui.model.FieldModel;
@@ -34,6 +36,8 @@ class ClassScanner<F extends BaseUi> {
 	private List<DetailListModel> children;
 	
 	private Class<BaseEntityModel> entityClazz;
+	
+	private List<CommandModel> commands;
 
 	
 	private MCWebui clazzAnnotation;
@@ -46,11 +50,7 @@ class ClassScanner<F extends BaseUi> {
 	 */
 	public ClassScanner(Class<F> clazz)
 	{
-		
-		
-		
-		this.clazzAnnotation =clazz.getAnnotation(MCWebui.class);
-	
+		this.clazzAnnotation =clazz.getAnnotation(MCWebui.class);	
 		this.scan(clazz);
 	}
 
@@ -101,7 +101,18 @@ class ClassScanner<F extends BaseUi> {
 		return this.entityClazz;
 	}
 	
+
+	/**
+	 * Return the list of commands button to show in the user interface
+	 * @return
+	 */
+	public List<CommandModel> getCommands()
+	{
+		return this.commands;
+	}
 	
+	
+	@SuppressWarnings("unchecked")
 	private void scan(Class<F> clazz)
 	{
 		
@@ -115,6 +126,11 @@ class ClassScanner<F extends BaseUi> {
 		this.fillFieldList(clazz, webui);
 
 		/*
+		 * Fills internal list of commands
+		 */
+		this.fillCommandList(webui);
+		
+		/*
 		 * Sorts fields
 		 */
 		this.sortFieldByFormPosition();
@@ -124,6 +140,29 @@ class ClassScanner<F extends BaseUi> {
 		 */
 		this.sortShortListFieldByGridPosition();		
 
+		
+		/*
+		 * Sorts commands
+		 */
+		this.sortCommandListBySequence();
+	}
+	
+	private void fillCommandList(MCWebui webui)
+	{
+		
+		this.commands = new ArrayList<CommandModel>();
+		
+		if( webui.commands().length > 0 )
+		{
+					
+			for (MCWebuiCommand command : webui.commands())
+			{
+				this.commands.add(new CommandModel(command.label(), command.memberExpression(), command.sequence()));
+			}
+			
+		}
+		
+		
 	}
 	
 	private void fillFieldList(Class<F> clazz, MCWebui webui)
@@ -423,6 +462,26 @@ class ClassScanner<F extends BaseUi> {
 		});
 	}
 
+	private void sortCommandListBySequence()
+	{
+				
+		Collections.sort(this.commands, new Comparator<CommandModel>() {
+
+			@Override
+			public int compare(CommandModel o1, CommandModel o2) {
+				if (o1.getSequence() == o2.getSequence()) {
+					return 0;
+				} else if (o1.getSequence() > o2.getSequence()) {
+					return 1;
+				} else {
+					return -1;
+				}
+
+			}
+		});
+	}
+
+	
 	
 	private static boolean implementBaseEntityModel(Type type)
 	{

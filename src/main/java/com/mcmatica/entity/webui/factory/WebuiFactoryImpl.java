@@ -12,14 +12,19 @@ import javax.faces.model.DataModel;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.tooltip.Tooltip;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.MenuItem;
 
 import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
+import com.mcmatica.entity.webui.model.CommandModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.FieldModel;
 import com.mcmatica.entity.webui.provider.WebuiDatatableProvider;
@@ -32,9 +37,8 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 	private List<FieldModel> fields;
 	
 	private List<FieldModel> shortListFields;
-	
-	
-	//private Class<T> clazz;
+
+	private List<CommandModel> commands;
 	
 	private ResourceBundle labels; 
 	
@@ -63,19 +67,17 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 	 */
 	public WebuiFactoryImpl(Class<T> clazz)
 	{
-		
-		//this.clazz = clazz;
-
 		/*
 		 * scan the Entity class
 		 */
 		this.scanner = new ClassScanner<T>(clazz);
 			
 		this.shortListFields = scanner.getShortListFields();
-		
-		
+				
 		this.fields = scanner.getFields();
 
+		this.commands = scanner.getCommands();
+		
 	}
 
 
@@ -264,6 +266,37 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 
 		return panel;
 	}
+	
+	
+	@Override
+	public MenuButton buildMenuFunctions() 
+	{
+		MenuButton menuButton = new MenuButton();
+
+		List<CommandModel> commands = this.scanner.getCommands(); 
+		if (commands != null && !commands.isEmpty() )
+		{
+		
+			DefaultMenuModel model = new DefaultMenuModel();
+			DefaultMenuItem item;
+			for (CommandModel command : commands) 
+			{
+			
+				item = new DefaultMenuItem();
+				item.setValue(command.getLabel());
+				item.setCommand( command.getMemberExpression());
+				
+				
+				model.addElement(item);
+			}
+			
+			menuButton.setModel(model);
+		}
+		
+		
+		return menuButton;
+	}
+	
 	
 /*
  * --------------------------

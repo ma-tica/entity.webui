@@ -5,6 +5,7 @@ import java.util.List;
 import javax.faces.component.html.HtmlPanelGroup;
 
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.panel.Panel;
 
 import com.mcmatica.entity.webui.model.FieldModel;
@@ -21,7 +22,8 @@ public interface WebuiFactory {
 
 	DataTable buildSelectionGrid();
 
-
 	Panel buildEditFormDialogs();
+	
+	MenuButton buildMenuFunctions();
 
 }

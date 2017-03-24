@@ -155,6 +155,9 @@ abstract class WebuiAbstractProvider {
 		calendar.setMode("popup");
 		calendar.setShowOn("button");
 		
+		
+		
+		
 		return calendar;
 	}
 	
@@ -408,6 +411,9 @@ abstract class WebuiAbstractProvider {
 		if (fmodel.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE))
 		{
 			eventChange = "itemSelect";
+		}else if (fmodel.getEditorComponent().equals(EditorComponent.INPUT_DATE) || 
+				fmodel.getEditorComponent().equals(EditorComponent.INPUT_DATETIME)) {
+			eventChange = "dateSelect";
 		}
 		
 //		if (fmodel.getEvent() == null ||  !fmodel.getEvent().getEventName().equals("change")) {
