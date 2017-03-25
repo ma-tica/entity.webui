@@ -1,20 +1,18 @@
 package com.mcmatica.entity.webui.service;
 
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.bson.BSONObject;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.BasicQuery;
-import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.util.ReflectionUtils;
 
-import com.mcmatica.entity.webui.common.Utility;
+import com.mcmatica.entity.webui.annotation.MCDbRef;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.spring.converter.ApplicationContextProvider;
 import com.mongodb.BasicDBList;
@@ -24,7 +22,7 @@ import com.mongodb.DBObject;
 
 public class LoadLazyProvider {
 	
-	public static LoadLazyProvider istance = new LoadLazyProvider();
+	public static LoadLazyProvider instance = new LoadLazyProvider();
 	
 	private MongoOperations mongoOperations;
 	
@@ -44,7 +42,7 @@ public class LoadLazyProvider {
 	}
 
 	
-	public <T extends BaseEntityModel, G extends BaseEntityModel> G loadLazy(Class<G> entityType, T entity, String propertyName )
+	public <T extends BaseEntityModel, G extends BaseEntityModel> G loadLazyProperty(Class<G> entityType, T entity, String propertyName )
 	{
 		BasicDBObject query = new BasicDBObject();
 		query.put("_id", entity.getId());
@@ -61,46 +59,12 @@ public class LoadLazyProvider {
 
 		return null;
 	}
-	
-//	public <T extends BaseEntityModel, G extends BaseEntityModel> List<G> listLoadLazy(Class<G> entityType, BaseEntityModel entity, 																					  
-//																					  String propertyName, BasicDBObject match )
-//	{
-//		
-//		Document from = entity.getClass().getAnnotation(Document.class);
-//		Document child = entityType.getAnnotation(Document.class);
-//		DBCollection collection = this.getMongoOperations().getCollection(from.collection());
-//		List<DBObject> pipeline = new ArrayList<DBObject>();
-//		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
-//		
-//		pipeline.add(new BasicDBObject("$unwind", "$" + propertyName));
-//		
-//		pipeline.add(new BasicDBObject("$lookup", new BasicDBObject("from", child.collection())
-//				.append("localField", propertyName)
-//				.append("foreignField", "_id")
-//				.append("as", "lookupoutput")));
-////		pipeline.add(new BasicDBObject("$match", match.append("_id", entity.getId())));
-//		
-//		List<G> resultList = new ArrayList<G>();
-//		
-//		Iterator<DBObject> result =  collection.aggregate(pipeline).results().iterator();
-//		while(result.hasNext())
-//		{
-//			BasicDBList tmp = (BasicDBList) result.next().get("lookupoutput");
-//			if (tmp != null && !tmp.isEmpty()) {
-//				DBObject obj = (DBObject) tmp.get(0);					
-//				G eobj = this.getMongoOperations().getConverter().read(entityType, obj);
-//				resultList.add(eobj);
-//			}
-//		}		
-//		
-//		return resultList;
-//	}
-	
-	public <T extends BaseEntityModel, G extends BaseEntityModel> List<G> listLoadLazy(Class<G> entityType, BaseEntityModel entity, 
+
+
+
+	public <T extends BaseEntityModel, G extends BaseEntityModel> List<G> loadLazyListProperty(Class<G> entityType, T entity,
 																					  String propertyName )
 	{
-		
-		
 		Document from = entity.getClass().getAnnotation(Document.class);
 		Document child = entityType.getAnnotation(Document.class);
 		DBCollection collection = this.getMongoOperations().getCollection(from.collection());
@@ -127,100 +91,47 @@ public class LoadLazyProvider {
 		}		
 		
 		return resultList;
-		
-		
-//		class AggResultObj {
-//			
-//			String _id;
-//			List<G> lookupoutput;
-//			public String get_id() {
-//				return _id;
-//			}
-//			public void set_id(String _id) {
-//				this._id = _id;
-//			}
-//			public List<G> getLookupoutput() {
-//				return lookupoutput;
-//			}
-//			public void setLookupoutput(List<G> lookupoutput) {
-//				this.lookupoutput = lookupoutput;
-//			}
-//
-//		}
-//		
-//		
-//		Aggregation aggregation = Aggregation.newAggregation(
-//				Aggregation.match(Criteria.where("_id").is(entity.getId())),
-//			    Aggregation.unwind(propertyName),
-//			    Aggregation.lookup(list.collection(), propertyName, "_id", "lookupoutput"),
-//			    Aggregation.project("lookupoutput")
-//			);
-////	    Aggregation.group("lookup-output")
-//
-//		
-//		System.out.println("Query  ==>>["+aggregation.toString()+"]");
-//		AggregationResults<AggResultObj> data =   this.getMongoOperations().aggregate(aggregation, from.collection(), AggResultObj.class);
-//		//AggregationResults<T> data =   (AggregationResults<T>) this.getMongoOperations().aggregate(aggregation, from.collection(), entity.getClass());
-//		
-//		System.out.println(data.getMappedResults());
-//		System.out.println(data.getRawResults().get("result"));
-//		return (List<G>) data.getMappedResults();
-		
-//		DBObject match = new BasicDBObject();
-//		match.put("$match", new BasicDBObject().put("_id",entity.getId()));
-//		DBObject lookup = new BasicDBObject();
-//		lookup.put("$lookup", new BasicDBObject().put("from", list.collection()) )
-//		
-//		this.getMongoOperations().getCollection(from.collection()).aggregate(pipeline)
-		
 
-//		Object  object = dbobject.get(propertyName);
-//		
-//		List<G> result = new ArrayList<G>();
-//		if (object instanceof List)
-//		{
-//			List<String> list = (List<String>) object;
-//			 
-//			for(String id : list)
-//			{
-//				BasicQuery qry = new BasicQuery(String.format("{_id: '%s'}", id));
-//				G entitytmp  =  this.getMongoOperations().findOne(qry, entityType );
-//				result.add(entitytmp);
-//			}
-//		}
-//		
-//		
-//		return result;
-		
-//		T entitytmp  =  this.getMongoOperations().findOne(qry, entityType );
-//		
-//		java.lang.reflect.Method method;
-//		try {
-//			method = entitytmp.getClass().getMethod("get" + Utility.capitalize(propertyName));
-//			return (List<G>) method.invoke(entitytmp);
-//		} catch (NoSuchMethodException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return null;
-//		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return null;
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return null;
-//		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return null;
-//		} catch (InvocationTargetException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//			return null;
-//		}
-		
 	}
-	
+
+	public <T extends BaseEntityModel> void fullLoad(T entity)
+	{
+
+		ReflectionUtils.doWithFields(entity.getClass(), new ReflectionUtils.FieldCallback() {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				ReflectionUtils.makeAccessible(field);
+
+				/*
+				 * Load all lazy loaded properties of an object
+				 */
+				MCDbRef mcdbref = field.getAnnotation(MCDbRef.class);
+				if (mcdbref != null && mcdbref.lazy())
+				{
+
+					if (field.get(entity) == null) {
+						if (BaseEntityModel.class.isAssignableFrom(field.getType()))
+						{
+							T property = loadLazyProperty((Class<T>) field.getType(), entity, field.getName());
+							field.set(entity, property);
+							
+							
+						}else if (Collections.class.isAssignableFrom(field.getType()))
+						{
+							ParameterizedType objectListType = (ParameterizedType) field.getGenericType();
+							Class<T> listClass = (Class<T>) objectListType.getActualTypeArguments()[0];
+
+							List<T> property = loadLazyListProperty(listClass, entity, field.getName());
+							field.set(entity, property);
+						}
+
+					}
+				}
+
+
+			}
+		});
+
+	}
+
 
 }

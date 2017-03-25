@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
 import javax.faces.component.html.HtmlPanelGroup;
 
 import org.primefaces.component.column.Column;
@@ -16,7 +15,7 @@ import org.primefaces.component.panelgrid.PanelGrid;
 import org.primefaces.component.row.Row;
 
 import com.mcmatica.entity.webui.common.Utility;
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 
 public class WebuiPanelProvider extends WebuiAbstractProvider {
 	

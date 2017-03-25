@@ -2,7 +2,7 @@ package com.mcmatica.entity.webui.repository;
 
 import java.util.List;
 
-import com.mcmatica.entity.webui.model.JoinModel;
+import com.mcmatica.entity.webui.model.scanner.JoinModel;
 
 
 
@@ -41,6 +41,8 @@ public interface  BaseRepository<T> {
 	String getNextId();
 
 	List<T> findAllSorted(List<String> properties);
+	
+	List<T> findAllSorted(String ... properties);
 
 	List<T> find(String filter, int pageIndex, int pageSize, List<JoinModel> joins) throws ClassNotFoundException;
 

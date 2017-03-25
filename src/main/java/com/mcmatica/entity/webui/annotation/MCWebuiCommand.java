@@ -12,7 +12,7 @@ public  @interface MCWebuiCommand {
 	/**
 	 * Expression string of the method
 	 */
-	public String memberExpression();
+	public String commandExpression();
 
 
 	/**
@@ -26,4 +26,15 @@ public  @interface MCWebuiCommand {
 	 */
 	public int sequence() default 0;
 	
+	
+	/**
+	 * Expression string to enable / disable the menu item
+	 */
+	public String disabledExpression() default "false";
+	
+	
+	/**
+	 * Client objects update
+	 */
+	public String update() default "";
 }

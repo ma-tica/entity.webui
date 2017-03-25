@@ -8,13 +8,11 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.application.FacesMessage.Severity;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 
-import org.apache.logging.log4j.core.util.ArrayUtils;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.panel.Panel;
@@ -24,7 +22,7 @@ import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 import com.mcmatica.entity.webui.service.BaseWebuiService;
 import com.mcmatica.jqb.JqbWhereBuilder;
 

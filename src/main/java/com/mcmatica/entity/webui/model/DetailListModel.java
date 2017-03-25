@@ -1,5 +1,7 @@
 package com.mcmatica.entity.webui.model;
 
+import com.mcmatica.entity.webui.model.scanner.EventModel;
+
 public class DetailListModel {
 	
 	private String selectionName;

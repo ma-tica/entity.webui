@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

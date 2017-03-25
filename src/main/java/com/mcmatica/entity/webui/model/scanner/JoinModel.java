@@ -1,4 +1,4 @@
-package com.mcmatica.entity.webui.model;
+package com.mcmatica.entity.webui.model.scanner;
 
 public class JoinModel {
 

@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Transient;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
+import com.mcmatica.entity.webui.service.LoadLazyProvider;
 
 public abstract class BaseEntityModelImpl implements BaseEntityModel, Serializable {
 
@@ -31,7 +32,9 @@ public abstract class BaseEntityModelImpl implements BaseEntityModel, Serializab
 	@Transient
 	private HashMap<String, List<BaseEntityModel>> fieldListItemRemoved;
 
-	
+	@Transient
+	private List<String> filedListLazyLoaded;
+
 	@Override
 	public Long getIdValue() {
 		if (this.getId() != null)
@@ -57,7 +60,6 @@ public abstract class BaseEntityModelImpl implements BaseEntityModel, Serializab
 	@Override
 	public void setNewInstanceState(boolean value) {
 		newInstance = value;
-
 	}
 
 //	@Override
@@ -84,6 +86,13 @@ public abstract class BaseEntityModelImpl implements BaseEntityModel, Serializab
 		}
 	
 		return this.fieldListItemRemoved.get(childListName);
+	}
+
+	@Override
+	public void fullLoad() {
+	
+		LoadLazyProvider.instance.fullLoad(this);
+		
 	}
 
 	

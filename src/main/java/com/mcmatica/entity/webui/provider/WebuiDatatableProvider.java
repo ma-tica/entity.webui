@@ -3,31 +3,17 @@
 import java.util.List;
 import java.util.ResourceBundle;
 
-import javax.el.MethodExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.html.HtmlOutputText;
 
-import org.primefaces.component.celleditor.CellEditor;
 import org.primefaces.component.column.Column;
-import org.primefaces.component.commandbutton.CommandButton;
-import org.primefaces.component.contextmenu.ContextMenu;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.graphicimage.GraphicImage;
-import org.primefaces.component.menubutton.MenuButton;
-import org.primefaces.component.panel.Panel;
-import org.primefaces.component.roweditor.RowEditor;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.DynamicMenuModel;
-import org.primefaces.model.menu.MenuItem;
-import org.primefaces.model.menu.MenuModel;
 
-import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 
 public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbstractProvider {
 

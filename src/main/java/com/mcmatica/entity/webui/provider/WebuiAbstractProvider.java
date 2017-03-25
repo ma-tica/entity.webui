@@ -27,8 +27,8 @@ import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.converter.AutocompleteConverter;
 import com.mcmatica.entity.webui.converter.SelectItemsConverter;
-import com.mcmatica.entity.webui.model.FieldModel;
-import com.mcmatica.entity.webui.model.FieldModel.EditorComponent;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel.EditorComponent;
 
 abstract class WebuiAbstractProvider {
 	

@@ -1,4 +1,4 @@
-package com.mcmatica.entity.webui.model;
+package com.mcmatica.entity.webui.model.scanner;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -8,7 +8,7 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.panel.Panel;
 
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 
 public interface WebuiFactory {
 

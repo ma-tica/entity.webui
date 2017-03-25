@@ -23,7 +23,7 @@ import com.mcmatica.entity.webui.factory.WebuiFactory;
 import com.mcmatica.entity.webui.factory.WebuiFactoryImpl;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 import com.mcmatica.entity.webui.repository.BaseRepository;
 
 //public abstract class BaseWebuiServiceImpl<T extends BaseEntityModel, F extends BaseEntityModel> implements BaseWebuiService, WebuiFactory {	

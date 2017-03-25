@@ -12,7 +12,7 @@ import org.primefaces.component.panelgrid.PanelGrid;
 import com.mcmatica.entity.webui.annotation.MCWebui;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.DetailListModel;
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 
 public class WebuiFormProvider extends WebuiPanelProvider {
 	

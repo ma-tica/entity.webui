@@ -20,12 +20,9 @@ public interface BaseEntityModel {
 	
 	void setNewInstanceState(boolean value);
 	
-	/**
-	 * Used for SelectOneMenu e autoComplete ui components
-	 * @return
-	 */
-	//String getSelectionLabel();
-
 	List<BaseEntityModel> getFieldListItemsRemoved(String childListName);
+
+	void fullLoad();
+	
 	
 }

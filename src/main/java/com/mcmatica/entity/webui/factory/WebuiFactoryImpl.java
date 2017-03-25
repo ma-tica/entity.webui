@@ -13,20 +13,18 @@ import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.menubutton.MenuButton;
+import org.primefaces.component.menuitem.UIMenuItem;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.tooltip.Tooltip;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.MenuItem;
 
 import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
-import com.mcmatica.entity.webui.model.CommandModel;
+import com.mcmatica.entity.webui.model.scanner.CommandModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
-import com.mcmatica.entity.webui.model.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
 import com.mcmatica.entity.webui.provider.WebuiDatatableProvider;
 import com.mcmatica.entity.webui.provider.WebuiFormProvider;
 import com.mcmatica.entity.webui.provider.WebuiPanelProvider;
@@ -276,21 +274,28 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		List<CommandModel> commands = this.scanner.getCommands(); 
 		if (commands != null && !commands.isEmpty() )
 		{
-		
-			DefaultMenuModel model = new DefaultMenuModel();
-			DefaultMenuItem item;
-			for (CommandModel command : commands) 
+
+
+			UIMenuItem item;
+
+
+			for (CommandModel command : commands)
 			{
-			
-				item = new DefaultMenuItem();
+
+				item = new UIMenuItem();
+
 				item.setValue(command.getLabel());
-				item.setCommand( command.getMemberExpression());
+				item.setActionExpression(Utility.createMethodExp(command.getCommandExpression()));
+				item.setValueExpression("disabled", Utility.createExpression(command.getDisabledExpression(), Boolean.class));
+				item.setUpdate(command.getClientUpdate());
 				
 				
-				model.addElement(item);
+				menuButton.getChildren().add(item);
+
+
 			}
-			
-			menuButton.setModel(model);
+
+
 		}
 		
 		

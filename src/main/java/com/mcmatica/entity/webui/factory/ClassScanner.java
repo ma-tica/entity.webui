@@ -20,11 +20,11 @@ import com.mcmatica.entity.webui.annotation.MCWebuiGridColumn;
 import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
-import com.mcmatica.entity.webui.model.CommandModel;
+import com.mcmatica.entity.webui.model.scanner.CommandModel;
 import com.mcmatica.entity.webui.model.DetailListModel;
-import com.mcmatica.entity.webui.model.EventModel;
-import com.mcmatica.entity.webui.model.FieldModel;
-import com.mcmatica.entity.webui.model.FieldModel.EditorComponent;
+import com.mcmatica.entity.webui.model.scanner.EventModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel;
+import com.mcmatica.entity.webui.model.scanner.FieldModel.EditorComponent;
 
 //class ClassScanner<T extends BaseEntityModel> {
 class ClassScanner<F extends BaseUi> {
@@ -154,10 +154,16 @@ class ClassScanner<F extends BaseUi> {
 		
 		if( webui.commands().length > 0 )
 		{
-					
+				
+			CommandModel commandModel;
 			for (MCWebuiCommand command : webui.commands())
 			{
-				this.commands.add(new CommandModel(command.label(), command.memberExpression(), command.sequence()));
+				
+				commandModel = new CommandModel(command.label(), command.commandExpression());
+				commandModel.setDisabledExpression(command.disabledExpression());
+				commandModel.setSequence(command.sequence());
+				commandModel.setClientUpdate(command.update());
+				this.commands.add(commandModel);
 			}
 			
 		}

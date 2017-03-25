@@ -17,7 +17,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
-import com.mcmatica.entity.webui.model.JoinModel;
+import com.mcmatica.entity.webui.model.scanner.JoinModel;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -165,6 +165,19 @@ public class BaseMongoRepositoryImpl<T extends BaseEntityModel> implements BaseR
 		
 		return this.operations.find(qry, this.clazz);
 	}
+
+	@Override
+	public List<T> findAllSorted(String ... properties) {
+		
+		Sort sort = new Sort(Direction.ASC, properties);
+		
+		Query qry = new Query();
+		qry.with(sort);
+		
+		
+		return this.operations.find(qry, this.clazz);
+	}
+
 	
 	@Override
 	public List<T> findSorted(String filter, List<String> properties) {

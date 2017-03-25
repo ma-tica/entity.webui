@@ -21,10 +21,9 @@ public class McMongoIdToEntityConverter implements ConditionalGenericConverter {
 		if (this.mongoOperations == null)
 		{
         	ApplicationContextProvider appContext = new ApplicationContextProvider();
-        	
+
         	this.mongoOperations = appContext.getApplicationContext().getBean(MongoOperations.class);
 
-			
 		}
 		return this.mongoOperations;
 	}
@@ -37,40 +36,20 @@ public class McMongoIdToEntityConverter implements ConditionalGenericConverter {
 
 	@Override
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-		
 
-//		BaseEntityModel dummy = null;
-//		try {
-//			dummy = (BaseEntityModel) targetType.getType().newInstance();
-//			dummy.setId((String) source); 
-//		} catch (InstantiationException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalAccessException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-//		
-//		
-//		return dummy;
-		
-		BasicQuery qry = new BasicQuery(String.format("{_id: '%s'}", source));
-		
-		
-		return this.getMongoOperations().findOne(qry, targetType.getType());	
+		if (source != null)
+		{
+			BasicQuery qry = new BasicQuery(String.format("{_id: '%s'}", source));
+			return this.getMongoOperations().findOne(qry, targetType.getType());
+		}else{
+			return null;
+		}
 	}
 
 	@Override
 	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		
-		
-		
-		if (sourceType.getName().equals(String.class.getName())  ) {
-			
-			
+		if (sourceType.getName().equals(String.class.getName())) {
 			return true;
-			
 		}
 		
 		return false;

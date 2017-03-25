@@ -434,7 +434,7 @@ public class Utility {
 							ParameterizedType itemListType = (ParameterizedType) field.getGenericType();
 					        Class<T> itemListClass = (Class<T>) itemListType.getActualTypeArguments()[0];
 							
-					        List<T> originalListItems = LoadLazyProvider.istance.listLoadLazy(itemListClass, original0, field.getName());
+					        List<T> originalListItems = LoadLazyProvider.instance.loadLazyListProperty(itemListClass, original0, field.getName());
 
 					        field.set(original0, originalListItems);
 					        
@@ -446,7 +446,7 @@ public class Utility {
 								}
 							}
 						}else{
-							T refObjectValue = LoadLazyProvider.istance.loadLazy((Class<T>) field.getType(), original0, field.getName());
+							T refObjectValue = LoadLazyProvider.instance.loadLazyProperty((Class<T>) field.getType(), original0, field.getName());
 							field.set(original0, refObjectValue);
 						}
 					}			
