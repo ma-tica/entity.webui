@@ -284,10 +284,13 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 
 				item = new UIMenuItem();
 
+				item.setProcess("@this");
 				item.setValue(command.getLabel());
 				item.setActionExpression(Utility.createMethodExp(command.getCommandExpression()));
 				item.setValueExpression("disabled", Utility.createExpression(command.getDisabledExpression(), Boolean.class));
 				item.setUpdate(command.getClientUpdate());
+				
+				//item.setOncomplete("PF('oggetto-dlg-duplica').show();");
 				
 				
 				menuButton.getChildren().add(item);
