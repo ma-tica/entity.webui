@@ -351,6 +351,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		Method mth = itemselected.getClass().getMethod("get" + Utility.capitalize(childListName) );
 		List<BaseEntityModel> list =  (List<BaseEntityModel>) mth.invoke(itemselected);
 		list.remove(item);
+		this.service.startEditing();
 		
 		/*
 		 * Update the User interface
