@@ -42,7 +42,6 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 	
 	@Override
 	protected String elValue(FieldModel fmodel) {
-		// TODO Auto-generated method stub
 //		String el = "#{%s.%s.%s.%s}";
 //		return String.format(el, fmodel.getBeanControllerName(), "selected", fmodel.getLinkedParentField(), fmodel.getPropertyName());
 		if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
@@ -73,10 +72,11 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 		// Commands button
 		CommandButton buttonok = new CommandButton();
 		buttonok.setType("submit");
-		buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview:" + detailListModel.getPropertyName() + "_datatable");
-		buttonok.setIcon("fa fa-check");
+		//buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview:" + detailListModel.getPropertyName() + "_datatable");
+		buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview");
+		buttonok.setIcon("fa fa-check");		
 		buttonok.setValueExpression("value", Utility.createExpression("#{mclbl['common.ok']}",String.class));
-		buttonok.setOncomplete("PF('" + dialog.getId() +"').hide()");
+		buttonok.setOnsuccess("PF('" + dialog.getId() +"').hide()");
 		
 		dialog.getChildren().add(buttonok);
 		

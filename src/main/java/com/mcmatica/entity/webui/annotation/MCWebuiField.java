@@ -41,4 +41,6 @@ public @interface MCWebuiField {
 	 */
 	public int selectionField() default 0;
 	
+	public String mask() default "";
+	
 }

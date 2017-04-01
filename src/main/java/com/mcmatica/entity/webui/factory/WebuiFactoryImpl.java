@@ -428,7 +428,8 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		edit.setProcess("@this");
 		edit.setIcon("fa fa-edit");
 		edit.setId(detailList.getPropertyName() + "_edit_button");
-		edit.setUpdate(":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg");		
+		edit.setUpdate(":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg");	
+		edit.setResetValues(true);
 		edit.setOncomplete("PF('" + detailList.getPropertyName()+"_dlg" + "').show()");		
 		edit.setValueExpression("disabled", Utility.createExpression(disableExpression, Boolean.class));
 		/*

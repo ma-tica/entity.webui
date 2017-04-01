@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
@@ -16,6 +17,7 @@ import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.calendar.Calendar;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.dialog.Dialog;
+import org.primefaces.component.inputmask.InputMask;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.message.Message;
@@ -85,8 +87,10 @@ abstract class WebuiAbstractProvider {
 	protected Message buildMessage(FieldModel fmodel)
 	{
 		Message message = new Message();
-		message.setFor(fmodel.getId());
-		message.setDisplay("text");
+		message.setValueExpression("for", Utility.createExpression(fmodel.getId(), String.class));
+		message.setValueExpression("display", Utility.createExpression("text", String.class));
+//		message.setFor(fmodel.getId());
+//		message.setDisplay("text");
 		message.setId(fmodel.getId()+"_message");
 		
 		return message;
@@ -98,23 +102,33 @@ abstract class WebuiAbstractProvider {
 	 * @param field
 	 * @return
 	 */
-	protected InputText buildInputText(FieldModel fmodel)
+	protected UIInput buildInputText(FieldModel fmodel)
 	{
-		InputText input = new InputText();
-		
-		
+		UIInput input;
+		if (fmodel.getMask() != null && !fmodel.getMask().isEmpty())
+		{
+			input = new InputMask();
+			((InputMask) input).setMask(fmodel.getMask());
+			
+		}else
+		{
+			input = new InputText();
+			
+		}
 		this.partialBuildeComponent(fmodel, input);		
 		
-
+		String style;
 		if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty())
 		{
-			input.setStyle("width: " + fmodel.getWidth() + ";");
+			style = "width: " + fmodel.getWidth() + ";";
 		}else{
 		
-			input.setStyle("width: 100%;");
+			style = "width: 100%;";
 		}
 		
+		input.setValueExpression("style", Utility.createExpression(style, String.class));
 		input.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
+			
 		
 		
 		return input;
@@ -153,10 +167,7 @@ abstract class WebuiAbstractProvider {
 		
 		calendar.setValueExpression("disabled", Utility.createExpression(fmodel.getReadonlyExpression(), boolean.class));
 		calendar.setMode("popup");
-		calendar.setShowOn("button");
-		
-		
-		
+		calendar.setShowOn("button");		
 		
 		return calendar;
 	}

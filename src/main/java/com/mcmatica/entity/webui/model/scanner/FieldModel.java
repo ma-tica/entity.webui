@@ -54,6 +54,8 @@ public class FieldModel {
 	
 	private int selectionField;
 	
+	private String mask;
+	
 	private List<String> referencedSelectionFields;
 
 	
@@ -428,6 +430,14 @@ public class FieldModel {
 
 	public void setLinkedParentType(Class<?> linkedParentType) {
 		this.linkedParentType = linkedParentType;
+	}
+
+	public String getMask() {
+		return mask;
+	}
+
+	public void setMask(String mask) {
+		this.mask = mask;
 	}
 
 	
