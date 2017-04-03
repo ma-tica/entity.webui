@@ -1,5 +1,7 @@
 package com.mcmatica.entity.webui.repository;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +16,10 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.ReflectionUtils;
 
+import com.mcmatica.entity.webui.annotation.MCCascadeSave;
+import com.mcmatica.entity.webui.annotation.MCDbRef;
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.scanner.JoinModel;
@@ -61,10 +66,11 @@ public class BaseMongoRepositoryImpl<T extends BaseEntityModel> implements BaseR
 
 	@Override
 	public void delete(T item) {
+		this.cascadeDelete(item);
 		WriteResult result =  this.operations.remove(item);
 		if (logger.isInfoEnabled())
 		{
-			logger.info("Deleted count: " + result.getN());
+			logger.info("Deleted " + item.getClass().getName() + " count: " + result.getN());
 		}
 		
 	}
@@ -281,4 +287,47 @@ public class BaseMongoRepositoryImpl<T extends BaseEntityModel> implements BaseR
 	}
 
 
+	private void cascadeDelete(T item)
+	{
+		ReflectionUtils.doWithFields(item.getClass(), new ReflectionUtils.FieldCallback() {
+			public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
+				ReflectionUtils.makeAccessible(field);
+
+				/*
+				 * Load all lazy loaded properties of an object
+				 */
+				
+				MCDbRef mcdbref = field.getAnnotation(MCDbRef.class);
+				MCCascadeSave mccascadesave =  field.getAnnotation(MCCascadeSave.class);
+				if (mcdbref != null && mccascadesave != null && mccascadesave.cascadeDelete())
+				{
+
+					if (field.get(item) != null) {
+						if (BaseEntityModel.class.isAssignableFrom(field.getType()))
+						{
+							delete(item);
+														
+						}else if (List.class.isAssignableFrom(field.getType()))
+						{
+							ParameterizedType objectListType = (ParameterizedType) field.getGenericType();
+							Class<T> listClass = (Class<T>) objectListType.getActualTypeArguments()[0];
+							if (BaseEntityModel.class.isAssignableFrom(listClass))
+							{
+								for (T subitem : (List<T>) field.get(item))	{
+									delete(subitem);
+								}
+							}
+						}else{
+							throw new IllegalArgumentException("Field type " + field.getType() + " not supported by entity cascadeDelete procedure");
+						}
+						
+					}
+				}
+
+
+			}
+		});
+		
+	}
+	
 }

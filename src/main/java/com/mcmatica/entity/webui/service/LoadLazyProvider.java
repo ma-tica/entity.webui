@@ -115,15 +115,17 @@ public class LoadLazyProvider {
 							field.set(entity, property);
 							
 							
-						}else if (Collections.class.isAssignableFrom(field.getType()))
+						}else if (List.class.isAssignableFrom(field.getType()))
 						{
 							ParameterizedType objectListType = (ParameterizedType) field.getGenericType();
 							Class<T> listClass = (Class<T>) objectListType.getActualTypeArguments()[0];
 
 							List<T> property = loadLazyListProperty(listClass, entity, field.getName());
 							field.set(entity, property);
+						}else{
+							throw new IllegalArgumentException("Field type " + field.getType() + " not supported by entity fullLoad procedure");
 						}
-
+						
 					}
 				}
 
