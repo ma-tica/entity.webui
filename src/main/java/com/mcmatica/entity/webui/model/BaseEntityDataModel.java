@@ -100,7 +100,7 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 	public List<E> load(int first, int pageSize, String sortField, SortOrder sortOrder, Map<String, Object> filters)  {
 		
 		List<E> page;
-
+		pageSize = pageSize == 0 ? 1 : pageSize;
 		if (filters != null && !filters.isEmpty())
 		{
 			Jqb jqb = new Jqb(JqbDialect.MONGODB);
@@ -138,6 +138,8 @@ public class BaseEntityDataModel<E extends BaseEntityModel> extends LazyDataMode
 					
 				}
 			}
+			
+			
 			
 			int pageIndex = first / pageSize;
 			if (joins == null) 

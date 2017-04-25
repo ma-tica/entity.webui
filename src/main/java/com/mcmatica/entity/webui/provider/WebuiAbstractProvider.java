@@ -10,25 +10,38 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.UISelectItem;
 import javax.faces.component.UISelectItems;
+import javax.faces.component.html.HtmlForm;
+import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
+import javax.faces.event.BehaviorEvent;
+import javax.faces.model.DataModel;
 
+import org.omg.CORBA.OMGVMCID;
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.calendar.Calendar;
+import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
+import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.dialog.Dialog;
 import org.primefaces.component.inputmask.InputMask;
 import org.primefaces.component.inputtext.InputText;
 import org.primefaces.component.inputtextarea.InputTextarea;
 import org.primefaces.component.message.Message;
 import org.primefaces.component.outputlabel.OutputLabel;
+import org.primefaces.component.overlaypanel.OverlayPanel;
 import org.primefaces.component.selectbooleancheckbox.SelectBooleanCheckbox;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
+import org.primefaces.event.SelectEvent;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.converter.AutocompleteConverter;
 import com.mcmatica.entity.webui.converter.SelectItemsConverter;
+
+import com.mcmatica.entity.webui.factory.WebuiFactory;
+import com.mcmatica.entity.webui.factory.WebuiFactoryImpl;
+import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.scanner.FieldModel;
 import com.mcmatica.entity.webui.model.scanner.FieldModel.EditorComponent;
 
@@ -328,62 +341,231 @@ abstract class WebuiAbstractProvider {
 		return auto;
 	}
 	
-	protected HtmlPanelGroup buildSearchpanel(FieldModel fmodel) {
+	protected HtmlPanelGroup buildSearchpanel(FieldModel fmodel, String containerId) {
+		
+		HtmlPanelGroup panel = new HtmlPanelGroup();
+		panel.setStyle("float: left");
+		panel.setId(fmodel.getId() + "_panel");
+		
 		
 		InputText input = new InputText();
 		this.partialBuildeComponent(fmodel, input);		
 		if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty())
 		{
 			input.setStyle("width: " + fmodel.getWidth() + ";");
-		}else{
+		}else
+		{
 		
 			input.setStyle("width: 100%;");
 		}	
 		input.setValueExpression("readonly", Utility.createExpression("true", boolean.class));
-		String selectItemsExp = fmodel.getFillSelectionListExpression(); // String.format("#{%s.%s}", fmodel.getRelatedBeanControllerName(), "findAll()");
 		
+		
+//		String valueexpr = "";
+//		valueexpr = this.elValue(fmodel);
+//		input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
+//		input.setConverter(new AutocompleteConverter());
 
-		// Dialog
+				
+		String value = "";
+		String refObject = this.elValue(fmodel);
+		refObject = refObject.trim().substring(2, refObject.length() - 1);
+		for (String selectionField : fmodel.getReferencedSelectionFields())
+		{
+			if (!value.isEmpty() )
+			{
+				value += " - ";
+			}
+			value +=  String.format("#{%s.%s}", refObject, selectionField);
+		}
+				
+		input.setValueExpression("value", Utility.createExpression(value.trim(),  String.class));
+	
+		//String valueexpr = "#{component_lookup.tempselection} eq "; 
+		
+		
+		//input.setValueExpression("value", Utility.createExpression("#{component_lookup.tempselection}",  fmodel.getPropertyType()));
+		
+		
+		
+		
+		
+		/* Dialog */
 		Dialog dialog = new Dialog();
 		dialog.setId(fmodel.getId() + "_search_dialog");
-		dialog.setWidgetVar(fmodel.getId() + "_search_dialog");
-		dialog.setValueExpression("header", Utility.createExpression(fmodel.getCaption(), String.class));
-		
-		OutputLabel lbl = new OutputLabel();
-		lbl.setValue("...");
-		
-		dialog.getChildren().add(lbl);
+		dialog.setWidgetVar(dialog.getId());
+		dialog.setValueExpression("header", Utility.createExpression(fmodel.getCaption(), String.class));		
 		dialog.setModal(false);
-		dialog.setCloseOnEscape(true);
-//		DataTable searchTable = new DataTable();
+		
+		//dialog.setCloseOnEscape(true);
 
+//		OverlayPanel opanel = new OverlayPanel();
+//		opanel.setId(fmodel.getId() + "_search_dialog");
+//		opanel.setWidgetVar(opanel.getId());
+//		opanel.setAppendToBody(false);
+//		opanel.setModal(false);
+		
+		
+		
+//		DataTable searchTable = this.buildSearchDataTable(fmodel, dialog.getWidgetVar(), "#{component_lookup.clientIds." + input.getId() + "}");
+		
+		DataTable searchTable = this.buildSearchDataTable(fmodel, dialog.getWidgetVar(),  containerId + ":" + input.getId() + " @this");
+
+//		DataTable searchTable = this.buildSearchDataTable(fmodel, dialog.getWidgetVar(),  "progetto_form:progetto_panel_grid");
+		
+		
+		searchTable.setId(fmodel.getId() + "_search_dialog_table");
+		searchTable.setStyleClass("search_dialog_table");
+		//searchTable.setFirst(13);
+		
+		dialog.getChildren().add(searchTable);
+		if (fmodel.getWidth() != null && !fmodel.getWidth().isEmpty())
+		{
+			dialog.setWidth(fmodel.getWidth());
+		}
+		
+		
+		
+		//dialog.setAppendTo("dialogPanels_content");
+		//dialog.setAppendTo("searchDialogs");
+		
+
+//		opanel.getChildren().add(searchTable);
+		
 				
 		// Button search
 		CommandButton button = new CommandButton();
-		button.setProcess("@this");
+		//button.setProcess("@this");
 		button.setIcon("fa fa-search");
-		button.setOnclick("PF('" + dialog.getWidgetVar() + "').show()");
-		button.setType("button");
+		//button.setUpdate(":form_main:" + searchTable.getId());
+		button.setOnsuccess("PF('" + dialog.getWidgetVar() + "').show()");
+//		button.setOnsuccess("PF('" + opanel.getWidgetVar() + "').show()");
+		button.setType("submit");
 		
-		
-		
-		
-		HtmlPanelGroup panel = new HtmlPanelGroup();
-		panel.setStyle("float: left");
-			
-		
-		
-		
-		
-		
+				
 		panel.getChildren().add(input);
+		//panel.getChildren().add(inputHidden);
 		panel.getChildren().add(button);
 		panel.getChildren().add(dialog);
+		
+//		System.out.println(input.getId());
+//		System.out.println(searchTable.getClientId());
+//		System.out.println(panel.getContainerClientId( FacesContext.getCurrentInstance()));
+				
 		
 		return panel;
 		
 	}
 	
+	
+	private DataTable buildSearchDataTable(FieldModel fmodel, String dialogWidgetvar, String update)
+	{
+		DataTable table = new DataTable();
+		
+		/* value */
+		String expr = String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "list");
+		table.setValueExpression("value", Utility.createExpression( expr, DataModel.class));
+		
+		/* var */
+		table.setVar("item");
+		table.setSelectionMode("single");
+		
+		
+		/* filtered value */
+		expr = String.format("#{%s.%s}", fmodel.getReferencedFieldBeanControllerName(), "listFiltered");
+		table.setValueExpression("filteredValue", Utility.createExpression( expr, List.class));
+		
+		//table.setValueExpression("rowKey", Utility.createExpression("#{item.id}", String.class));
+		
+		/* selection */
+//		String valueexpr = "";
+//		valueexpr = this.elValue(fmodel);	
+//		table.setValueExpression("selection", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
+//		table.setValueExpression("selection", Utility.createExpression("#{component_lookup.tempselection}", fmodel.getPropertyType()));
+		
+		/* table style */
+//		table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
+		
+		/* skipChildren */
+//		table.setValueExpression("skipChildren", Utility.createExpression("true", Boolean.class));
+		
+		
+		/* lazy */
+		table.setValueExpression("lazy", Utility.createExpression("true", Boolean.class));
+
+		
+		table.setPaginatorPosition("top");
+		table.setRows(10);
+		table.setPaginatorTemplate("{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {NextPageLink} {LastPageLink}");
+		table.setPaginator(true);
+		
+		//table.getAttributes().put("myfield", fmodel.getPropertyName());
+		table.getAttributes().put("myfield", this.elValue(fmodel));
+		
+//		table.getf .put("attribute", this.elValue(fmodel));
+		
+		//table.setResizableColumns(true);
+		
+		//System.out.println("SEARCH update: " + update);
+		
+		//table.addClientBehavior("rowDblselect", Utility.createClientBehaviour("", "PF('" + dialogWidgetvar + "').hide();" , update));
+		String field = this.elValue(fmodel);
+		String eventListener = String.format("#{%s.%s}", fmodel.getBeanControllerName(), "onSearchSelection" );
+		
+		table.addClientBehavior("rowDblselect", Utility.createAjaxBehaviour(eventListener,new Class<?>[] { SelectEvent.class},  "PF('" + dialogWidgetvar + "').hide();" , update));
+		
+		
+		/*
+		 * columns
+		 */
+		
+		Column column = new Column();
+		
+		
+		for (String columnName : fmodel.getReferencedSelectionFields())
+		{
+			column = new Column();
+			column.setValueExpression("headerText", Utility.createExpression(columnName, String.class));
+			HtmlOutputText cell = new HtmlOutputText();
+			String cellvalue = String.format("#{%s.%s}", table.getVar(), columnName);
+//			if (fmodel.getLinkedParentField() != null && !fmodel.getLinkedParentField().isEmpty())
+//			{
+//				cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+//			}
+			
+			
+			cell.setValueExpression("value", Utility.createExpression(cellvalue, String.class));
+			column.getChildren().add(cell);
+
+			/* filter by */
+			cellvalue = String.format("#{%s.%s}", table.getVar(), columnName);
+			
+//			if (fmodel.getLinkedParentField() == null || fmodel.getLinkedParentField().isEmpty())
+//			{
+//				//cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
+//				cellvalue = String.format("#{%s.%s}", table.getVar(), columnName);
+//			}else{
+//				cellvalue = String.format("#{%s.%s.%s.%s}", table.getVar(), 
+//														 fmodel.getLinkedParentField(),
+//														 fmodel.getLinkedParentType().getName().replace(".", "_"),
+//														 fmodel.getLinkedValueExpression());
+//			}
+			
+			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
+
+//			column.setWidth(_width);
+			
+			table.getChildren().add(column);
+
+			
+		}
+		
+		
+		
+		return table;
+		
+	}
+
 	
 	private void partialBuildeComponent(FieldModel fmodel, UIInput input)
 	{
@@ -391,7 +573,9 @@ abstract class WebuiAbstractProvider {
 		/*
 		 * create the value expression for Value attribute
 		 */
-		input.setValueExpression("value", Utility.createExpression(this.elValue(fmodel), fmodel.getPropertyType()));
+		String valueexpr = "";
+		valueexpr = this.elValue(fmodel);
+		input.setValueExpression("value", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
 		
 		
 		/*

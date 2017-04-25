@@ -20,6 +20,7 @@ import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.tooltip.Tooltip;
 
 import com.mcmatica.entity.webui.bean.BaseUi;
+import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.scanner.CommandModel;
@@ -106,7 +107,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 																  scanner.getClazzAnnotation().columnClasses(),	
 																  null, null, this.getLabels());
 		
-		panel.getChildren().add(panelProvider.buildPanelGrid());
+		panel.getChildren().add(panelProvider.buildPanelGrid(scanner.getClazzAnnotation().beanControllerName(), Constant.MAIN_FORM_ID));
 		
 				
 		/*
@@ -428,7 +429,11 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		edit.setProcess("@this");
 		edit.setIcon("fa fa-edit");
 		edit.setId(detailList.getPropertyName() + "_edit_button");
-		edit.setUpdate(":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg");	
+		//edit.setUpdate(":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg");	
+		String update = ":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg";
+		update += " @(.search_dialog_table)";
+		edit.setUpdate(update);
+		
 		edit.setResetValues(true);
 		edit.setOncomplete("PF('" + detailList.getPropertyName()+"_dlg" + "').show()");		
 		edit.setValueExpression("disabled", Utility.createExpression(disableExpression, Boolean.class));
@@ -459,6 +464,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		
 		Panel panel = new Panel();
 		panel.setId(detailList.getPropertyName() + "_panel");
+		panel.setStyleClass("detailtabview");
 
 		
 		if (title != null)

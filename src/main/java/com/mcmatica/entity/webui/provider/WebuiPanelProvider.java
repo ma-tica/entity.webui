@@ -60,9 +60,11 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		private int numColumns;
 		private String[] columnClasses;
 		private PanelGrid panel;
+		private String formContainerId;
 		
-		public PanelBuilder(PanelGrid panel, int numColumns, String header)
+		public PanelBuilder(PanelGrid panel, int numColumns, String header, String formContainerId)
 		{
+			this.formContainerId = formContainerId;
 			this.panel = panel;
 			this.numColumns = numColumns;
 			if (panel.getColumnClasses() != null && !panel.getColumnClasses().isEmpty()) {
@@ -120,11 +122,15 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 			this.panel.getFacets().put("header", rowHeader);
 			
 		}
+
+		public String getFormContainerId() {
+			return formContainerId;
+		}
 	}
 	
 	
 	
-	public PanelGrid buildPanelGrid()
+	public PanelGrid buildPanelGrid(String panelId, String formContainerId)
 	{
 		/*
 		 * Sort fields
@@ -132,6 +138,8 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		this.sortFieldByFormPosition();
 		
 		PanelGrid panel = new PanelGrid();
+		panel.setId(panelId);
+		
 		
 		panel.setStyleClass("ui-noborder");
 		if (this.columnClasses != null && !this.columnClasses.isEmpty()) 
@@ -145,7 +153,7 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		/*
 		 * Instantiate the panel builder class and creates the main header panel
 		 */		
-		PanelBuilder panelBuilder = new PanelBuilder(panel, this.columnNum, this.title);
+		PanelBuilder panelBuilder = new PanelBuilder(panel, this.columnNum, this.title, formContainerId);
 
 
 		for(FieldModel fmodel : this.fields)
@@ -202,7 +210,8 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 			input = this.buildAutocomplete(fmodel);
 			break;
 		case SEARCH:
-			input = this.buildSearchpanel(fmodel);
+			//input = this.buildSearchpanel(fmodel, builder.getFormContainerId() + ":" + builder.panel.getId());
+			input = this.buildSearchpanel(fmodel, builder.getFormContainerId() );
 			break;
 		default:
 			break;
@@ -231,6 +240,8 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 		case INPUT_DATETIME:
 		case SELECTION_ONE_MENU:
 		case BOOLEAN_CHECKBOX:
+		
+			
 			message = this.buildMessage(fmodel);
 			break;
 		default:

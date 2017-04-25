@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
@@ -17,6 +21,7 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
@@ -57,6 +62,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	protected MenuButton menuFunctions;
 	
+//	@ManagedProperty(value="#{component_lookup}")
+//	private ComponentLookup componentLookup;
 	
 
 	public ResourceBundle getLabels() {
@@ -176,6 +183,12 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public void setSelected(BaseEntityModel selected) {
 		if (!this.service.isEditing())
 		{
+//			if (this.componentLookup.getTempselection() != null)
+//			{
+//				this.service.setSelected(this.componentLookup.getTempselection());
+//			}else{
+//				this.service.setSelected(selected);
+//			}
 			this.service.setSelected(selected);
 		}else{
 			
@@ -252,6 +265,10 @@ public  abstract class  BaseWebuiBean implements Serializable {
 //	}
 
 	
+//	public void setComponentLookup(ComponentLookup componentLookup) {
+//		this.componentLookup = componentLookup;
+//	}
+
 	
 /*
  * ---------------------------------
@@ -391,6 +408,29 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public abstract String goToHome();
 
+
+	public void onSearchSelection(SelectEvent event)
+	{
+		
+		
+		DataTable table = (DataTable) event.getComponent();
+		String fieldExpression = (String) table.getAttributes().get("myfield");
+		BaseEntityModel selectedValue = (BaseEntityModel) event.getObject();
+		
+		FacesContext context = FacesContext.getCurrentInstance();
+	    ExpressionFactory expressionFactory = context.getApplication().getExpressionFactory();
+	    ELContext elContext = context.getELContext();
+	    ValueExpression vex = expressionFactory.createValueExpression(elContext, fieldExpression, void.class);
+	    vex.setValue(elContext, selectedValue);
+	    this.service.startEditing();
+	   // String result = (String) vex.getValue(elContext);
+			
+		
+		
+		
+		
+		//this.service.setSelected((BaseEntityModel) event.getObject() );
+	}
 
 	
 	

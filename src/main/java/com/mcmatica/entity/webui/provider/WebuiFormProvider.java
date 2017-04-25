@@ -7,9 +7,11 @@ import javax.faces.component.html.HtmlForm;
 
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.dialog.Dialog;
+import org.primefaces.component.overlaypanel.OverlayPanel;
 import org.primefaces.component.panelgrid.PanelGrid;
 
 import com.mcmatica.entity.webui.annotation.MCWebui;
+import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.DetailListModel;
 import com.mcmatica.entity.webui.model.scanner.FieldModel;
@@ -59,32 +61,45 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 	public HtmlForm buildForm()
 	{
 
+		HtmlForm form = new HtmlForm();
+		form.setId(detailListModel.getPropertyName() + "_form");
 		
 		
-		Dialog dialog = new Dialog();
+		//Dialog dialog = new Dialog();
+		OverlayPanel dialog = new OverlayPanel();
 		dialog.setId(detailListModel.getPropertyName() + "_dlg");
 		dialog.setWidgetVar(dialog.getId());
 		dialog.setModal(true);
-		PanelGrid panel = this.buildPanelGrid();
+		PanelGrid panel = this.buildPanelGrid(detailListModel.getPropertyName() + "_panel_grid", form.getId() );
 		dialog.getChildren().add(panel);
 		//dialog.setClosable(false);
+		
 		
 		// Commands button
 		CommandButton buttonok = new CommandButton();
 		buttonok.setType("submit");
-		//buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview:" + detailListModel.getPropertyName() + "_datatable");
-		buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview");
+		
+		buttonok.setUpdate(":form_toolbar, :" + Constant.MAIN_FORM_ID + ":detail_tabview");
+		//buttonok.setUpdate(":form_toolbar, @(.detailtabview)");
 		buttonok.setIcon("fa fa-check");		
 		buttonok.setValueExpression("value", Utility.createExpression("#{mclbl['common.ok']}",String.class));
 		buttonok.setOnsuccess("PF('" + dialog.getId() +"').hide()");
 		
+
+		CommandButton buttonCancel = new CommandButton();
+		buttonCancel.setType("button");
+		//buttonok.setUpdate(":form_toolbar, :form_main:detail_tabview:" + detailListModel.getPropertyName() + "_datatable");
+		//buttonCancel.setUpdate(":form_toolbar, :" + Constant.MAIN_FORM_ID + ":detail_tabview");
+		buttonCancel.setIcon("fa fa-exit");		
+		buttonCancel.setValueExpression("value", Utility.createExpression("#{mclbl['common.cancel']}",String.class));
+		buttonCancel.setOnclick("PF('" + dialog.getId() +"').hide()");
+
 		dialog.getChildren().add(buttonok);
+		dialog.getChildren().add(buttonCancel);
 		
 		
-		HtmlForm form = new HtmlForm();
 		form.getChildren().add(dialog);
 		
-		form.setId(detailListModel.getPropertyName() + "_form");
 		
 		return form;
 	}

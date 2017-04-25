@@ -113,25 +113,36 @@ public class Utility {
 	 * @return
 	 */
 	public static AjaxBehavior createAjaxBehaviour(String listenerExpression, String update) {
+		return createAjaxBehaviour(listenerExpression, new Class<?>[] { BehaviorEvent.class }, "", update );
+	}
+	
+	public static AjaxBehavior createAjaxBehaviour(String listenerExpression, Class<?>[] parmeters, String onsuccess, String update) {
 		FacesContext context = FacesContext.getCurrentInstance();
 		AjaxBehavior ajaxBehavior = (AjaxBehavior) context.getApplication().createBehavior(AjaxBehavior.BEHAVIOR_ID);
 		if (listenerExpression != null && !listenerExpression.isEmpty()) {
 
 			MethodExpression me = context.getApplication().getExpressionFactory().createMethodExpression(
-					context.getELContext(), listenerExpression, null, new Class<?>[] { BehaviorEvent.class });
+					context.getELContext(), listenerExpression, null, parmeters );
+			
 			ajaxBehavior.addAjaxBehaviorListener(new AjaxBehaviorListenerImpl(me, me));
 		}
 		ajaxBehavior.setProcess("@this");
 		ajaxBehavior.setUpdate(update);
+		ajaxBehavior.setOnsuccess(onsuccess);
+		
 		return ajaxBehavior;
 	}
 
 	public static AjaxBehavior createClientBehaviour(String onstart, String onsuccess, String update) {
+		return createClientBehaviour(onstart, onsuccess, update, "@this");
+	}
+
+	public static AjaxBehavior createClientBehaviour(String onstart, String onsuccess, String update, String process) {
 		FacesContext context = FacesContext.getCurrentInstance();
 		AjaxBehavior ajaxBehavior = (AjaxBehavior) context.getApplication().createBehavior(AjaxBehavior.BEHAVIOR_ID);
 		ajaxBehavior.setOnstart(onstart);
 		ajaxBehavior.setOnsuccess(onsuccess);
-		ajaxBehavior.setProcess("@this");
+		ajaxBehavior.setProcess(process);
 		ajaxBehavior.setUpdate(update);
 		return ajaxBehavior;
 	}

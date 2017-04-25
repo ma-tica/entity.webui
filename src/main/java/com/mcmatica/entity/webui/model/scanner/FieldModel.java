@@ -282,6 +282,28 @@ public class FieldModel {
 			return expression;
 		}else if(this.getEditorComponent().equals(EditorComponent.AUTOCOMPLETE)) {			
 			return String.format("#{%s.%s}", this.getReferencedFieldBeanControllerName(), "complete");
+		}else if (this.getEditorComponent().equals(EditorComponent.SEARCH))
+		{
+			String value = ""; //"#{";
+			
+			
+			String refObject;
+			
+
+			
+			if (this.getLinkedParentField() != null && !this.getLinkedParentField().isEmpty())
+			{
+				refObject = String.format("#{%s.%s.%s.%s}", this.getBeanControllerName(), "selected", this.getLinkedParentField(), this.getLinkedValueExpression());
+			}else{
+				refObject = String.format("#{%s.%s.%s}", this.getBeanControllerName(), "selected", this.getPropertyName()); 
+			}
+			refObject = refObject.trim().substring(2, refObject.length() - 1);
+			for (String selectionField : this.getReferencedSelectionFields())
+			{
+				value +=  String.format("#{%s.%s} ", refObject, selectionField);
+			}
+			//value +="}";
+			return value.trim();
 		}
 		
 		return null;
