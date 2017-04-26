@@ -65,8 +65,8 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 		form.setId(detailListModel.getPropertyName() + "_form");
 		
 		
-		//Dialog dialog = new Dialog();
-		OverlayPanel dialog = new OverlayPanel();
+		Dialog dialog = new Dialog();
+		//OverlayPanel dialog = new OverlayPanel();
 		dialog.setId(detailListModel.getPropertyName() + "_dlg");
 		dialog.setWidgetVar(dialog.getId());
 		dialog.setModal(true);

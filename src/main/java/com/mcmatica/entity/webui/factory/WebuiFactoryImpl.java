@@ -9,6 +9,7 @@ import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 
+import org.primefaces.behavior.confirm.ConfirmBehavior;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.datatable.DataTable;
@@ -414,7 +415,13 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		remove.setUpdate(detailList.getPropertyName()+"_datatable");
 		
 		remove.setValueExpression("disabled", Utility.createExpression(disableExpression, Boolean.class));
+		ConfirmBehavior confirmRemove = new ConfirmBehavior();
+		confirmRemove.setHeader("Confirmation");
+		confirmRemove.setMessage("Procedere con l'eliminazione ?");
+		confirmRemove.setIcon("ui-icon-alert");
+		remove.addClientBehavior("click", confirmRemove);
 
+		
 		/*
 		 * Tooltip bottone -
 		 */

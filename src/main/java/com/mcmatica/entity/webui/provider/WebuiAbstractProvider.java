@@ -427,7 +427,7 @@ abstract class WebuiAbstractProvider {
 		
 		
 		//dialog.setAppendTo("dialogPanels_content");
-		//dialog.setAppendTo("searchDialogs");
+		dialog.setAppendTo("searchDialogs");
 		
 
 //		opanel.getChildren().add(searchTable);
