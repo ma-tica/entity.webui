@@ -667,5 +667,9 @@ public class Utility {
 		return false;
 	}
 	
-	
+
+	public static void invalidateBean(String beanName) {
+		FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(beanName, null);
+	}
+
 }

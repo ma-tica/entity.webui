@@ -22,7 +22,7 @@ public class WebuiPanelProvider extends WebuiAbstractProvider {
 
 	private List<FieldModel> fields;
 	private int columnNum;
-	private String title;
+	protected String title;
 	private String parentField;
 	private String columnClasses;
 	

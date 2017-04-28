@@ -11,7 +11,6 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ManagedProperty;
 import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlPanelGroup;
 import javax.faces.context.FacesContext;
@@ -42,6 +41,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 
 	
 	
+	@SuppressWarnings("rawtypes")
 	protected BaseWebuiService service;
 	
 	protected List<FieldModel> columns = new ArrayList<FieldModel>();
@@ -64,6 +64,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 //	@ManagedProperty(value="#{component_lookup}")
 //	private ComponentLookup componentLookup;
+	
 	
 
 	public ResourceBundle getLabels() {

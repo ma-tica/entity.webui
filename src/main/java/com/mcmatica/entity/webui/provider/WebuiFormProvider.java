@@ -62,6 +62,10 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 	{
 
 		HtmlForm form = new HtmlForm();
+		form.setTitle(this.title);
+		
+		
+		
 		form.setId(detailListModel.getPropertyName() + "_form");
 		
 		
@@ -71,8 +75,11 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 		dialog.setWidgetVar(dialog.getId());
 		dialog.setModal(true);
 		PanelGrid panel = this.buildPanelGrid(detailListModel.getPropertyName() + "_panel_grid", form.getId() );
+		
 		dialog.getChildren().add(panel);
+		dialog.setHeader(this.title);
 		//dialog.setClosable(false);
+		
 		
 		
 		// Commands button
