@@ -24,10 +24,11 @@ import org.primefaces.event.SelectEvent;
 
 import com.mcmatica.entity.webui.common.Constant;
 import com.mcmatica.entity.webui.common.Utility;
+import com.mcmatica.entity.webui.factory.WebuiFactory;
 import com.mcmatica.entity.webui.model.BaseEntityDataModel;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 import com.mcmatica.entity.webui.model.scanner.FieldModel;
-import com.mcmatica.entity.webui.service.BaseWebuiService;
+import com.mcmatica.entity.webui.service.BaseDataService;
 import com.mcmatica.jqb.JqbWhereBuilder;
 
 
@@ -41,8 +42,12 @@ public  abstract class  BaseWebuiBean implements Serializable {
 
 	
 	
-	@SuppressWarnings("rawtypes")
-	protected BaseWebuiService service;
+//	@SuppressWarnings("rawtypes")
+//	protected BaseWebuiService service;
+
+	protected BaseDataService dataService;
+	
+	protected WebuiFactory webuiFactory;
 	
 	protected List<FieldModel> columns = new ArrayList<FieldModel>();
 	
@@ -89,8 +94,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public BaseEntityDataModel<BaseEntityModel> getList() {
 //		if (this.list == null)
 //		{
-			this.list = this.service.buildList();
-			//this.listFiltered = this.service.buildList();
+			this.list = this.dataService.buildList();
+			
 			this.listFiltered =  this.list.getData();
 //		}
 		
@@ -106,7 +111,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public List<BaseEntityModel> getListFiltered() {
 		if (this.listFiltered == null) {
-			this.listFiltered = this.service.buildList().getData();
+			this.listFiltered = this.dataService.buildList().getData();			
 		}
 		return listFiltered;
 	}
@@ -120,7 +125,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public Panel getDialogsPanel() {
 		if (dialogsPanel == null)
 		{
-			this.dialogsPanel = this.service.buildEditFormDialogs();
+//			this.dialogsPanel = this.service.buildEditFormDialogs();
+			this.dialogsPanel = this.webuiFactory.buildEditFormDialogs();
 		}
 		return dialogsPanel;
 	}
@@ -135,7 +141,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	{
 		if (formPanel == null)
 		{
-			this.formPanel = this.service.buildPanelGrid();
+//			this.formPanel = this.service.buildPanelGrid();
+			this.formPanel = this.webuiFactory.buildPanelGrid();
 		}
 		return formPanel;
 	}
@@ -146,9 +153,10 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	}	
 	
 	public DataTable getSelectionGrid() {
-		if (selectionGrid == null)
+		if (this.selectionGrid == null)
 		{
-			selectionGrid = this.service.buildSelectionGrid();
+//			selectionGrid = this.service.buildSelectionGrid();
+			this.selectionGrid = this.webuiFactory.buildSelectionGrid();
 		}
 		return selectionGrid;
 	}
@@ -160,7 +168,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 
 
 	public BaseEntityModel getSelected() {
-		return service.getSelected();
+		return this.dataService.getSelected();
 	}
 
 	
@@ -168,7 +176,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	{
 		if (this.menuFunctions == null)
 		{
-			this.menuFunctions = this.service.buildMenuFunctions();
+//			this.menuFunctions = this.service.buildMenuFunctions();
+			this.menuFunctions = this.webuiFactory.buildMenuFunctions();
 		}
 		return this.menuFunctions;
 	}
@@ -182,7 +191,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 * @param selected the selected to set
 	 */
 	public void setSelected(BaseEntityModel selected) {
-		if (!this.service.isEditing())
+		if (!this.dataService.isEditing())
 		{
 //			if (this.componentLookup.getTempselection() != null)
 //			{
@@ -190,7 +199,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 //			}else{
 //				this.service.setSelected(selected);
 //			}
-			this.service.setSelected(selected);
+			this.dataService.setSelected(selected);
 		}else{
 			
 			FacesContext.getCurrentInstance().addMessage(null,
@@ -205,7 +214,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	 */
 	public List<BaseEntityModel> findAll()
 	{
-		return this.service.findAll();
+		return this.dataService.findAll();
 	}
 
 	public List<BaseEntityModel> findAllSorted(String ... property)
@@ -217,13 +226,13 @@ public  abstract class  BaseWebuiBean implements Serializable {
 			properties.add(property[i]);
 		}
 		
-		return this.service.findAllSorted(properties);
+		return this.dataService.findAllSorted(properties);
 	}
 
 	
 	public BaseEntityModel getById(String id)
 	{
-		return this.service.getById(id);
+		return this.dataService.getById(id);
 	}
 
 	
@@ -241,10 +250,10 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		
 		if (query.trim().isEmpty())
 		{
-			return this.service.findAllSorted(selectionFields);
+			return this.dataService.findAllSorted(selectionFields);
 		}else
 		{
-			return this.service.findSorted(wh.text(), selectionFields);
+			return this.dataService.findSorted(wh.text(), selectionFields);
 		}
 		
 	}
@@ -256,7 +265,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 //			return this.service.isEditing();
 //		}
 //		return true;
-		return this.service.isEditing();
+		return this.dataService.isEditing();
 		
 	}
 
@@ -279,15 +288,15 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public void save()
 	{
-		this.service.save();
+		this.dataService.save();
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "save"));
 	}
 	
 	public void create()
 	{
-		this.service.create();
-		this.service.setDefaultValues();
+		this.dataService.create();
+		this.dataService.setDefaultValues(this.webuiFactory.getFields());
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "addnew"));
 
@@ -295,7 +304,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public void delete()
 	{
-		this.service.delete();
+		this.dataService.delete();
 		FacesContext.getCurrentInstance().addMessage(null,
 				new FacesMessage(FacesMessage.SEVERITY_INFO, "Info", "delete"));
 		
@@ -303,7 +312,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public void cancel()
 	{
-		this.service.cancel();
+		this.dataService.cancel();
 		
 //		BaseEntityModel e = this.list.getRowData(this.getSelected().getId());
 //		e = this.getSelected();
@@ -325,7 +334,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	{
 		//BaseEntityModel d = this.list.getRowData("000000000017");
 		//this.service.setSelected(d);
-		if (this.service.getSelected() == null)
+		if (this.dataService.getSelected() == null)
 		{
 			this.setSelected(this.list.getData().get(0));
 		}
@@ -369,7 +378,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		Method mth = itemselected.getClass().getMethod("get" + Utility.capitalize(childListName) );
 		List<BaseEntityModel> list =  (List<BaseEntityModel>) mth.invoke(itemselected);
 		list.remove(item);
-		this.service.startEditing();
+		this.dataService.startEditing();
 		
 		/*
 		 * Update the User interface
@@ -382,7 +391,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	public void onChangeField(AjaxBehaviorEvent event)
 	{
-		this.service.startEditing();
+		this.dataService.startEditing();
 		this.updateUI();
 	}
 	
@@ -423,7 +432,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	    ELContext elContext = context.getELContext();
 	    ValueExpression vex = expressionFactory.createValueExpression(elContext, fieldExpression, void.class);
 	    vex.setValue(elContext, selectedValue);
-	    this.service.startEditing();
+	    this.dataService.startEditing();
 	   // String result = (String) vex.getValue(elContext);
 			
 		

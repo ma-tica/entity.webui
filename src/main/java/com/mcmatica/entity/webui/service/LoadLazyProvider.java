@@ -3,7 +3,6 @@ package com.mcmatica.entity.webui.service;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -13,8 +12,8 @@ import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.util.ReflectionUtils;
 
 import com.mcmatica.entity.webui.annotation.MCDbRef;
+import com.mcmatica.entity.webui.common.SpringContextProvider;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
-import com.mcmatica.entity.webui.spring.converter.ApplicationContextProvider;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -35,7 +34,7 @@ public class LoadLazyProvider {
 	{
 		if (this.mongoOperations == null)
 		{
-        	ApplicationContextProvider appContext = new ApplicationContextProvider();        	
+			SpringContextProvider appContext = new SpringContextProvider();        	
         	this.mongoOperations = appContext.getApplicationContext().getBean(MongoOperations.class);		
 		}
 		return this.mongoOperations;

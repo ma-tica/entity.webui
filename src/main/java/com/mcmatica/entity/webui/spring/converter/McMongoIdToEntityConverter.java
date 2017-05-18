@@ -8,6 +8,7 @@ import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 
+import com.mcmatica.entity.webui.common.SpringContextProvider;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
 
 public class McMongoIdToEntityConverter implements ConditionalGenericConverter {
@@ -20,7 +21,7 @@ public class McMongoIdToEntityConverter implements ConditionalGenericConverter {
 	{
 		if (this.mongoOperations == null)
 		{
-        	ApplicationContextProvider appContext = new ApplicationContextProvider();
+			SpringContextProvider appContext = new SpringContextProvider();
 
         	this.mongoOperations = appContext.getApplicationContext().getBean(MongoOperations.class);
 
