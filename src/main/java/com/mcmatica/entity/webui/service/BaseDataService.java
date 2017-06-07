@@ -19,7 +19,6 @@ public interface BaseDataService<T extends BaseEntityModel> {
 	
 	T getSelected();
 
-	
 	T getById(String id);
 	
 	BaseEntityDataModel<T> buildList();
@@ -30,9 +29,10 @@ public interface BaseDataService<T extends BaseEntityModel> {
 	
 	List<T> findSorted(String filter, List<String> properties);
 	
-
 	List<T> findAllSorted(List<String> properties);
 
+	
+	
 //	long count();
 //	
 //	long count(String filter);

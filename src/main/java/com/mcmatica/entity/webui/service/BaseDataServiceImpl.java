@@ -3,6 +3,8 @@ package com.mcmatica.entity.webui.service;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -30,6 +32,8 @@ public class BaseDataServiceImpl<T extends BaseEntityModel, R extends BaseReposi
 	private boolean isEditing;
 
 	Boolean execSaveBeforeDelete = false;
+	
+	private Class<T> clazzEntity;
 
 	private Logger logger = LogManager.getLogger(this.getClass().getName());
 
@@ -37,11 +41,12 @@ public class BaseDataServiceImpl<T extends BaseEntityModel, R extends BaseReposi
 //		this.repository = repository;
 //	}
 
-	public BaseDataServiceImpl(Class<R> clazz) {
+	public BaseDataServiceImpl(Class<T> clazzEntity, Class<R> clazzRepository) {
+		this.clazzEntity = clazzEntity;
 		if (this.repository == null)
 		{
 			ApplicationContext springContext = SpringContextProvider.getApplicationContext();
-			this.repository = springContext.getBean(clazz);
+			this.repository = springContext.getBean(clazzRepository);
 		}
 	}
 
@@ -137,6 +142,26 @@ public class BaseDataServiceImpl<T extends BaseEntityModel, R extends BaseReposi
 
 	private T getInstanceOfT()
     {
+		try {
+			return this.clazzEntity.newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		} 
+		/*
+		TypeVariable<?>[] t = this.getClass().getTypeParameters();
+	      if(t.length != 0) {
+	         for(TypeVariable<?> val : t) {
+	            System.out.println(val.toString());
+	            System.out.println(val.getTypeName());
+	         }
+	      } 
+		
+        //ParameterizedType superClass = (ParameterizedType) this.getClass().getGenericInterfaces()[0];
+    //    Class<T> type = (Class<T>) superClass.getActualTypeArguments()[0];
+        
+        TypeVariable<?> tp = this.getClass().getTypeParameters()[0];
+        
+        //Class<T> type = (Class<T>) this.getClass().getTypeParameters()[0];
         ParameterizedType superClass = (ParameterizedType) getClass().getGenericSuperclass();
         Class<T> type = (Class<T>) superClass.getActualTypeArguments()[0];
         try
@@ -148,6 +173,7 @@ public class BaseDataServiceImpl<T extends BaseEntityModel, R extends BaseReposi
             // Oops, no default constructor
             throw new RuntimeException(e);
         }
+        */
     }
 
 	

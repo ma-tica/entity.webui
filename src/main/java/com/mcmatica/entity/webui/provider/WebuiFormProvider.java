@@ -62,7 +62,9 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 	{
 
 		HtmlForm form = new HtmlForm();
-		form.setTitle(this.title);
+		//form.setTitle(this.title);
+		
+		form.setValueExpression("title", Utility.createExpression(this.title, String.class));
 		
 		
 		
@@ -77,7 +79,8 @@ public class WebuiFormProvider extends WebuiPanelProvider {
 		PanelGrid panel = this.buildPanelGrid(detailListModel.getPropertyName() + "_panel_grid", form.getId() );
 		
 		dialog.getChildren().add(panel);
-		dialog.setHeader(this.title);
+		//dialog.setHeader(this.title);
+		dialog.setValueExpression("header", Utility.createExpression(this.title, String.class));
 		//dialog.setClosable(false);
 		
 		

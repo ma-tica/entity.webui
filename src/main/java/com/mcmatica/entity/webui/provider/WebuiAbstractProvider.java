@@ -121,7 +121,8 @@ abstract class WebuiAbstractProvider {
 		if (fmodel.getMask() != null && !fmodel.getMask().isEmpty())
 		{
 			input = new InputMask();
-			((InputMask) input).setMask(fmodel.getMask());
+			//((InputMask) input).setMask(fmodel.getMask());
+			input.setValueExpression("mask", Utility.createExpression(fmodel.getMask(), String.class));
 			
 		}else
 		{
