@@ -39,7 +39,7 @@ public @interface MCWebuiField {
 	 * Each field value are separated by ' - '
 	 * @return
 	 */
-	public int selectionField() default 0;
+	public int selectionFieldSequence() default 0;
 	
 	public String mask() default "";
 	

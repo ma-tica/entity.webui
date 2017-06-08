@@ -198,7 +198,7 @@ class ClassScanner<F extends BaseUi> {
 				fmodel.setVisibleExpression(webuifield.visible());
 				fmodel.setReadonlyExpression(webuifield.readonly());
 				fmodel.setWidth(webuifield.width());
-				fmodel.setSelectionField(webuifield.selectionField());
+				fmodel.setSelectionField(webuifield.selectionFieldSequence());
 				fmodel.setMask(webuifield.mask());
 				
 				fmodel.setFormField(true);

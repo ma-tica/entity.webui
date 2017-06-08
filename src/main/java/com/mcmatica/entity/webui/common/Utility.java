@@ -528,15 +528,15 @@ public class Utility {
 			MCWebuiField webuifield = field.getAnnotation(MCWebuiField.class);
 			if (webuifield != null) 
 			{
-				if (webuifield.selectionField() > 0)
+				if (webuifield.selectionFieldSequence() > 0)
 				{
 					FieldS f;
 					MCLinkedField linkedField = field.getAnnotation(MCLinkedField.class);
 					if (linkedField == null)
 					{
-						f = new FieldS(webuifield.selectionField(), field.getName());
+						f = new FieldS(webuifield.selectionFieldSequence(), field.getName());
 					}else{						
-						f = new FieldS(webuifield.selectionField(), String.format("%s.%s", linkedField.parentField(), linkedField.valueExpression()));
+						f = new FieldS(webuifield.selectionFieldSequence(), String.format("%s.%s", linkedField.parentField(), linkedField.valueExpression()));
 					}
 					selectionfFields.add(f);
 				}
