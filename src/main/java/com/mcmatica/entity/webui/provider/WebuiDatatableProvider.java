@@ -1,14 +1,20 @@
 	package com.mcmatica.entity.webui.provider;
 
+
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javax.el.MethodExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.component.html.HtmlOutputText;
 
 import org.primefaces.component.column.Column;
+import org.primefaces.component.contextmenu.ContextMenu;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.menu.Menu;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.MenuItem;
 
 import com.mcmatica.entity.webui.common.Utility;
 import com.mcmatica.entity.webui.model.BaseEntityModel;
@@ -43,8 +49,7 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		table.setVar(var);
 		
 		/* Id */
-		//table.setId(detailListModel.getPropertyName());
-		table.setId(detailListModel.getPropertyName() + "_datatable");
+		table.setId(this.buildDataTableId());
 
 		/* selection mode */
 		table.setSelectionMode("single");
@@ -57,7 +62,12 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		//table.setEditMode("cell");
 		//table.setEditingRow(true);
 
+		/* resizable column */
 		table.setResizableColumns(true);
+		
+		/* sort mode */
+		table.setSortMode("multiple");
+		
 		
 		/* table style */
 		//table.setValueExpression("tableStyle", Utility.createExpression("width: auto", String.class));
@@ -133,6 +143,10 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 	
 				
 				column.getChildren().add(outputcell);
+		
+				/* sortable column */
+				column.setValueExpression("sortBy", Utility.createExpression(valueexpr, fmodel.getPropertyType()));
+				
 				
 				
 				/* add column to table */
@@ -189,6 +203,8 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 
 		return table;
 	}
+	
+	
 
 	private UIInput buildFieldController(FieldModel fmodel) {
 
@@ -252,5 +268,10 @@ public class WebuiDatatableProvider<T extends BaseEntityModel> extends WebuiAbst
 		return String.format(el, fmodel.getBeanControllerName(), fmodel.getPropertyName());
 	}
 
-
+	private String buildDataTableId()
+	{
+		return detailListModel.getPropertyName() + "_datatable";
+	}
+	
+	
 }

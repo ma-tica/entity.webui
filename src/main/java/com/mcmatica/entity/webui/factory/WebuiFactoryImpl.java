@@ -12,6 +12,7 @@ import javax.faces.model.DataModel;
 import org.primefaces.behavior.confirm.ConfirmBehavior;
 import org.primefaces.component.column.Column;
 import org.primefaces.component.commandbutton.CommandButton;
+import org.primefaces.component.contextmenu.ContextMenu;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.menubutton.MenuButton;
 import org.primefaces.component.menuitem.UIMenuItem;
@@ -19,6 +20,10 @@ import org.primefaces.component.panel.Panel;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.component.tabview.TabView;
 import org.primefaces.component.tooltip.Tooltip;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.MenuItem;
+import org.primefaces.model.menu.MenuModel;
 
 import com.mcmatica.entity.webui.bean.BaseUi;
 import com.mcmatica.entity.webui.common.Constant;
@@ -174,6 +179,9 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		/* lazy */
 		table.setValueExpression("lazy", Utility.createExpression("true", Boolean.class));
 		
+		/* sort mode */
+//		table.setSortMode("multiple");
+		
 		/*
 		 * columns
 		 */
@@ -212,6 +220,10 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 			
 			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
 			column.getChildren().add(cell);
+
+			/* sort by */
+//			column.setValueExpression("sortBy", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+
 			
 			/* filter by */
 			
@@ -229,6 +241,7 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
 			/* filter match mode */
 			//column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
+			
 			
 			
 			table.getChildren().add(column);
@@ -412,7 +425,10 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		MethodExpression removeactionListener = Utility.createMethodExp(deleteMethod,
 				new Class[] { detailList.getPropertyType() });
 		remove.setActionExpression(removeactionListener);
-		remove.setUpdate(detailList.getPropertyName()+"_datatable");
+		String update = Constant.MAIN_FORM_ID + ":detail_tabview" 
+						+ " " + detailList.getPropertyName()+"_datatable";
+					
+		remove.setUpdate(update);
 		
 		remove.setValueExpression("disabled", Utility.createExpression(disableExpression, Boolean.class));
 		ConfirmBehavior confirmRemove = new ConfirmBehavior();
@@ -421,6 +437,13 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		confirmRemove.setIcon("ui-icon-alert");
 		remove.addClientBehavior("click", confirmRemove);
 
+		DefaultMenuItem itemRemove = new DefaultMenuItem();
+		itemRemove.setIcon(remove.getIcon());
+		itemRemove.setUpdate(remove.getUpdate());
+		itemRemove.setAjax(true);
+		itemRemove.setCommand(deleteMethod);
+		//itemRemove.setConfirmationScript("alert('Procedere con eliminazione ?')");
+		itemRemove.setValue("Delete");
 		
 		/*
 		 * Tooltip bottone -
@@ -437,13 +460,22 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		edit.setIcon("fa fa-edit");
 		edit.setId(detailList.getPropertyName() + "_edit_button");
 		//edit.setUpdate(":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg");	
-		String update = ":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg";
+		update = ":" + detailList.getPropertyName()+"_form:" + detailList.getPropertyName() + "_dlg";
 		update += " @(.search_dialog_table)";
 		edit.setUpdate(update);
 		
 		edit.setResetValues(true);
 		edit.setOncomplete("PF('" + detailList.getPropertyName()+"_dlg" + "').show()");		
 		edit.setValueExpression("disabled", Utility.createExpression(disableExpression, Boolean.class));
+	
+		DefaultMenuItem itemEdit = new DefaultMenuItem();
+		itemEdit.setIcon(edit.getIcon());
+		itemEdit.setUpdate(edit.getUpdate());
+		itemEdit.setResetValues(edit.isResetValues());
+		itemEdit.setOncomplete(edit.getOncomplete());
+		itemEdit.setDisabled(false);
+		itemEdit.setValue("Edit");
+		
 		/*
 		 * Tooltip bottone edit
 		 */
@@ -451,18 +483,6 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		edittooltip.setFor(edit.getId());
 		edittooltip.setValue("Edit " + detailList.getPropertyName()) ;
 		
-		
-		/*
-		 * Loader gif
-		 */
-		// TODO - da migliorare
-		
-//		GraphicImage img = new GraphicImage();
-//		img.setName("img/ajax-loader.gif");
-//		img.setId(detailList.getPropertyName() + "_jobber_gif");
-//		img.setStyle("visibility: hidden");		
-//		img.setStyleClass("detail_tabview_jobber_gif");
-	
 		
 		
 		/*
@@ -488,8 +508,15 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		panel.getChildren().add(edittooltip);
 
 		
-		//panel.getChildren().add(img);
-		panel.getChildren().add(dataTableProvider.buildDataTable());
+		
+		/* Child Data Table */
+		DataTable table = dataTableProvider.buildDataTable();
+		panel.getChildren().add(table);
+		
+		/* data table context menu */
+		ContextMenu menu = this.buildDataTableContextMenu(table.getId(), itemEdit, itemRemove);		
+		panel.getChildren().add(menu);
+		
 
 		/*
 		 * Sub Children panels
@@ -512,6 +539,28 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		
 		return panel;
 		
+		
+	}
+	
+	private ContextMenu buildDataTableContextMenu(String dataTableId, DefaultMenuItem itemEdit, DefaultMenuItem itemRemove)
+	{
+		ContextMenu menu = new ContextMenu();
+		MenuModel menuModel = new DefaultMenuModel();
+		
+		
+		/* Id */
+		menu.setId(dataTableId + "_menu");
+		
+		/* for */
+		menu.setFor(dataTableId);
+		
+			
+		menuModel.addElement(itemEdit);
+		menuModel.addElement(itemRemove);
+		
+		menu.setModel(menuModel);
+		
+		return menu;
 		
 	}
 	

@@ -380,6 +380,7 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		list.remove(item);
 		this.dataService.startEditing();
 		
+		
 		/*
 		 * Update the User interface
 		 */
