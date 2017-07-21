@@ -346,13 +346,16 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	public void removeFieldListItem(String getter, String childListName, String selectionName) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 		Method mthGetSelected = this.getClass().getMethod("get" + Utility.capitalize(selectionName) );
-		BaseEntityModel itemselected;
-		itemselected = (BaseEntityModel) mthGetSelected.invoke(this);
+		
+		
+		Object itemselected;
+		itemselected =  mthGetSelected.invoke(this);
 		this.removeFieldListItem(getter, childListName, itemselected);
 		
 	}
 	
-	public void removeFieldListItem(String getter, String childListName, BaseEntityModel item) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+//	public void removeFieldListItem(String getter, String childListName, BaseEntityModel item) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
+	public void removeFieldListItem(String getter, String childListName, Object item) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException
 	{
 		
 		/*
@@ -362,7 +365,10 @@ public  abstract class  BaseWebuiBean implements Serializable {
 		/*
 		 * Put the removed item into the special list used for cascading save
 		 */
-		this.getSelected().getFieldListItemsRemoved(childListName).add(item);
+		if (item instanceof BaseEntityModel)
+		{
+			this.getSelected().getFieldListItemsRemoved(childListName).add((BaseEntityModel) item);
+		}
 		
 		//Method mth = this.getSelected().getClass().getMethod("get" + Utility.capitalize(childListName) );
 		
