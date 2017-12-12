@@ -213,7 +213,8 @@ class ClassScanner<F extends BaseUi> {
 					this.fillWebuiProperties(field, fmodel, webui);
 				}
 				fmodel.setGridWidth(webuigridcolumn.width());
-				fmodel.setShortListPosition(webuigridcolumn.shortListPosition());
+				fmodel.setListPosition(webuigridcolumn.listPosition());
+				fmodel.setHiddenOnListCollapsedMode(webuigridcolumn.hiddenOnCollapsedMode());
 				fmodel.setGridCaption(webuigridcolumn.caption());
 				if (!webuigridcolumn.dbFieldName().isEmpty()) 
 				{
@@ -221,6 +222,7 @@ class ClassScanner<F extends BaseUi> {
 				}else{
 					fmodel.setDbFieldName(field.getName());
 				}
+				
 				fmodel.setShortGridField(true);
 				
 			}
@@ -457,9 +459,9 @@ class ClassScanner<F extends BaseUi> {
 
 			@Override
 			public int compare(FieldModel o1, FieldModel o2) {
-				if (o1.getShortListPosition() == o2.getShortListPosition()) {
+				if (o1.getListPosition() == o2.getListPosition()) {
 					return 0;
-				} else if (o1.getShortListPosition() > o2.getShortListPosition()) {
+				} else if (o1.getListPosition() > o2.getListPosition()) {
 					return 1;
 				} else {
 					return -1;

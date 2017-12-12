@@ -67,6 +67,8 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	
 	protected MenuButton menuFunctions;
 	
+	private boolean expandedSearchGridMode = false;
+	
 //	@ManagedProperty(value="#{component_lookup}")
 //	private ComponentLookup componentLookup;
 	
@@ -280,6 +282,11 @@ public  abstract class  BaseWebuiBean implements Serializable {
 //	}
 
 	
+	public boolean getExpandedSearchGridMode()
+	{
+		return expandedSearchGridMode;
+	}
+	
 /*
  * ---------------------------------
  * C O M M A N D
@@ -450,8 +457,11 @@ public  abstract class  BaseWebuiBean implements Serializable {
 	}
 
 	
-	
-	
+	public void onToggleExpandGridSearch() {
+		expandedSearchGridMode = !expandedSearchGridMode;
+		
+		
+	}
 	
 /*
  * ---------------------------------------

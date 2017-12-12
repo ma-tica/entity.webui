@@ -11,6 +11,7 @@ import javax.faces.model.DataModel;
 
 import org.primefaces.behavior.confirm.ConfirmBehavior;
 import org.primefaces.component.column.Column;
+import org.primefaces.component.columntoggler.ColumnToggler;
 import org.primefaces.component.commandbutton.CommandButton;
 import org.primefaces.component.contextmenu.ContextMenu;
 import org.primefaces.component.datatable.DataTable;
@@ -149,15 +150,18 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 	public DataTable buildSelectionGrid()
 	{
 		DataTable table = new DataTable();
+		String expr;
 		
 		/* value */
-		String expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "list");
+		expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "list");
 		table.setValueExpression("value", Utility.createExpression( expr, DataModel.class));
 		
 		/* var */
 		table.setVar("item");
 		table.setSelectionMode("single");
 		
+		/* Id */
+		//table.setId("selectionGrid");
 		
 		/* filtered value */
 		expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "listFiltered");
@@ -181,6 +185,27 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		
 		/* sort mode */
 //		table.setSortMode("multiple");
+
+		
+//		CommandButton columnTogglerButton = new CommandButton();				
+//		columnTogglerButton.setValueExpression("value", Utility.createExpression("#{mclbl['common.columns']}",String.class));
+//		columnTogglerButton.setStyle("float:right");
+//		columnTogglerButton.setIcon("fa fa-bars");
+//		columnTogglerButton.setId("column_toggler");
+//		
+//		ColumnToggler columnToggler = new ColumnToggler();
+//		columnToggler.setDatasource("selctionDatatable");
+//		columnToggler.setTrigger(columnTogglerButton.getId());
+//		
+//		HtmlOutputText headerCaption = new HtmlOutputText();
+//		headerCaption.setValueExpression("value", Utility.createExpression("Lista", String.class));			
+//
+//		HtmlPanelGroup togglerGroup = new HtmlPanelGroup();
+//		togglerGroup.getChildren().add(columnTogglerButton);
+//		togglerGroup.getChildren().add(columnToggler);
+		
+		
+//		table.getFacets().put("header", togglerGroup );
 		
 		/*
 		 * columns
@@ -189,17 +214,15 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 		{
 			Column column = new Column();
 			
-//			HtmlOutputText caption = new HtmlOutputText();
-//			caption.setValueExpression("value", Utility.createExpression(fmodel.getGridCaption(), String.class));			
-//			column.getFacets().put("header", caption);
 			
-			/*
-			 * Header
-			 */
 			
-			/* caption */
+			/* Header caption */
 			String caption = fmodel.getGridCaption();
 			column.setValueExpression("headerText", Utility.createExpression(caption, String.class));
+
+			
+			
+
 			
 			/* width */
 			column.setValueExpression("width", Utility.createExpression(fmodel.getGridWidth(), String.class));
@@ -217,8 +240,28 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 			{
 				cellvalue = String.format("#{%s.%s.%s}", table.getVar(), fmodel.getLinkedParentField(), fmodel.getLinkedValueExpression());
 			}
+		
+			if (fmodel.getReferencedSelectionFields() != null && !fmodel.getReferencedSelectionFields().isEmpty()) {
+				String complexCellvalue="";
+				for (String refFieldName : fmodel.getReferencedSelectionFields())
+				{
+					if (complexCellvalue != "") { complexCellvalue +=" - " ;}
+					complexCellvalue += "item." + fmodel.getPropertyName() + "." + refFieldName;
+					break;
+				}
+				
+				if (complexCellvalue != null)
+				{
+					cellvalue = "#{"+complexCellvalue+"}";
+				}
+				cell.setValueExpression("value", Utility.createExpression(cellvalue, String.class));
+			}else {
 			
-			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+				cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+		    }
+			
+//			cell.setValueExpression("value", Utility.createExpression(cellvalue, fmodel.getPropertyType()));
+
 			column.getChildren().add(cell);
 
 			/* sort by */
@@ -241,8 +284,13 @@ public class WebuiFactoryImpl<T extends BaseUi> implements WebuiFactory {
 			column.setValueExpression("filterBy", Utility.createExpression(cellvalue, String.class));
 			/* filter match mode */
 			//column.setValueExpression("filterMatchMode", Utility.createExpression("contains", String.class));
+
 			
+			if (fmodel.isHiddenOnListCollapsedMode()) {
 			
+				expr = String.format("#{%s.%s}", scanner.getClazzAnnotation().beanControllerName(), "expandedSearchGridMode");
+				column.setValueExpression("visible", Utility.createExpression(expr, boolean.class));
+			}
 			
 			table.getChildren().add(column);
 			

@@ -620,20 +620,23 @@ abstract class WebuiAbstractProvider {
 	
 	protected String selectionLabelString(String var, FieldModel fmodel)
 	{
-		String label = null;
-		for(String fieldname : fmodel.getReferencedSelectionFields()) 
-		{
-			if (label != null)
-			{
-				label = label.concat(" - ");
-			}else{
-				label = new String("");
-			}
-				
-			label = label.concat(String.format("#{%s.%s}", var , fieldname));
-		}
+//		String label = null;
+//		for(String fieldname : fmodel.getReferencedSelectionFields()) 
+//		{
+//			if (label != null)
+//			{
+//				label = label.concat(" - ");
+//			}else{
+//				label = new String("");
+//			}
+//				
+//			label = label.concat(String.format("#{%s.%s}", var , fieldname));
+//		}
+//		
+//		return label;
 		
-		return label;
+		return fmodel.selectionLabelString(var);
+		
 	}
 	
 //	private DataTable buildSearchTable(FieldModel fmodel)

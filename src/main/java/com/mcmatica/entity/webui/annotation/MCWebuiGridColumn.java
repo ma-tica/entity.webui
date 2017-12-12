@@ -12,7 +12,9 @@ public @interface MCWebuiGridColumn {
 
 	public String dbFieldName() default "";
 	
-	public int shortListPosition() ;
+	public int listPosition() default 0;
+	
+	public boolean hiddenOnCollapsedMode() default true;
 
 	public String caption() default "";
 		

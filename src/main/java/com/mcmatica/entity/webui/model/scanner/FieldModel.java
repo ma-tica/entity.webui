@@ -30,7 +30,9 @@ public class FieldModel {
 	private String beanControllerName;
 	private Class<?> propertyType;
 	private String requiredExpression;
-	private int shortListPosition;
+	//private int shortListPosition;
+	private int listPosition;
+	private boolean hiddenOnListCollapsedMode;
 	private int formPosition;
 	private int colSpan;
 	private String defaultValue;
@@ -159,15 +161,15 @@ public class FieldModel {
 	/**
 	 * @return the shortListPosition
 	 */
-	public int getShortListPosition() {
-		return shortListPosition;
+	public int getListPosition() {
+		return listPosition;
 	}
 
 	/**
 	 * @param shortListPosition the shortListPosition to set
 	 */
-	public void setShortListPosition(int shortListPosition) {
-		this.shortListPosition = shortListPosition;
+	public void setListPosition(int listPosition) {
+		this.listPosition = listPosition;
 	}
 
 	/**
@@ -310,6 +312,24 @@ public class FieldModel {
 	}
 
 		
+	public String selectionLabelString(String parentObject)
+	{
+		String label = null;
+		for(String fieldname : this.getReferencedSelectionFields()) 
+		{
+			if (label != null)
+			{
+				label = label.concat(" - ");
+			}else{
+				label = new String("");
+			}
+				
+			label = label.concat(String.format("#{%s.%s}", parentObject , fieldname));
+		}
+		
+		return label;
+	}
+
 	public void setFillSelectionListExpression(String fillSelectionListExpression) {
 		this.fillSelectionListExpression = fillSelectionListExpression;
 	}
@@ -460,6 +480,14 @@ public class FieldModel {
 
 	public void setMask(String mask) {
 		this.mask = mask;
+	}
+
+	public boolean isHiddenOnListCollapsedMode() {
+		return hiddenOnListCollapsedMode;
+	}
+
+	public void setHiddenOnListCollapsedMode(boolean hiddenOnListCollapsedMode) {
+		this.hiddenOnListCollapsedMode = hiddenOnListCollapsedMode;
 	}
 
 	
